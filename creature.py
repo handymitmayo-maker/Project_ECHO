@@ -29,6 +29,7 @@ from settings import (
     FOOD_DETECTION_RADIUS, FOOD_DETECTION_RADIUS_HUNGRY, FOOD_HUNGER_SCAN_BOOST,
     FOOD_MEMORY_DURATION, FOOD_SAFE_SEEK_RADIUS,
     FOOD_CLAIM_OVERRIDE_FACTOR,
+    CROWD_RADIUS, CROWD_THRESHOLD, CROWD_WANDER_BIAS, CROWD_LOG_COOLDOWN,
     TARGET_COMMIT_BASE, TARGET_COMMIT_VAR,
     TARGET_RETARGET_COOL, TARGET_BETTER_FACTOR,
     CLAIM_REFRESH_INTERVAL, CONTEST_LOG_COOLDOWN,
@@ -175,6 +176,7 @@ class Creature:
         self._retarget_cool       : float = 0.0   # cooldown after voluntary target switch
         self._claim_refresh_timer : float = 0.0   # time until next claim TTL refresh
         self._contest_log_timer   : float = 0.0   # rate limit for FOOD_CONTEST log
+        self._crowd_log_timer     : float = 0.0   # rate limit for CROWD_AVOIDANCE log
 
         # --- Extension placeholders ---
         self.memory        : list = []
@@ -194,6 +196,7 @@ class Creature:
         if self._retarget_cool       > 0: self._retarget_cool       = max(0.0, self._retarget_cool       - dt)
         if self._claim_refresh_timer > 0: self._claim_refresh_timer = max(0.0, self._claim_refresh_timer - dt)
         if self._contest_log_timer   > 0: self._contest_log_timer   = max(0.0, self._contest_log_timer   - dt)
+        if self._crowd_log_timer     > 0: self._crowd_log_timer     = max(0.0, self._crowd_log_timer     - dt)
         self._decay_stats(dt)
 
         # Decay food memory over time
@@ -581,6 +584,9 @@ class Creature:
         # --- Friend pull (gentle bias toward nearest friend) ---
         self._apply_friend_pull(world, dt)
 
+        # --- Crowd avoidance (gentle bias away from seeker clusters) ---
+        self._apply_crowd_avoidance(world, dt)
+
         # --- Perturb wander angle ---
         self._wander_angle += random.uniform(-WANDER_ANGLE_SPEED, WANDER_ANGLE_SPEED) * dt
 
@@ -669,6 +675,34 @@ class Creature:
         while diff < -math.pi: diff += math.tau
         self._wander_angle += diff * REL_FRIEND_PULL * dt
 
+    def _apply_crowd_avoidance(self, world: "World", dt: float) -> None:
+        """Gently bias wander angle away from overcrowded SEEK_FOOD clusters."""
+        radius  = CROWD_RADIUS * 1.5
+        seekers = [
+            c for c in world.get_nearby_creatures(self.pos, radius, exclude=self)
+            if c.state == State.SEEK_FOOD
+        ]
+        if len(seekers) < CROWD_THRESHOLD:
+            return
+
+        cx = sum(c.pos.x for c in seekers) / len(seekers)
+        cy = sum(c.pos.y for c in seekers) / len(seekers)
+        away_angle = math.atan2(self.pos.y - cy, self.pos.x - cx)
+
+        pressure = min(1.0, (len(seekers) - CROWD_THRESHOLD) / 5.0)
+        diff = away_angle - self._wander_angle
+        while diff >  math.pi: diff -= math.tau
+        while diff < -math.pi: diff += math.tau
+        self._wander_angle += diff * CROWD_WANDER_BIAS * pressure * dt
+
+        if self._crowd_log_timer <= 0:
+            get_logger().log_event(
+                "CROWD_AVOIDANCE",
+                f"seekers_nearby={len(seekers)} pressure={pressure:.2f}",
+                self.label,
+            )
+            self._crowd_log_timer = CROWD_LOG_COOLDOWN
+
     def _get_food_target(self, world: "World"):
         """
         Claim-aware food lookup. Uses get_best_food_target for claim coordination.
@@ -700,7 +734,24 @@ class Creature:
             radius = FOOD_DETECTION_RADIUS
 
         food = world.get_best_food_target(self.pos, radius, self)
+
         if food is not None:
+            # If chosen food has no competition but nearest raw food was contested,
+            # log a migration decision so analysts can see the crowd-driven rerouting.
+            chosen_seekers = getattr(world, "_last_food_seekers", 0)
+            if chosen_seekers == 0:
+                nearest_contested = any(
+                    f.claimed_by is not None
+                    and self.pos.distance_squared_to(f.pos) < radius * radius
+                    for f in world.foods
+                    if f is not food
+                )
+                if nearest_contested:
+                    get_logger().log_event(
+                        "MIGRATION_DECISION",
+                        f"avoided contested zone  chose ({int(food.pos.x)},{int(food.pos.y)})",
+                        self.label,
+                    )
             self._claim(food)
         return food
 

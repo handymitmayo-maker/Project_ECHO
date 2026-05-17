@@ -153,6 +153,9 @@ class Logger:
         social_evts = self._social_count
         self._social_count = 0
 
+        contested       = sum(1 for f in world.foods if f.claimed_by is not None)
+        contested_ratio = contested / max(1, len(world.foods))
+
         ts   = self._timestamp()
         line = (
             f"[{ts}] [{'STATS':<{_W}}] {'':8} | "
@@ -160,7 +163,8 @@ class Logger:
             f"avg_hunger={avg_hunger:5.1f}  "
             f"avg_energy={avg_energy:5.1f}  "
             f"hungry={hungry}  "
-            f"social_events={social_evts}"
+            f"social_events={social_evts}  "
+            f"contested_food={contested_ratio:.0%}"
         )
         self._emit(line)
 

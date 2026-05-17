@@ -109,7 +109,7 @@ BAR_SPACING           = 5          # px between bar and creature edge
 
 # HUD Panel (top-left debug overlay)
 HUD_BG_COLOR          = (0,   0,   0)       # panel fill colour
-HUD_BG_ALPHA          = 140                 # 0–255 panel opacity
+HUD_BG_ALPHA          = 70                 # 0–255 panel opacity
 HUD_TEXT_COLOR        = (0,   255, 136)     # phosphor green text
 HUD_TEXT_SHADOW       = (0,   60,  30)      # shadow colour for depth
 HUD_PADDING           = 10                  # px inner padding around text
@@ -138,15 +138,15 @@ BIOME_BARREN_RATE    = 0.25
 BIOME_CLUSTER_STD    = 55           # px – Gaussian std for food scatter within biome
 DEBUG_SHOW_BIOMES    = True         # draw semi-transparent biome overlay
 
-# Stronger, more saturated colours for contrast against the grass background
-COLOR_BIOME_FERTILE  = (20,  80,  25)
-COLOR_BIOME_NEUTRAL  = (10,  15,  60)
-COLOR_BIOME_BARREN   = (80,  20,  10)
+# Vivid, clearly readable biome colours against the grass background
+COLOR_BIOME_FERTILE  = (30,  160,  40)   # vivid green
+COLOR_BIOME_NEUTRAL  = (20,   40, 140)   # clear blue
+COLOR_BIOME_BARREN   = (160,  30,  15)   # strong red-orange
 
 # Biome overlay gradient
-BIOME_ALPHA_CENTER   = 70           # opacity at circle centre (0–255)
+BIOME_ALPHA_CENTER   = 130          # opacity at circle centre (0–255)
 BIOME_ALPHA_EDGE     = 0            # opacity at outer rim (fade to transparent)
-BIOME_GRADIENT_STEPS = 12           # concentric rings used to fake the gradient
+BIOME_GRADIENT_STEPS = 16           # more rings = smoother gradient at higher alpha
 
 # --- Relationships ------------------------------------------------------------
 REL_SOCIAL_GAIN      = 0.4          # affinity/s while actively socializing
@@ -179,6 +179,13 @@ REST_MIN_SOCIAL_OVERRIDE   = 0.3   # social_dependency must exceed this to exit 
 
 # Safe food-seeking distance (used when energy is critically low)
 FOOD_SAFE_SEEK_RADIUS      = 220   # preferred max dist when energy < ENERGY_SURVIVAL_ONLY
+
+# Population Pressure / Crowd Awareness
+CROWD_RADIUS             = 150    # px – radius for sensing local competition density
+CROWD_THRESHOLD          = 3      # min seeking creatures before pressure activates
+CROWD_FOOD_SCORE_PENALTY = 50     # px added to effective food distance per nearby seeker
+CROWD_WANDER_BIAS        = 0.18   # wander angle pull strength away from crowd centroid
+CROWD_LOG_COOLDOWN       = 8.0    # min seconds between CROWD_AVOIDANCE logs per creature
 
 # Food Claim System
 FOOD_CLAIM_TTL             = 4.0   # seconds before an uncollected claim auto-expires
