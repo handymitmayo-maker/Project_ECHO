@@ -27,7 +27,9 @@ from settings import (
     COLOR_CREATURE_SEEK,
     COLOR_BAR_BG, COLOR_BAR_HUNGER, COLOR_BAR_ENERGY, COLOR_BAR_SOCIAL,
     SHOW_STATUS_BARS, BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
+    SHOW_CREATURE_LABELS,
 )
+from logger import get_logger
 
 if TYPE_CHECKING:
     from world import World
@@ -50,6 +52,17 @@ _STATE_COLOR = {
 }
 
 
+# Module-level label font – lazy-initialized after pygame.init()
+_label_font: pygame.font.Font | None = None
+
+
+def _get_label_font() -> pygame.font.Font:
+    global _label_font
+    if _label_font is None:
+        _label_font = pygame.font.SysFont("Courier New", 9)
+    return _label_font
+
+
 # =============================================================================
 class Creature:
     """
@@ -67,7 +80,11 @@ class Creature:
         self.relationships – {creature_id: affinity_float}
     """
 
+    _counter: int = 0   # class-level sequential ID counter
+
     def __init__(self, x: float, y: float) -> None:
+        Creature._counter += 1
+        self.label         = f"ECHO-{Creature._counter:02d}"
         self.id            = uuid.uuid4()
         self.pos           = pygame.Vector2(x, y)
         self.vel           = pygame.Vector2(
@@ -83,8 +100,9 @@ class Creature:
         self.social  = random.uniform(30, 90)
 
         # --- State machine ---
-        self.state   = State.WANDER
-        self.target  = None                      # Food object or Vector2
+        self.state        = State.WANDER
+        self._prev_state  = State.WANDER
+        self.target       = None                 # Food object or Vector2
 
         # Wander / Reynolds wander circle
         self._wander_timer  = 0.0
@@ -94,6 +112,10 @@ class Creature:
         self._is_idle       = False
         self._idle_timer    = 0.0
         self._idle_duration = 0.0
+
+        # Social interaction – track whether we're already in an interaction
+        # to avoid logging every frame
+        self._in_social_interaction = False
 
         # --- Extension placeholders ---
         self.memory        : list        = []    # future: episodic events
@@ -131,6 +153,14 @@ class Creature:
         # Core body
         pygame.draw.circle(surface, color, (px, py), CREATURE_RADIUS)
 
+        if SHOW_CREATURE_LABELS:
+            font       = _get_label_font()
+            label_surf = font.render(self.label, True, (110, 110, 110))
+            surface.blit(
+                label_surf,
+                (px - label_surf.get_width() // 2, py - CREATURE_RADIUS - 13),
+            )
+
         if SHOW_STATUS_BARS:
             self._draw_status_bars(surface, px, py)
 
@@ -143,7 +173,7 @@ class Creature:
         if self.hunger >= HUNGER_THRESHOLD:
             self.state  = State.SEEK_FOOD
             nearest     = world.get_nearest_food(self.pos)
-            self.target = nearest          # may be None if no food exists
+            self.target = nearest
         elif self.energy <= ENERGY_THRESHOLD:
             self.state  = State.REST
             self.target = None
@@ -154,6 +184,14 @@ class Creature:
         else:
             self.state  = State.WANDER
             self.target = None
+
+        if self.state != self._prev_state:
+            get_logger().log_event(
+                "STATE_CHANGE",
+                f"{self._prev_state.name} -> {self.state.name}",
+                self.label,
+            )
+            self._prev_state = self.state
 
     def _act(self, world: "World", dt: float) -> None:
         """Translate current state into steering forces."""
@@ -174,7 +212,18 @@ class Creature:
                 self._steer_arrive(self.target.pos)
                 if self.pos.distance_to(self.target.pos) < SOCIAL_RADIUS * 0.5:
                     self.social = min(100, self.social + SOCIAL_GAIN_RATE * dt)
+                    if not self._in_social_interaction:
+                        self._in_social_interaction = True
+                        get_logger().log_event(
+                            "SOCIAL",
+                            f"interacting with {self.target.label}",
+                            self.label,
+                        )
+                        get_logger().increment_social()
+                else:
+                    self._in_social_interaction = False
             else:
+                self._in_social_interaction = False
                 self._steer_wander(dt)
 
         else:  # WANDER
@@ -235,6 +284,11 @@ class Creature:
                 self._is_idle       = True
                 self._idle_timer    = 0.0
                 self._idle_duration = random.uniform(IDLE_DURATION_MIN, IDLE_DURATION_MAX)
+                get_logger().log_event(
+                    "IDLE_ENTER",
+                    f"pausing for {self._idle_duration:.1f}s",
+                    self.label,
+                )
                 return
 
         # --- Perturb wander angle (organic drift) ---
@@ -278,6 +332,11 @@ class Creature:
         self.hunger = max(0, self.hunger - food.nutrition)
         food.alive  = False
         self.target = None
+        get_logger().log_event(
+            "FOOD_FOUND",
+            f"ate at ({int(self.pos.x)}, {int(self.pos.y)})",
+            self.label,
+        )
         # Extension: self.memory.append({"event": "ate", "pos": self.pos.copy()})
 
     # ------------------------------------------------------------------

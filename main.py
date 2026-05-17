@@ -53,6 +53,8 @@ def main() -> None:
 
         pygame.display.flip()
 
+    from logger import get_logger
+    get_logger().close()
     pygame.quit()
     sys.exit()
 

@@ -76,6 +76,13 @@ BAR_WIDTH             = 28
 BAR_HEIGHT            = 3
 BAR_SPACING           = 5          # px between bar and creature edge
 
+# --- Logging ------------------------------------------------------------------
+LOG_TO_CONSOLE        = True        # print events to stdout
+LOG_TO_FILE           = True        # write events to log.txt
+LOG_FILE              = "log.txt"   # relative to working directory
+STATS_INTERVAL        = 5.0         # seconds between statistics dumps
+SHOW_CREATURE_LABELS  = True        # render ECHO-NN label above each creature
+
 # --- Debug --------------------------------------------------------------------
 DEBUG_MODE            = False       # show extra info when True
 

@@ -14,10 +14,11 @@ from settings import (
     WORLD_WIDTH, WORLD_HEIGHT,
     CREATURE_COUNT,
     FOOD_INITIAL_COUNT, FOOD_SPAWN_INTERVAL, FOOD_SPAWN_BATCH, FOOD_MAX_COUNT,
-    COLOR_BG, SCANLINE_ALPHA,
+    COLOR_BG, SCANLINE_ALPHA, STATS_INTERVAL,
 )
 from creature import Creature
 from food import Food
+from logger import get_logger
 
 
 class World:
@@ -42,6 +43,7 @@ class World:
 
         # Internal timers
         self._food_timer  = 0.0
+        self._stats_timer = 0.0
 
         # Scanline overlay surface (created once, reused every frame)
         self._scanline_surf : pygame.Surface | None = None
@@ -88,6 +90,12 @@ class World:
         if self._food_timer >= FOOD_SPAWN_INTERVAL:
             self._food_timer = 0.0
             self._spawn_food_batch()
+
+        # Periodic statistics dump
+        self._stats_timer += dt
+        if self._stats_timer >= STATS_INTERVAL:
+            self._stats_timer = 0.0
+            get_logger().log_stats(self)
 
     # ------------------------------------------------------------------
     # Draw
