@@ -126,7 +126,7 @@ BIOME_FERTILE_RATE   = 3.0          # spawn weight multiplier
 BIOME_NEUTRAL_RATE   = 1.0
 BIOME_BARREN_RATE    = 0.25
 BIOME_CLUSTER_STD    = 55           # px – Gaussian std for food scatter within biome
-DEBUG_SHOW_BIOMES    = False        # draw semi-transparent biome overlay
+DEBUG_SHOW_BIOMES    = True         # draw semi-transparent biome overlay
 
 COLOR_BIOME_FERTILE  = (15,  50,  20)
 COLOR_BIOME_NEUTRAL  = (15,  20,  45)
@@ -165,8 +165,8 @@ REST_MIN_SOCIAL_OVERRIDE   = 0.3   # social_dependency must exceed this to exit 
 FOOD_SAFE_SEEK_RADIUS      = 220   # preferred max dist when energy < ENERGY_SURVIVAL_ONLY
 
 # --- Debug --------------------------------------------------------------------
-DEBUG_MODE            = False       # show extra info when True
-DEBUG_SHOW_PERCEPTION = False       # draw food-perception radius on SEEK_FOOD creatures
+DEBUG_MODE            = True        # show extra info when True
+DEBUG_SHOW_PERCEPTION = True        # draw food-perception radius on SEEK_FOOD creatures
 
 # =============================================================================
 # Extension placeholders (filled in future versions)
