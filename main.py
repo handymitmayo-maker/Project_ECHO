@@ -9,7 +9,10 @@ import pygame
 from settings import (
     WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, FPS,
     DEBUG_MODE, COLOR_BG,
+    HUD_BG_COLOR, HUD_BG_ALPHA, HUD_TEXT_COLOR, HUD_TEXT_SHADOW,
+    HUD_PADDING, HUD_LINE_HEIGHT, HUD_FONT_SIZE,
 )
+from boot_screen import BootScreen
 from world import World
 
 
@@ -23,7 +26,10 @@ def main() -> None:
     clock  = pygame.time.Clock()
 
     # Debug font (only allocated when DEBUG_MODE is True)
-    debug_font = pygame.font.SysFont("Courier New", 14) if DEBUG_MODE else None
+    debug_font = pygame.font.SysFont("Courier New", HUD_FONT_SIZE) if DEBUG_MODE else None
+
+    # --- Boot screen --------------------------------------------------------
+    BootScreen(screen, clock).run()
 
     # --- Simulation ---------------------------------------------------------
     world = World()
@@ -97,22 +103,35 @@ def _draw_debug(
     clock      : pygame.time.Clock,
     world      : "World",
 ) -> None:
-    """Render a small HUD with simulation stats (debug mode only)."""
+    """Render a semi-transparent HUD panel with simulation stats."""
+    alive = [c for c in world.creatures if c.alive]
     lines = [
         f"FPS       : {clock.get_fps():.1f}",
         f"Tick      : {world.tick}",
-        f"Creatures : {len(world.creatures)}",
+        f"Creatures : {len(alive)}",
         f"Food      : {len(world.foods)}",
     ]
-    x, y = 10, 10
+
+    pad     = HUD_PADDING
+    text_w  = max(font.size(line)[0] for line in lines)
+    text_h  = HUD_LINE_HEIGHT * len(lines)
+    panel_w = text_w + pad * 2
+    panel_h = text_h + pad * 2
+
+    # Semi-transparent dark panel
+    panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+    panel.fill((*HUD_BG_COLOR, HUD_BG_ALPHA))
+    screen.blit(panel, (8, 8))
+
+    # Text with drop shadow
+    x = 8 + pad
+    y = 8 + pad
     for line in lines:
-        # Shadow
-        shadow = font.render(line, True, (0, 0, 0))
+        shadow = font.render(line, True, HUD_TEXT_SHADOW)
         screen.blit(shadow, (x + 1, y + 1))
-        # Text
-        text = font.render(line, True, (0, 255, 136))
+        text = font.render(line, True, HUD_TEXT_COLOR)
         screen.blit(text, (x, y))
-        y += 18
+        y += HUD_LINE_HEIGHT
 
 
 # =============================================================================

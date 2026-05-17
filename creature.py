@@ -29,6 +29,9 @@ from settings import (
     FOOD_DETECTION_RADIUS, FOOD_DETECTION_RADIUS_HUNGRY, FOOD_HUNGER_SCAN_BOOST,
     FOOD_MEMORY_DURATION, FOOD_SAFE_SEEK_RADIUS,
     FOOD_CLAIM_OVERRIDE_FACTOR,
+    TARGET_COMMIT_BASE, TARGET_COMMIT_VAR,
+    TARGET_RETARGET_COOL, TARGET_BETTER_FACTOR,
+    CLAIM_REFRESH_INTERVAL, CONTEST_LOG_COOLDOWN,
     SURVIVAL_LOG_COOLDOWN,
     DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
     DEATH_CRITICAL_TIME, CORPSE_DURATION,
@@ -167,6 +170,12 @@ class Creature:
         # Anti-spam: SURVIVAL_DECISION log cooldown
         self._survival_log_timer : float = 0.0
 
+        # Target commitment / retarget cooldowns
+        self._target_commit_timer : float = 0.0   # time left before re-evaluation allowed
+        self._retarget_cool       : float = 0.0   # cooldown after voluntary target switch
+        self._claim_refresh_timer : float = 0.0   # time until next claim TTL refresh
+        self._contest_log_timer   : float = 0.0   # rate limit for FOOD_CONTEST log
+
         # --- Extension placeholders ---
         self.memory        : list = []
         self.dna           : dict = {}
@@ -180,8 +189,11 @@ class Creature:
         """Main update tick – only called while self.alive is True."""
         self._lifespan    += dt
         self._state_timer += dt
-        if self._survival_log_timer > 0:
-            self._survival_log_timer = max(0.0, self._survival_log_timer - dt)
+        if self._survival_log_timer  > 0: self._survival_log_timer  = max(0.0, self._survival_log_timer  - dt)
+        if self._target_commit_timer > 0: self._target_commit_timer = max(0.0, self._target_commit_timer - dt)
+        if self._retarget_cool       > 0: self._retarget_cool       = max(0.0, self._retarget_cool       - dt)
+        if self._claim_refresh_timer > 0: self._claim_refresh_timer = max(0.0, self._claim_refresh_timer - dt)
+        if self._contest_log_timer   > 0: self._contest_log_timer   = max(0.0, self._contest_log_timer   - dt)
         self._decay_stats(dt)
 
         # Decay food memory over time
@@ -373,6 +385,7 @@ class Creature:
         # Refresh target for the new state
         if new_state == State.SEEK_FOOD:
             self.target = self._get_food_target(world)
+            self._reset_commit_timer()
         elif new_state == State.SOCIALIZE:
             nearby      = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
             self.target = self._best_social_target(nearby)
@@ -438,22 +451,27 @@ class Creature:
         """Translate current state into movement and interaction."""
         if self.state == State.SEEK_FOOD:
             if self.target is not None and self.target.alive:
-                self._claim(self.target)          # refresh TTL while chasing
+                # Refresh claim TTL periodically (not every frame)
+                if self._claim_refresh_timer <= 0:
+                    self._claim(self.target)
+                    self._claim_refresh_timer = CLAIM_REFRESH_INTERVAL
+
                 self._steer_arrive(self.target.pos)
                 if self.pos.distance_to(self.target.pos) < CREATURE_RADIUS + self.target.radius:
                     self._eat(self.target, world)
+                elif self._target_commit_timer <= 0 and self._retarget_cool <= 0:
+                    # Commitment expired – consider whether a better target exists
+                    self._consider_retarget(world)
             else:
-                # Target gone – look for new visible food
-                self.target = self._get_food_target(world)
+                # Target gone or None – acquire a fresh one immediately
+                self._acquire_new_target(world)
                 if self.target is not None:
                     self._steer_arrive(self.target.pos)
                 elif self._last_seen_food_pos is not None:
-                    # Head toward last known food position
                     self._steer_arrive(self._last_seen_food_pos)
                     if self.pos.distance_to(self._last_seen_food_pos) < 20:
                         self._last_seen_food_pos = None
                 else:
-                    # No memory – sweep wider in search
                     self._steer_search_wander(dt)
 
         elif self.state == State.REST:
@@ -686,6 +704,58 @@ class Creature:
             self._claim(food)
         return food
 
+    # ------------------------------------------------------------------
+    # Target commitment helpers
+    # ------------------------------------------------------------------
+
+    def _reset_commit_timer(self) -> None:
+        """
+        Set the commitment timer based on personality.
+        Risk-tolerant creatures commit for shorter periods (quicker to reassess).
+        Cautious creatures hold their target longer (more decisive, less twitchy).
+        """
+        duration = TARGET_COMMIT_BASE + (1.0 - self.risk_tolerance) * TARGET_COMMIT_VAR
+        self._target_commit_timer = duration
+
+    def _acquire_new_target(self, world: "World") -> None:
+        """Find and claim a fresh food target with no prior commitment check."""
+        self.target = self._get_food_target(world)
+        if self.target is not None:
+            self._reset_commit_timer()
+
+    def _consider_retarget(self, world: "World") -> None:
+        """
+        Called when the commitment timer expires.  Checks break conditions and
+        whether a significantly better (closer) target exists before switching.
+        Always resets the commit timer so evaluations stay periodic.
+        """
+        # Break condition: emergency hunger – always seek the best option
+        if self.hunger >= STATE_EMERGENCY_HUNGER:
+            self._acquire_new_target(world)
+            return
+
+        # Break condition: current target too far (creature may be stuck / path blocked)
+        if self.target is not None and self.target.alive:
+            current_dist = self.pos.distance_to(self.target.pos)
+            if current_dist > FOOD_DETECTION_RADIUS * 1.5:
+                self._acquire_new_target(world)
+                return
+
+            # Opportunistic switch: only if a clearly closer unclaimed food exists
+            candidate = world.get_best_food_target(self.pos, FOOD_DETECTION_RADIUS, self)
+            if (candidate is not None
+                    and candidate is not self.target
+                    and self.pos.distance_to(candidate.pos) < current_dist * TARGET_BETTER_FACTOR):
+                self._release_claim(self.target)
+                self._claim(candidate)
+                self.target         = candidate
+                self._retarget_cool = TARGET_RETARGET_COOL
+
+        # Reset commit timer regardless of outcome (keep evaluations periodic)
+        self._reset_commit_timer()
+
+    # ------------------------------------------------------------------
+
     def _log_survival(self, message: str) -> None:
         """Rate-limited SURVIVAL_DECISION log (max once per SURVIVAL_LOG_COOLDOWN seconds)."""
         if self._survival_log_timer <= 0:
@@ -721,11 +791,21 @@ class Creature:
         self._last_seen_food_pos = food.pos.copy()
         self._food_memory_timer  = 0.0
 
-        get_logger().log_event(
-            "FOOD_CONTEST" if was_contested else "FOOD_CLAIM",
-            f"food at ({int(food.pos.x)},{int(food.pos.y)})",
-            self.label,
-        )
+        if was_contested:
+            # Rate-limited: don't spam FOOD_CONTEST every frame
+            if self._contest_log_timer <= 0:
+                get_logger().log_event(
+                    "FOOD_CONTEST",
+                    f"food at ({int(food.pos.x)},{int(food.pos.y)})",
+                    self.label,
+                )
+                self._contest_log_timer = CONTEST_LOG_COOLDOWN
+        else:
+            get_logger().log_event(
+                "FOOD_CLAIM",
+                f"food at ({int(food.pos.x)},{int(food.pos.y)})",
+                self.label,
+            )
 
     def _release_claim(self, food: "Food") -> None:
         """Release this creature's claim on a food item."""

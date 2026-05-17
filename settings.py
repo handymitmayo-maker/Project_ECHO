@@ -107,6 +107,15 @@ BAR_WIDTH             = 28
 BAR_HEIGHT            = 3
 BAR_SPACING           = 5          # px between bar and creature edge
 
+# HUD Panel (top-left debug overlay)
+HUD_BG_COLOR          = (0,   0,   0)       # panel fill colour
+HUD_BG_ALPHA          = 140                 # 0–255 panel opacity
+HUD_TEXT_COLOR        = (0,   255, 136)     # phosphor green text
+HUD_TEXT_SHADOW       = (0,   60,  30)      # shadow colour for depth
+HUD_PADDING           = 10                  # px inner padding around text
+HUD_LINE_HEIGHT       = 18                  # px between lines
+HUD_FONT_SIZE         = 14                  # font size (px)
+
 # --- Logging ------------------------------------------------------------------
 LOG_TO_CONSOLE        = True        # print events to stdout
 LOG_TO_FILE           = True        # write events to timestamped session file
@@ -129,9 +138,15 @@ BIOME_BARREN_RATE    = 0.25
 BIOME_CLUSTER_STD    = 55           # px – Gaussian std for food scatter within biome
 DEBUG_SHOW_BIOMES    = True         # draw semi-transparent biome overlay
 
-COLOR_BIOME_FERTILE  = (15,  50,  20)
-COLOR_BIOME_NEUTRAL  = (15,  20,  45)
-COLOR_BIOME_BARREN   = (50,  15,  15)
+# Stronger, more saturated colours for contrast against the grass background
+COLOR_BIOME_FERTILE  = (20,  80,  25)
+COLOR_BIOME_NEUTRAL  = (10,  15,  60)
+COLOR_BIOME_BARREN   = (80,  20,  10)
+
+# Biome overlay gradient
+BIOME_ALPHA_CENTER   = 70           # opacity at circle centre (0–255)
+BIOME_ALPHA_EDGE     = 0            # opacity at outer rim (fade to transparent)
+BIOME_GRADIENT_STEPS = 12           # concentric rings used to fake the gradient
 
 # --- Relationships ------------------------------------------------------------
 REL_SOCIAL_GAIN      = 0.4          # affinity/s while actively socializing
@@ -168,6 +183,16 @@ FOOD_SAFE_SEEK_RADIUS      = 220   # preferred max dist when energy < ENERGY_SUR
 # Food Claim System
 FOOD_CLAIM_TTL             = 4.0   # seconds before an uncollected claim auto-expires
 FOOD_CLAIM_OVERRIDE_FACTOR = 0.55  # creature may contest if it is ≤ this fraction of claimer distance
+
+# Target Commitment System
+TARGET_COMMIT_BASE         = 2.5   # base seconds a food/social target is held without re-evaluation
+TARGET_COMMIT_VAR          = 1.5   # personality variance: risk_tolerance modulates duration
+                                   #   cautious (low risk) → longer commit; reckless → shorter
+TARGET_RETARGET_COOL       = 1.0   # cooldown after a voluntary target switch (prevents thrashing)
+TARGET_BETTER_FACTOR       = 0.65  # only switch if new target is this fraction of current distance
+                                   #   e.g. 0.65 = new target must be 35 % closer to be worth switching
+CLAIM_REFRESH_INTERVAL     = 1.0   # seconds between claim TTL refreshes (not every frame)
+CONTEST_LOG_COOLDOWN       = 4.0   # min seconds between FOOD_CONTEST log events per creature
 
 # Logger anti-spam
 SURVIVAL_LOG_COOLDOWN      = 6.0   # min seconds between SURVIVAL_DECISION logs per creature
