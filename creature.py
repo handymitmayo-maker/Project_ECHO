@@ -33,7 +33,7 @@ from settings import (
     COLOR_CREATURE_SEEK, COLOR_CREATURE_DYING, COLOR_CORPSE,
     COLOR_BAR_BG, COLOR_BAR_HUNGER, COLOR_BAR_ENERGY, COLOR_BAR_SOCIAL,
     SHOW_STATUS_BARS, BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
-    SHOW_CREATURE_LABELS,
+    SHOW_CREATURE_LABELS, LABEL_FONT_SIZE, LABEL_COLOR,
 )
 from logger import get_logger
 
@@ -66,7 +66,7 @@ _label_font: pygame.font.Font | None = None
 def _get_label_font() -> pygame.font.Font:
     global _label_font
     if _label_font is None:
-        _label_font = pygame.font.SysFont("Courier New", 9)
+        _label_font = pygame.font.SysFont("Courier New", LABEL_FONT_SIZE)
     return _label_font
 
 
@@ -526,9 +526,14 @@ class Creature:
         surface.blit(corpse_surf, (px - CREATURE_RADIUS - 1, py - CREATURE_RADIUS - 1))
 
     def _draw_label(self, surface: pygame.Surface, px: int, py: int) -> None:
-        font       = _get_label_font()
-        label_surf = font.render(self.label, True, (110, 110, 110))
-        surface.blit(label_surf, (px - label_surf.get_width() // 2, py - CREATURE_RADIUS - 13))
+        font   = _get_label_font()
+        y_base = py - CREATURE_RADIUS - 14
+        # Shadow (1 px offset) for contrast on dark background
+        shadow = font.render(self.label, True, (0, 0, 0))
+        surface.blit(shadow, (px - shadow.get_width() // 2 + 1, y_base + 1))
+        # Main label
+        text = font.render(self.label, True, LABEL_COLOR)
+        surface.blit(text, (px - text.get_width() // 2, y_base))
 
     def _draw_status_bars(self, surface: pygame.Surface, px: int, py: int) -> None:
         bars    = [

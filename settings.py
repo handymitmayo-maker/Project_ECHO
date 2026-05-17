@@ -105,6 +105,8 @@ LOG_TO_FILE           = True        # write events to log.txt
 LOG_FILE              = "log.txt"   # relative to working directory
 STATS_INTERVAL        = 5.0         # seconds between statistics dumps
 SHOW_CREATURE_LABELS  = True        # render ECHO-NN label above each creature
+LABEL_FONT_SIZE       = 11          # px – larger = easier to read
+LABEL_COLOR           = (200, 200, 200)  # bright enough to read on black bg
 
 # --- Debug --------------------------------------------------------------------
 DEBUG_MODE            = False       # show extra info when True

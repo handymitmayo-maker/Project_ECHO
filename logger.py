@@ -38,7 +38,7 @@ class Logger:
         self._session_start : datetime.datetime = datetime.datetime.now()
 
         if LOG_TO_FILE:
-            self._file = open(LOG_FILE, "a", encoding="utf-8")
+            self._file = open(LOG_FILE, "w", encoding="utf-8")
             self._write_raw(
                 f"\n{'=' * 60}\n"
                 f"  PROJECT ECHO – Session {self._session_start.strftime('%Y-%m-%d %H:%M:%S')}\n"
