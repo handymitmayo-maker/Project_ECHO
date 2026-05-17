@@ -25,8 +25,7 @@ def main() -> None:
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock  = pygame.time.Clock()
 
-    # Debug font (only allocated when DEBUG_MODE is True)
-    debug_font = pygame.font.SysFont("Courier New", HUD_FONT_SIZE) if DEBUG_MODE else None
+    debug_font = pygame.font.SysFont("Courier New", HUD_FONT_SIZE)
 
     # --- Boot screen --------------------------------------------------------
     BootScreen(screen, clock).run()
@@ -57,7 +56,7 @@ def main() -> None:
         # 4. Render
         world.draw(screen)
 
-        if DEBUG_MODE and debug_font:
+        if DEBUG_MODE:
             _draw_debug(screen, debug_font, clock, world)
 
         pygame.display.flip()
@@ -74,6 +73,7 @@ def _handle_keydown(event: pygame.event.Event, world: "World") -> None:
 
     ESC     – quit
     D       – toggle DEBUG_MODE at runtime
+    B       – toggle biome zone overlay
     SPACE   – spawn a burst of food manually
     """
     import settings  # local import so we can mutate the module-level flag
@@ -83,6 +83,13 @@ def _handle_keydown(event: pygame.event.Event, world: "World") -> None:
 
     elif event.key == pygame.K_d:
         settings.DEBUG_MODE = not settings.DEBUG_MODE
+
+    elif event.key == pygame.K_b:
+        settings.DEBUG_SHOW_BIOMES = not settings.DEBUG_SHOW_BIOMES
+        if settings.DEBUG_SHOW_BIOMES:
+            world._rebuild_biome_overlay()
+        else:
+            world._biome_surf = None
 
     elif event.key == pygame.K_SPACE:
         # Manual food drop at a random cluster position
@@ -104,13 +111,19 @@ def _draw_debug(
     world      : "World",
 ) -> None:
     """Render a semi-transparent HUD panel with simulation stats."""
+    import settings
+
     alive = [c for c in world.creatures if c.alive]
     lines = [
         f"FPS       : {clock.get_fps():.1f}",
         f"Tick      : {world.tick}",
         f"Creatures : {len(alive)}",
         f"Food      : {len(world.foods)}",
+        f"Biomes    : {'ON' if settings.DEBUG_SHOW_BIOMES else 'OFF'}  [B]",
     ]
+    if settings.DEBUG_SHOW_BIOMES:
+        for b in world.biomes:
+            lines.append(f"  {b.type:7} r={int(b.radius):3}  ({int(b.center.x)},{int(b.center.y)})")
 
     pad     = HUD_PADDING
     text_w  = max(font.size(line)[0] for line in lines)

@@ -25,11 +25,11 @@ from settings import (
     BIOME_FERTILE_RATE, BIOME_NEUTRAL_RATE, BIOME_BARREN_RATE,
     BIOME_CLUSTER_STD, DEBUG_SHOW_BIOMES,
     COLOR_BIOME_FERTILE, COLOR_BIOME_NEUTRAL, COLOR_BIOME_BARREN,
-    BIOME_ALPHA_CENTER, BIOME_ALPHA_EDGE, BIOME_GRADIENT_STEPS,
     COLOR_BG, SCANLINE_ALPHA, STATS_INTERVAL,
     STATE_EMERGENCY_HUNGER,
     GRASS_TILE_PATH, GRASS_TILE_DARK,
 )
+from biome_render import build_biome_overlay
 from creature import Creature
 from food import Food
 from logger import get_logger
@@ -97,6 +97,9 @@ class World:
         self._last_food_seekers : int = 0
 
         self._spawn_initial_entities()
+
+        if DEBUG_SHOW_BIOMES:
+            self._rebuild_biome_overlay()
 
     # ------------------------------------------------------------------
     # Initialisation
@@ -441,34 +444,14 @@ class World:
 
         return bg
 
+    def _rebuild_biome_overlay(self) -> None:
+        """Pre-render smooth biome zones (fill + border + labels)."""
+        self._biome_surf = build_biome_overlay(self.biomes)
+
     def _draw_biomes(self, surface: pygame.Surface) -> None:
-        """
-        Draw soft radial-gradient biome overlays (built once, reused every frame).
-        Each biome is rendered as BIOME_GRADIENT_STEPS concentric filled circles
-        whose alpha ramps from BIOME_ALPHA_EDGE at the rim to BIOME_ALPHA_CENTER
-        at the core, producing a smooth fade-in effect.
-        """
+        """Blit the cached biome overlay built by biome_render."""
         if self._biome_surf is None:
-            self._biome_surf = pygame.Surface(
-                (WORLD_WIDTH, WORLD_HEIGHT), pygame.SRCALPHA
-            )
-            for biome in self.biomes:
-                cx = int(biome.center.x)
-                cy = int(biome.center.y)
-                # Draw from outermost ring inward so inner rings paint over outer
-                for step in range(BIOME_GRADIENT_STEPS, 0, -1):
-                    frac  = step / BIOME_GRADIENT_STEPS          # 1.0 … 1/N
-                    r     = max(1, int(biome.radius * frac))
-                    alpha = int(
-                        BIOME_ALPHA_EDGE
-                        + (BIOME_ALPHA_CENTER - BIOME_ALPHA_EDGE) * (1.0 - frac)
-                    )
-                    pygame.draw.circle(
-                        self._biome_surf,
-                        (*biome.color, alpha),
-                        (cx, cy),
-                        r,
-                    )
+            self._rebuild_biome_overlay()
         surface.blit(self._biome_surf, (0, 0))
 
     def _draw_scanlines(self, surface: pygame.Surface) -> None:

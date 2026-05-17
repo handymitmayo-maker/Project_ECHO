@@ -138,15 +138,20 @@ BIOME_BARREN_RATE    = 0.25
 BIOME_CLUSTER_STD    = 55           # px – Gaussian std for food scatter within biome
 DEBUG_SHOW_BIOMES    = True         # draw semi-transparent biome overlay
 
-# Vivid, clearly readable biome colours against the grass background
-COLOR_BIOME_FERTILE  = (30,  160,  40)   # vivid green
-COLOR_BIOME_NEUTRAL  = (20,   40, 140)   # clear blue
-COLOR_BIOME_BARREN   = (160,  30,  15)   # strong red-orange
+# Biome zone colours – saturated so they read clearly on grass
+COLOR_BIOME_FERTILE  = (50,  210,  85)    # lush green
+COLOR_BIOME_NEUTRAL  = (75,  145, 255)    # clear blue
+COLOR_BIOME_BARREN   = (235,  65,  50)    # warm red
 
-# Biome overlay gradient
-BIOME_ALPHA_CENTER   = 130          # opacity at circle centre (0–255)
-BIOME_ALPHA_EDGE     = 0            # opacity at outer rim (fade to transparent)
-BIOME_GRADIENT_STEPS = 16           # more rings = smoother gradient at higher alpha
+# Biome overlay (smooth radial fill – see biome_render.py)
+BIOME_ALPHA_CENTER   = 100          # peak tint opacity at zone centre (0–255)
+BIOME_FALLOFF        = 2.0          # >1 = softer fade toward edge
+BIOME_RING_WIDTH     = 3            # px outline so each zone has a clear border
+BIOME_RING_ALPHA     = 210          # outline opacity
+BIOME_SHOW_LABELS    = True         # FERTILE / NEUTRAL / BARREN label in centre
+BIOME_LABEL_FONT_SIZE = 13
+COLOR_BIOME_LABEL    = (235, 245, 235)
+COLOR_BIOME_LABEL_BG = (0, 0, 0, 140)
 
 # --- Relationships ------------------------------------------------------------
 REL_SOCIAL_GAIN      = 0.4          # affinity/s while actively socializing
