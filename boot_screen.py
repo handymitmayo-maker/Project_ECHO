@@ -22,6 +22,7 @@ from settings import (
     WINDOW_WIDTH, WINDOW_HEIGHT, FPS,
     CREATURE_COUNT, FOOD_INITIAL_COUNT, BIOME_COUNT,
 )
+from world_seed import boot_sidebar_seed, get_mode
 
 # ---------------------------------------------------------------------------
 # Boot constants (all tunable here)
@@ -74,7 +75,6 @@ _BOOT_LINES: list[tuple] = [
 
 # Metadata sidebar (right column, rendered alongside boot lines)
 _SESSION_ID = str(uuid.uuid4())[:8].upper()
-_SEED       = random.randint(10000, 99999)
 
 
 # =============================================================================
@@ -303,7 +303,8 @@ class BootScreen:
         ts = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
         entries = [
             ("SESSION",    _SESSION_ID),
-            ("SEED",       str(_SEED)),
+            ("MODE",       get_mode()),
+            ("WORLD SEED", boot_sidebar_seed()),
             ("TIMESTAMP",  ts),
             ("POPULATION", str(self._pop_display)),
             ("FOOD INIT",  str(self._food_display)),

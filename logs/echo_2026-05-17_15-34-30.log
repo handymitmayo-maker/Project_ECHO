@@ -1,0 +1,532 @@
+==============================================================
+  PROJECT ECHO  –  Session 2026-05-17 15:34:30
+==============================================================
+  File              : logs\echo_2026-05-17_15-34-30.log
+--------------------------------------------------------------
+  Initial population: 12
+  Biomes            : 5  →  fertile(3.0x)  fertile(3.0x)  barren(0.2x)  neutral(1.0x)  neutral(1.0x)
+  Initial food      : 20  (cap 60, spawn 3 / 3.0s)
+--------------------------------------------------------------
+  Hunger decay      : 4.0/s
+  Energy wander/seek: 1.2/2.8 /s
+  Energy rest rate  : 18.0/s
+  Target FPS        : 60
+--------------------------------------------------------------
+  Max population    : 40  (pair reproduction only)
+  Repro gates       : affinity>25, age>60s
+==============================================================
+
+[15:34:32.666] [STATE_CHANGE        ] ECHO-07  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=68 e=50 s=36
+[15:34:32.667] [STATE_CHANGE        ] ECHO-09  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=61 e=87 s=34
+[15:34:32.668] [FOOD_CLAIM          ] ECHO-09  | food at (1011,606)
+[15:34:32.668] [STATE_CHANGE        ] ECHO-12  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=56 e=70 s=61
+[15:34:32.747] [FOOD_CLAIM          ] ECHO-07  | food at (493,126)
+[15:34:33.032] [STATE_CHANGE        ] ECHO-10  | WANDER (2.4s) -> SEEK_FOOD  [normal]  h=55 e=74 s=61
+[15:34:33.032] [MIGRATION_DECISION  ] ECHO-10  | avoided contested zone  chose (418,189)
+[15:34:33.033] [FOOD_CLAIM          ] ECHO-10  | food at (418,189)
+[15:34:33.935] [STATE_CHANGE        ] ECHO-05  | WANDER (3.3s) -> SEEK_FOOD  [normal]  h=55 e=76 s=56
+[15:34:34.135] [STATE_CHANGE        ] ECHO-11  | WANDER (3.5s) -> SOCIALIZE  [normal]  h=46 e=68 s=27
+[15:34:34.216] [STATE_CHANGE        ] ECHO-03  | WANDER (3.6s) -> SEEK_FOOD  [normal]  h=55 e=55 s=34
+[15:34:34.217] [MIGRATION_DECISION  ] ECHO-03  | avoided contested zone  chose (1015,552)
+[15:34:34.217] [FOOD_CLAIM          ] ECHO-03  | food at (1015,552)
+[15:34:34.952] [STATE_CHANGE        ] ECHO-01  | WANDER (4.3s) -> SEEK_FOOD  [normal]  h=55 e=68 s=60
+[15:34:34.953] [FOOD_CLAIM          ] ECHO-01  | food at (137,240)
+[15:34:35.166] [IDLE_ENTER          ] ECHO-02  | pausing for 4.0s
+[15:34:35.167] [IDLE_ENTER          ] ECHO-04  | pausing for 3.6s
+[15:34:35.168] [IDLE_ENTER          ] ECHO-08  | pausing for 2.4s
+[15:34:35.663] [STATS               ]          | pop=12  avg_hunger= 59.7  avg_energy= 67.6  hungry=7  social_events=0  contested_food=22%
+[15:34:35.663] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:34:35.796] [STATE_CHANGE        ] ECHO-06  | WANDER (5.1s) -> SEEK_FOOD  [normal]  h=55 e=72 s=48
+[15:34:35.796] [FOOD_CLAIM          ] ECHO-06  | food at (1004,525)
+[15:34:36.977] [STATE_CHANGE        ] ECHO-08  | WANDER (6.3s) -> SEEK_FOOD  [normal]  h=55 e=62 s=31
+[15:34:36.981] [MIGRATION_DECISION  ] ECHO-08  | avoided contested zone  chose (1029,465)
+[15:34:36.981] [FOOD_CLAIM          ] ECHO-08  | food at (1029,465)
+[15:34:37.755] [STATE_CHANGE        ] ECHO-02  | WANDER (7.1s) -> SEEK_FOOD  [normal]  h=55 e=78 s=35
+[15:34:37.759] [MIGRATION_DECISION  ] ECHO-12  | avoided contested zone  chose (83,144)
+[15:34:37.759] [FOOD_CLAIM          ] ECHO-12  | food at (83,144)
+[15:34:37.838] [STATE_CHANGE        ] ECHO-04  | WANDER (7.2s) -> SEEK_FOOD  [normal]  h=55 e=90 s=48
+[15:34:39.400] [FOOD_FOUND          ] ECHO-09  | ate at (1021, 609)  total=1
+[15:34:39.709] [FOOD_CLAIM          ] ECHO-02  | food at (997,517)
+[15:34:40.023] [FOOD_FOUND          ] ECHO-10  | ate at (422, 198)  total=1
+[15:34:40.041] [MIGRATION_DECISION  ] ECHO-10  | avoided contested zone  chose (387,234)
+[15:34:40.042] [FOOD_CLAIM          ] ECHO-10  | food at (387,234)
+[15:34:40.372] [FOOD_FOUND          ] ECHO-08  | ate at (1035, 456)  total=1
+[15:34:40.387] [STATE_CHANGE        ] ECHO-08  | SEEK_FOOD (3.4s) -> WANDER  [normal]  h=34 e=53 s=26
+[15:34:40.436] [FOOD_CLAIM          ] ECHO-05  | food at (471,137)
+[15:34:40.665] [STATS               ]          | pop=12  avg_hunger= 71.0  avg_energy= 55.1  hungry=10  social_events=0  contested_food=31%
+[15:34:40.666] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:34:41.026] [CROWD_AVOIDANCE     ] ECHO-08  | seekers_nearby=4 pressure=0.20
+[15:34:41.542] [SOCIAL              ] ECHO-11  | interacting with ECHO-02  total=1
+[15:34:42.084] [FOOD_FOUND          ] ECHO-03  | ate at (1008, 559)  total=1
+[15:34:42.399] [STATE_CHANGE        ] ECHO-08  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=42 e=50 s=23
+[15:34:42.679] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (8.5s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=58 s=36  tgt=51px
+[15:34:42.680] [EMERGENCY_OVERRIDE  ] ECHO-11  | contesting food at (997,517)  hunger=80
+[15:34:42.680] [TARGET_SWITCH       ] ECHO-11  | (976,509) -> (997,517)
+[15:34:42.681] [FOOD_CONTEST        ] ECHO-11  | food at (997,517)
+[15:34:42.745] [FOOD_CONTEST        ] ECHO-02  | food at (997,517)
+[15:34:42.925] [FOOD_FOUND          ] ECHO-01  | ate at (134, 249)  total=1
+[15:34:42.943] [FOOD_CLAIM          ] ECHO-01  | food at (154,207)
+[15:34:43.556] [MIGRATION_DECISION  ] ECHO-09  | avoided contested zone  chose (1129,236)
+[15:34:43.557] [FOOD_CLAIM          ] ECHO-09  | food at (1129,236)
+[15:34:43.623] [FOOD_FOUND          ] ECHO-10  | ate at (394, 226)  total=2
+[15:34:43.639] [STATE_CHANGE        ] ECHO-10  | SEEK_FOOD (10.6s) -> WANDER  [normal]  h=27 e=44 s=45
+[15:34:43.687] [FOOD_FOUND          ] ECHO-02  | ate at (988, 513)  total=1
+[15:34:43.688] [RIVALRY             ] ECHO-02  | with ECHO-11  | affinity=  -2.6 (Δ-3.0)
+[15:34:43.690] [EMERGENCY_OVERRIDE  ] ECHO-11  | contesting food at (997,517)  hunger=84
+[15:34:43.705] [EMERGENCY_OVERRIDE  ] ECHO-11  | contesting food at (1004,525)  hunger=84
+[15:34:43.706] [TARGET_SWITCH       ] ECHO-11  | (997,517) -> (1004,525)
+[15:34:43.850] [FOOD_CONTEST        ] ECHO-06  | food at (1004,525)
+[15:34:43.948] [FOOD_FOUND          ] ECHO-06  | ate at (1002, 535)  total=1
+[15:34:43.949] [RIVALRY             ] ECHO-06  | with ECHO-02  | affinity=  -2.9 (Δ-3.0)
+[15:34:43.949] [RIVALRY             ] ECHO-06  | with ECHO-11  | affinity=  -2.6 (Δ-3.0)
+[15:34:43.950] [EMERGENCY_OVERRIDE  ] ECHO-11  | contesting food at (1004,525)  hunger=85
+[15:34:43.964] [EMERGENCY_OVERRIDE  ] ECHO-11  | contesting food at (1129,236)  hunger=85
+[15:34:43.965] [TARGET_SWITCH       ] ECHO-11  | (1004,525) -> (1129,236)
+[15:34:44.576] [FOOD_CONTEST        ] ECHO-09  | food at (1129,236)
+[15:34:45.042] [FOOD_FOUND          ] ECHO-12  | ate at (86, 135)  total=1
+[15:34:45.059] [FOOD_CLAIM          ] ECHO-12  | food at (137,202)
+[15:34:45.678] [FOOD_CLAIM          ] ECHO-04  | food at (622,357)
+[15:34:45.680] [STATS               ]          | pop=12  avg_hunger= 71.2  avg_energy= 42.3  hungry=9  social_events=1  contested_food=26%
+[15:34:45.680] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:34:46.737] [FOOD_CONTEST        ] ECHO-11  | food at (1129,236)
+[15:34:46.770] [DEATH               ] ECHO-07  | cause=starvation | lifespan=16.1s | state=SEEK_FOOD | hunger=100.0 | energy=11.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-07
+  Lifespan            : 16.1s
+  Cause of death      : starvation
+  Food eaten          : 0
+  Distance travelled  : 209 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 14.1s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-05  (affinity=0.1)
+  Personality         : risk=0.20  lazy=0.74  social=0.69  greed=0.48
+  Generation          : 0
+  Lineage             : eb14370e
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:34:46.777] [FOOD_CLAIM_RELEASE  ] ECHO-07  | food at (493,126)
+[15:34:46.902] [SURVIVAL_DECISION   ] ECHO-03  | risky_food_search | energy=20.0 risk=0.67
+[15:34:47.034] [FOOD_FOUND          ] ECHO-01  | ate at (150, 216)  total=2
+[15:34:47.035] [EMERGENCY_OVERRIDE  ] ECHO-09  | contesting food at (1129,236)  hunger=84
+[15:34:47.050] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (12.1s) -> WANDER  [normal]  h=33 e=34 s=42
+[15:34:47.278] [EMERGENCY_OVERRIDE  ] ECHO-11  | contesting food at (1129,236)  hunger=98
+[15:34:47.692] [MIGRATION_DECISION  ] ECHO-05  | avoided contested zone  chose (471,137)
+[15:34:48.597] [FOOD_CONTEST        ] ECHO-09  | food at (1129,236)
+[15:34:48.646] [FOOD_FOUND          ] ECHO-05  | ate at (464, 129)  total=1
+[15:34:48.662] [FOOD_CLAIM          ] ECHO-05  | food at (493,126)
+[15:34:48.874] [MIGRATION_DECISION  ] ECHO-02  | avoided contested zone  chose (1095,173)
+[15:34:48.875] [FOOD_CLAIM          ] ECHO-02  | food at (1095,173)
+[15:34:49.056] [STATE_CHANGE        ] ECHO-01  | WANDER (2.0s) -> REST  [normal]  h=41 e=32 s=39
+[15:34:49.057] [REST_REASON         ] ECHO-01  | low_energy | energy=31.7 laziness=0.53
+[15:34:50.083] [STATE_CHANGE        ] ECHO-10  | WANDER (6.4s) -> REST  [normal]  h=53 e=37 s=36
+[15:34:50.084] [REST_REASON         ] ECHO-10  | low_energy | energy=36.7 laziness=0.78
+[15:34:50.395] [FOOD_FOUND          ] ECHO-12  | ate at (131, 194)  total=2
+[15:34:50.528] [EMERGENCY_OVERRIDE  ] ECHO-09  | contesting food at (1129,236)  hunger=98
+[15:34:50.594] [MIGRATION_DECISION  ] ECHO-11  | avoided contested zone  chose (1110,171)
+[15:34:50.604] [TARGET_SWITCH       ] ECHO-11  | (1129,236) -> (1110,171)
+[15:34:50.605] [FOOD_CLAIM          ] ECHO-11  | food at (1110,171)
+[15:34:50.679] [STATS               ]          | pop=11  avg_hunger= 76.3  avg_energy= 36.7  hungry=9  social_events=0  contested_food=19%
+[15:34:50.691] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:34:50.865] [FOOD_FOUND          ] ECHO-05  | ate at (483, 128)  total=2
+[15:34:50.882] [FOOD_CLAIM          ] ECHO-05  | food at (493,99)
+[15:34:51.063] [STATE_CHANGE        ] ECHO-01  | REST (2.0s) -> WANDER  [normal]  h=49 e=68 s=36
+[15:34:51.991] [STATE_CHANGE        ] ECHO-08  | SOCIALIZE (9.6s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=39 s=23  tgt=116px
+[15:34:51.992] [EMERGENCY_OVERRIDE  ] ECHO-08  | contesting food at (1129,236)  hunger=80
+[15:34:51.994] [TARGET_SWITCH       ] ECHO-08  | (1104,646) -> (1129,236)
+[15:34:51.994] [FOOD_CONTEST        ] ECHO-08  | food at (1129,236)
+[15:34:52.090] [STATE_CHANGE        ] ECHO-10  | REST (2.0s) -> SEEK_FOOD  [normal]  h=61 e=73 s=32
+[15:34:52.091] [FOOD_CLAIM          ] ECHO-10  | food at (480,190)
+[15:34:52.614] [FOOD_CONTEST        ] ECHO-09  | food at (1129,236)
+[15:34:52.912] [SURVIVAL_DECISION   ] ECHO-03  | risky_food_search | energy=3.1 risk=0.67
+[15:34:53.075] [STATE_CHANGE        ] ECHO-01  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=58 e=65 s=33
+[15:34:53.358] [FOOD_FOUND          ] ECHO-05  | ate at (490, 108)  total=3
+[15:34:53.375] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (19.4s) -> REST  [normal]  h=14 e=21 s=27
+[15:34:53.376] [REST_REASON         ] ECHO-05  | low_energy | energy=21.2 laziness=0.73
+[15:34:53.442] [FOOD_FOUND          ] ECHO-10  | ate at (474, 198)  total=3
+[15:34:53.458] [FOOD_CLAIM          ] ECHO-10  | food at (437,206)
+[15:34:53.675] [DEATH               ] ECHO-11  | cause=starvation | lifespan=23.0s | state=SEEK_FOOD | hunger=100.0 | energy=26.8
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-11
+  Lifespan            : 23.0s
+  Cause of death      : starvation
+  Food eaten          : 0
+  Distance travelled  : 226 px
+  Social interactions : 1
+  Time resting        : 0.0s
+  Time socializing    : 8.5s
+  Time seeking food   : 11.0s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-02  (affinity=3.8)
+  Personality         : risk=0.46  lazy=0.56  social=0.27  greed=0.50
+  Generation          : 0
+  Lineage             : 73abc363
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:34:53.681] [FOOD_CLAIM_RELEASE  ] ECHO-11  | food at (1110,171)
+[15:34:54.008] [EMERGENCY_OVERRIDE  ] ECHO-09  | contesting food at (1129,236)  hunger=100
+[15:34:54.090] [FOOD_CLAIM_RELEASE  ] ECHO-10  | food at (437,206)
+[15:34:54.091] [STATE_CHANGE        ] ECHO-10  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=34 e=67 s=29  tgt=29px
+[15:34:54.285] [IDLE_ENTER          ] ECHO-10  | pausing for 2.3s
+[15:34:54.891] [EMERGENCY_OVERRIDE  ] ECHO-08  | contesting food at (1129,236)  hunger=92
+[15:34:55.075] [DEATH               ] ECHO-04  | cause=starvation | lifespan=24.4s | state=SEEK_FOOD | hunger=100.0 | energy=41.2
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-04
+  Lifespan            : 24.4s
+  Cause of death      : starvation
+  Food eaten          : 0
+  Distance travelled  : 355 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 17.2s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.32  lazy=0.21  social=0.42  greed=0.25
+  Generation          : 0
+  Lineage             : 848ee95e
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:34:55.081] [FOOD_CLAIM_RELEASE  ] ECHO-04  | food at (622,357)
+[15:34:55.324] [FOOD_FOUND          ] ECHO-09  | ate at (1128, 246)  total=2
+[15:34:55.324] [RIVALRY             ] ECHO-09  | with ECHO-08  | affinity=  -3.0 (Δ-3.0)
+[15:34:55.341] [TARGET_SWITCH       ] ECHO-08  | (1129,236) -> (1131,183)
+[15:34:55.343] [FOOD_CLAIM          ] ECHO-08  | food at (1131,183)
+[15:34:55.593] [STATE_CHANGE        ] ECHO-05  | REST (2.2s) -> SOCIALIZE  [normal]  h=23 e=61 s=23
+[15:34:55.691] [STATS               ]          | pop=9  avg_hunger= 73.0  avg_energy= 31.6  hungry=7  social_events=0  contested_food=7%
+[15:34:55.692] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:34:56.021] [FOOD_CONTEST        ] ECHO-08  | food at (1131,183)
+[15:34:56.102] [FOOD_FOUND          ] ECHO-02  | ate at (1091, 182)  total=2
+[15:34:56.119] [FOOD_CLAIM          ] ECHO-02  | food at (1110,171)
+[15:34:56.120] [STATE_CHANGE        ] ECHO-10  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=42 e=65 s=26
+[15:34:56.657] [FOOD_CONTEST        ] ECHO-09  | food at (1131,183)
+[15:34:56.719] [FOOD_CLAIM          ] ECHO-06  | food at (1066,104)
+[15:34:57.117] [SOCIAL              ] ECHO-05  | interacting with ECHO-10  total=1
+[15:34:57.118] [SOCIAL              ] ECHO-10  | interacting with ECHO-05  total=1
+[15:34:57.475] [FOOD_FOUND          ] ECHO-02  | ate at (1101, 176)  total=3
+[15:34:57.491] [STATE_CHANGE        ] ECHO-02  | SEEK_FOOD (19.7s) -> REST  [normal]  h=29 e=23 s=5
+[15:34:57.491] [REST_REASON         ] ECHO-02  | low_energy | energy=22.6 laziness=0.48
+[15:34:57.756] [FOOD_CLAIM          ] ECHO-03  | food at (995,512)
+[15:34:58.240] [EMERGENCY_OVERRIDE  ] ECHO-08  | contesting food at (995,512)  hunger=100
+[15:34:58.240] [MIGRATION_DECISION  ] ECHO-08  | avoided contested zone  chose (995,512)
+[15:34:58.241] [TARGET_SWITCH       ] ECHO-08  | (1131,183) -> (995,512)
+[15:34:58.781] [FOOD_CONTEST        ] ECHO-03  | food at (995,512)
+[15:34:59.059] [FOOD_CLAIM          ] ECHO-01  | food at (1203,144)
+[15:34:59.367] [FOOD_FOUND          ] ECHO-09  | ate at (1131, 193)  total=3
+[15:34:59.384] [FOOD_CLAIM          ] ECHO-09  | food at (1117,168)
+[15:34:59.496] [STATE_CHANGE        ] ECHO-02  | REST (2.0s) -> SOCIALIZE  [normal]  h=37 e=59 s=2
+[15:34:59.496] [SOCIAL              ] ECHO-02  | interacting with ECHO-09  total=1
+[15:35:00.037] [DEATH               ] ECHO-03  | cause=starvation | lifespan=29.4s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-03
+  Lifespan            : 29.4s
+  Cause of death      : starvation
+  Food eaten          : 1
+  Distance travelled  : 282 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 25.8s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-06  (affinity=0.1)
+  Personality         : risk=0.67  lazy=0.73  social=0.30  greed=0.22
+  Generation          : 0
+  Lineage             : 6deea38a
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:00.043] [FOOD_CLAIM_RELEASE  ] ECHO-03  | food at (995,512)
+[15:35:00.055] [FOOD_CLAIM          ] ECHO-08  | food at (995,512)
+[15:35:00.072] [STATE_CHANGE        ] ECHO-10  | SOCIALIZE (4.0s) -> SEEK_FOOD  [normal]  h=58 e=60 s=50  tgt=6px
+[15:35:00.073] [TARGET_SWITCH       ] ECHO-10  | (475,158) -> (467,159)
+[15:35:00.073] [FOOD_CLAIM          ] ECHO-10  | food at (467,159)
+[15:35:00.074] [FOOD_FOUND          ] ECHO-10  | ate at (473, 165)  total=4
+[15:35:00.089] [FOOD_CLAIM          ] ECHO-10  | food at (480,150)
+[15:35:00.447] [STATE_CHANGE        ] ECHO-05  | SOCIALIZE (4.9s) -> WANDER  [normal]  h=42 e=55 s=50  tgt=3px
+[15:35:00.696] [STATS               ]          | pop=8  avg_hunger= 67.9  avg_energy= 30.0  hungry=4  social_events=3  contested_food=19%
+[15:35:00.696] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:00.760] [FOOD_CLAIM          ] ECHO-12  | food at (139,241)
+[15:35:01.156] [FOOD_FOUND          ] ECHO-10  | ate at (475, 159)  total=5
+[15:35:01.173] [FOOD_CLAIM          ] ECHO-10  | food at (504,173)
+[15:35:01.787] [DEATH               ] ECHO-06  | cause=starvation | lifespan=31.1s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-06
+  Lifespan            : 31.1s
+  Cause of death      : starvation
+  Food eaten          : 1
+  Distance travelled  : 493 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 26.0s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-03  (affinity=0.0)
+  Personality         : risk=0.32  lazy=0.52  social=0.48  greed=0.37
+  Generation          : 0
+  Lineage             : 27d7c5e3
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:01.793] [FOOD_CLAIM_RELEASE  ] ECHO-06  | food at (1066,104)
+[15:35:02.083] [FOOD_CLAIM_RELEASE  ] ECHO-10  | food at (504,173)
+[15:35:02.084] [STATE_CHANGE        ] ECHO-10  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=4 e=54 s=47  tgt=21px
+[15:35:02.972] [DEATH               ] ECHO-08  | cause=starvation | lifespan=32.3s | state=SEEK_FOOD | hunger=100.0 | energy=8.2
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-08
+  Lifespan            : 32.3s
+  Cause of death      : starvation
+  Food eaten          : 1
+  Distance travelled  : 368 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 9.6s
+  Time seeking food   : 14.4s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-03  (affinity=0.6)
+  Personality         : risk=0.74  lazy=0.57  social=0.63  greed=0.63
+  Generation          : 0
+  Lineage             : 8c17ed1e
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:02.979] [FOOD_CLAIM_RELEASE  ] ECHO-08  | food at (995,512)
+[15:35:03.588] [DEATH               ] ECHO-12  | cause=starvation | lifespan=32.9s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-12
+  Lifespan            : 32.9s
+  Cause of death      : starvation
+  Food eaten          : 2
+  Distance travelled  : 453 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 30.9s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-01  (affinity=0.1)
+  Personality         : risk=0.30  lazy=0.74  social=0.32  greed=0.25
+  Generation          : 0
+  Lineage             : b3decb8d
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:03.597] [FOOD_CLAIM_RELEASE  ] ECHO-12  | food at (139,241)
+[15:35:03.656] [STATE_CHANGE        ] ECHO-05  | WANDER (3.2s) -> SEEK_FOOD  [normal]  h=55 e=51 s=45
+[15:35:03.660] [FOOD_CLAIM          ] ECHO-05  | food at (442,167)
+[15:35:05.085] [FOOD_FOUND          ] ECHO-05  | ate at (432, 168)  total=4
+[15:35:05.101] [FOOD_CLAIM          ] ECHO-05  | food at (453,188)
+[15:35:05.464] [STATE_CHANGE        ] ECHO-02  | SOCIALIZE (6.0s) -> SEEK_FOOD  [normal]  h=61 e=51 s=50  tgt=2px
+[15:35:05.465] [TARGET_SWITCH       ] ECHO-02  | (1125,182) -> (1141,167)
+[15:35:05.465] [FOOD_CLAIM          ] ECHO-02  | food at (1141,167)
+[15:35:05.659] [FOOD_CLAIM_RELEASE  ] ECHO-05  | food at (453,188)
+[15:35:05.660] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=46 s=42  tgt=22px
+[15:35:05.711] [STATS               ]          | pop=5  avg_hunger= 56.0  avg_energy= 35.3  hungry=3  social_events=0  contested_food=10%
+[15:35:05.713] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:06.372] [FOOD_FOUND          ] ECHO-01  | ate at (1210, 151)  total=3
+[15:35:06.389] [FOOD_CLAIM          ] ECHO-01  | food at (1173,166)
+[15:35:06.755] [FOOD_FOUND          ] ECHO-02  | ate at (1134, 174)  total=4
+[15:35:06.774] [FOOD_CLAIM          ] ECHO-02  | food at (1149,178)
+[15:35:07.070] [IDLE_ENTER          ] ECHO-10  | pausing for 4.2s
+[15:35:07.478] [FOOD_CLAIM_RELEASE  ] ECHO-02  | food at (1149,178)
+[15:35:07.479] [STATE_CHANGE        ] ECHO-02  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=34 e=46 s=47  tgt=10px
+[15:35:09.867] [DEATH               ] ECHO-09  | cause=exhaustion | lifespan=39.2s | state=SEEK_FOOD | hunger=88.2 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-09
+  Lifespan            : 39.2s
+  Cause of death      : exhaustion
+  Food eaten          : 3
+  Distance travelled  : 697 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 37.2s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-02  (affinity=0.8)
+  Personality         : risk=0.35  lazy=0.31  social=0.55  greed=0.35
+  Generation          : 0
+  Lineage             : c8e061ce
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:09.876] [FOOD_CLAIM_RELEASE  ] ECHO-09  | food at (1117,168)
+[15:35:10.627] [FOOD_FOUND          ] ECHO-01  | ate at (1182, 162)  total=4
+[15:35:10.643] [FOOD_CLAIM          ] ECHO-01  | food at (1149,178)
+[15:35:10.710] [STATS               ]          | pop=4  avg_hunger= 45.2  avg_energy= 35.5  hungry=0  social_events=0  contested_food=3%
+[15:35:10.711] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:12.405] [STATE_CHANGE        ] ECHO-05  | WANDER (6.7s) -> SEEK_FOOD  [normal]  h=55 e=38 s=32
+[15:35:12.407] [FOOD_CLAIM          ] ECHO-05  | food at (418,209)
+[15:35:12.747] [STATE_CHANGE        ] ECHO-02  | WANDER (5.3s) -> SEEK_FOOD  [normal]  h=55 e=40 s=39
+[15:35:12.748] [FOOD_CLAIM          ] ECHO-02  | food at (1137,114)
+[15:35:12.749] [FOOD_FOUND          ] ECHO-02  | ate at (1142, 115)  total=5
+[15:35:12.764] [FOOD_CLAIM          ] ECHO-02  | food at (1110,146)
+[15:35:14.758] [FOOD_CLAIM_RELEASE  ] ECHO-02  | food at (1110,146)
+[15:35:14.758] [STATE_CHANGE        ] ECHO-02  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=34 s=36  tgt=12px
+[15:35:14.922] [STATE_CHANGE        ] ECHO-10  | WANDER (12.8s) -> SEEK_FOOD  [normal]  h=55 e=39 s=28
+[15:35:14.923] [MIGRATION_DECISION  ] ECHO-10  | avoided contested zone  chose (604,174)
+[15:35:14.923] [FOOD_CLAIM          ] ECHO-10  | food at (604,174)
+[15:35:15.372] [IDLE_ENTER          ] ECHO-02  | pausing for 2.2s
+[15:35:15.718] [STATS               ]          | pop=4  avg_hunger= 56.5  avg_energy= 25.0  hungry=3  social_events=0  contested_food=8%
+[15:35:15.719] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:16.542] [FOOD_FOUND          ] ECHO-05  | ate at (408, 212)  total=5
+[15:35:16.558] [MIGRATION_DECISION  ] ECHO-05  | avoided contested zone  chose (426,202)
+[15:35:16.559] [FOOD_CLAIM          ] ECHO-05  | food at (426,202)
+[15:35:16.773] [STATE_CHANGE        ] ECHO-02  | WANDER (2.0s) -> REST  [normal]  h=36 e=31 s=33
+[15:35:16.774] [REST_REASON         ] ECHO-02  | low_energy | energy=31.5 laziness=0.48
+[15:35:17.905] [FOOD_FOUND          ] ECHO-10  | ate at (600, 165)  total=6
+[15:35:17.921] [STATE_CHANGE        ] ECHO-10  | SEEK_FOOD (3.0s) -> REST  [normal]  h=32 e=31 s=23
+[15:35:17.923] [REST_REASON         ] ECHO-10  | low_energy | energy=30.6 laziness=0.78
+[15:35:18.051] [FOOD_FOUND          ] ECHO-05  | ate at (417, 207)  total=6
+[15:35:18.068] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (5.7s) -> REST  [normal]  h=8 e=22 s=24
+[15:35:18.069] [REST_REASON         ] ECHO-05  | low_energy | energy=21.9 laziness=0.73
+[15:35:18.787] [STATE_CHANGE        ] ECHO-02  | REST (2.0s) -> WANDER  [normal]  h=44 e=68 s=30
+[15:35:19.921] [STATE_CHANGE        ] ECHO-10  | REST (2.0s) -> SOCIALIZE  [normal]  h=40 e=67 s=20
+[15:35:20.239] [STATE_CHANGE        ] ECHO-05  | REST (2.2s) -> SOCIALIZE  [normal]  h=16 e=61 s=20
+[15:35:20.732] [STATS               ]          | pop=4  avg_hunger= 50.3  avg_energy= 47.8  hungry=1  social_events=0  contested_food=3%
+[15:35:20.733] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:21.506] [STATE_CHANGE        ] ECHO-02  | WANDER (2.7s) -> SEEK_FOOD  [normal]  h=55 e=64 s=26
+[15:35:21.507] [FOOD_CLAIM          ] ECHO-02  | food at (1081,84)
+[15:35:22.442] [DEATH               ] ECHO-01  | cause=exhaustion | lifespan=51.8s | state=SEEK_FOOD | hunger=94.3 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-01
+  Lifespan            : 51.8s
+  Cause of death      : exhaustion
+  Food eaten          : 4
+  Distance travelled  : 511 px
+  Social interactions : 0
+  Time resting        : 2.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 41.5s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-02  (affinity=0.6)
+  Personality         : risk=0.75  lazy=0.53  social=0.34  greed=0.46
+  Generation          : 0
+  Lineage             : 11aa8e23
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:22.446] [FOOD_CLAIM_RELEASE  ] ECHO-01  | food at (1149,178)
+[15:35:23.107] [FOOD_FOUND          ] ECHO-02  | ate at (1089, 89)  total=6
+[15:35:23.123] [FOOD_CLAIM          ] ECHO-02  | food at (1066,104)
+[15:35:23.521] [FOOD_CLAIM_RELEASE  ] ECHO-02  | food at (1066,104)
+[15:35:23.522] [STATE_CHANGE        ] ECHO-02  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=59 s=23  tgt=21px
+[15:35:25.528] [STATE_CHANGE        ] ECHO-02  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=36 e=56 s=20
+[15:35:25.745] [STATS               ]          | pop=3  avg_hunger= 46.3  avg_energy= 56.7  hungry=1  social_events=0  contested_food=0%
+[15:35:25.745] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:29.544] [IDLE_ENTER          ] ECHO-05  | pausing for 4.2s
+[15:35:29.923] [STATE_CHANGE        ] ECHO-10  | SOCIALIZE (10.0s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=55 s=20
+[15:35:29.924] [FOOD_CLAIM          ] ECHO-10  | food at (507,145)
+[15:35:30.601] [IDLE_ENTER          ] ECHO-02  | pausing for 3.9s
+[15:35:30.750] [STATS               ]          | pop=3  avg_hunger= 66.3  avg_energy= 50.3  hungry=3  social_events=0  contested_food=2%
+[15:35:30.752] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:35.757] [STATS               ]          | pop=3  avg_hunger= 85.2  avg_energy= 41.6  hungry=3  social_events=0  contested_food=2%
+[15:35:35.760] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:36.156] [STATE_CHANGE        ] ECHO-05  | SOCIALIZE (15.9s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=42 s=20
+[15:35:36.163] [MIGRATION_DECISION  ] ECHO-05  | avoided contested zone  chose (143,287)
+[15:35:36.164] [FOOD_CLAIM          ] ECHO-05  | food at (143,287)
+[15:35:36.493] [STATE_CHANGE        ] ECHO-02  | SOCIALIZE (11.0s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=43 s=20
+[15:35:36.495] [FOOD_CLAIM          ] ECHO-02  | food at (1002,512)
+[15:35:40.757] [STATS               ]          | pop=3  avg_hunger= 98.5  avg_energy= 28.2  hungry=3  social_events=0  contested_food=5%
+[15:35:40.758] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:40.906] [DEATH               ] ECHO-10  | cause=starvation | lifespan=70.3s | state=SEEK_FOOD | hunger=100.0 | energy=23.9
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-10
+  Lifespan            : 70.3s
+  Cause of death      : starvation
+  Food eaten          : 6
+  Distance travelled  : 843 px
+  Social interactions : 1
+  Time resting        : 4.0s
+  Time socializing    : 14.0s
+  Time seeking food   : 28.6s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-05  (affinity=1.2)
+  Personality         : risk=0.25  lazy=0.78  social=0.35  greed=0.60
+  Generation          : 0
+  Lineage             : 3c0c37b4
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:40.912] [FOOD_CLAIM_RELEASE  ] ECHO-10  | food at (507,145)
+[15:35:42.772] [FOOD_FOUND          ] ECHO-02  | ate at (1006, 521)  total=7
+[15:35:42.788] [FOOD_CLAIM          ] ECHO-02  | food at (995,512)
+[15:35:42.889] [FOOD_FOUND          ] ECHO-05  | ate at (152, 291)  total=7
+[15:35:42.906] [FOOD_CLAIM          ] ECHO-05  | food at (139,241)
+[15:35:43.438] [FOOD_FOUND          ] ECHO-02  | ate at (1003, 518)  total=8
+[15:35:43.455] [STATE_CHANGE        ] ECHO-02  | SEEK_FOOD (7.0s) -> REST  [normal]  h=33 e=24 s=9
+[15:35:43.456] [REST_REASON         ] ECHO-02  | low_energy | energy=23.7 laziness=0.48
+[15:35:45.464] [STATE_CHANGE        ] ECHO-02  | REST (2.0s) -> SOCIALIZE  [normal]  h=41 e=60 s=6
+[15:35:45.764] [STATS               ]          | pop=2  avg_hunger= 59.2  avg_energy= 37.2  hungry=1  social_events=0  contested_food=2%
+[15:35:45.764] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:46.655] [FOOD_FOUND          ] ECHO-05  | ate at (141, 251)  total=8
+[15:35:46.671] [FOOD_CLAIM          ] ECHO-05  | food at (132,204)
+[15:35:50.775] [STATS               ]          | pop=2  avg_hunger= 61.8  avg_energy= 27.2  hungry=2  social_events=0  contested_food=2%
+[15:35:50.775] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:52.539] [IDLE_ENTER          ] ECHO-02  | pausing for 2.6s
+[15:35:55.276] [STATE_CHANGE        ] ECHO-02  | SOCIALIZE (9.8s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=48 s=6
+[15:35:55.277] [FOOD_CLAIM          ] ECHO-02  | food at (999,474)
+[15:35:55.788] [STATS               ]          | pop=2  avg_hunger= 81.8  avg_energy= 23.4  hungry=2  social_events=0  contested_food=3%
+[15:35:55.789] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:35:57.097] [DEATH               ] ECHO-05  | cause=exhaustion | lifespan=86.4s | state=SEEK_FOOD | hunger=86.8 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-05
+  Lifespan            : 86.4s
+  Cause of death      : exhaustion
+  Food eaten          : 8
+  Distance travelled  : 1145 px
+  Social interactions : 1
+  Time resting        : 4.4s
+  Time socializing    : 20.8s
+  Time seeking food   : 48.0s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-10  (affinity=1.1)
+  Personality         : risk=0.25  lazy=0.73  social=0.22  greed=0.44
+  Generation          : 0
+  Lineage             : 4b8cafc2
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:35:57.106] [FOOD_CLAIM_RELEASE  ] ECHO-05  | food at (132,204)
+[15:35:58.768] [FOOD_FOUND          ] ECHO-02  | ate at (994, 466)  total=9
+[15:36:00.790] [STATS               ]          | pop=1  avg_hunger= 67.1  avg_energy= 32.7  hungry=1  social_events=0  contested_food=0%
+[15:36:00.791] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:36:00.954] [FOOD_CLAIM          ] ECHO-02  | food at (1025,500)
+[15:36:04.622] [FOOD_FOUND          ] ECHO-02  | ate at (1023, 490)  total=10
+[15:36:05.342] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=20.0 risk=0.76
+[15:36:05.791] [STATS               ]          | pop=1  avg_hunger= 52.1  avg_energy= 18.7  hungry=0  social_events=0  contested_food=0%
+[15:36:05.791] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:36:10.283] [FOOD_CLAIM          ] ECHO-02  | food at (1146,232)
+[15:36:10.793] [STATS               ]          | pop=1  avg_hunger= 72.1  avg_energy=  4.7  hungry=1  social_events=0  contested_food=2%
+[15:36:10.793] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:36:13.155] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=0.0 risk=0.76
+[15:36:15.805] [STATS               ]          | pop=1  avg_hunger= 92.1  avg_energy=  0.0  hungry=1  social_events=0  contested_food=2%
+[15:36:15.806] [GENERATION_STATS    ]          | max_gen=0  avg_gen=0.0  total_births=0
+[15:36:18.478] [DEATH               ] ECHO-02  | cause=starvation | lifespan=107.8s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-02
+  Lifespan            : 107.8s
+  Cause of death      : starvation
+  Food eaten          : 10
+  Distance travelled  : 1616 px
+  Social interactions : 1
+  Time resting        : 6.0s
+  Time socializing    : 26.7s
+  Time seeking food   : 55.9s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-09  (affinity=1.2)
+  Personality         : risk=0.76  lazy=0.48  social=0.71  greed=0.37
+  Generation          : 0
+  Lineage             : bd3a749d
+  Offspring produced  : 0
+--------------------------------------------------------------
+[15:36:18.482] [FOOD_CLAIM_RELEASE  ] ECHO-02  | food at (1146,232)
+
+==============================================================
+  SESSION SUMMARY
+==============================================================
+  Max population         : 12
+  Final population       : 0
+  Creatures that died    : 12
+  Total food consumed    : 36
+  Total social events    : 4
+  Total births           : 0
+  Peak generation        : 0
+--------------------------------------------------------------
+  Avg lifespan (dead)    : 45.4s
+  Longest survivor       : ECHO-02  (107.8s, 10 meals)
+  Most social            : ECHO-11  (1 interactions)
+  Best forager           : ECHO-02  (10 meals)
+  Most travelled         : ECHO-02  (1616 px)
+==============================================================

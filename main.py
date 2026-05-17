@@ -12,6 +12,7 @@ from settings import (
     HUD_PADDING, HUD_LINE_HEIGHT, HUD_FONT_SIZE,
 )
 import settings
+from world_seed import init_world_seed
 from boot_screen import BootScreen
 from debug_controls import handle_key, help_lines, is_on, status_lines
 from world import World
@@ -22,6 +23,9 @@ def main() -> None:
     # --- Pygame bootstrap ---------------------------------------------------
     pygame.init()
     pygame.display.set_caption(WINDOW_TITLE)
+
+    # Seed RNG before boot UI randomness and world generation
+    init_world_seed()
 
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock  = pygame.time.Clock()

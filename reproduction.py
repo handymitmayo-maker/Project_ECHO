@@ -17,6 +17,7 @@ from settings import (
     REPRO_COST_ENERGY, REPRO_COST_HUNGER,
     REPRO_COOLDOWN, REPRO_PAIR_COOLDOWN,
     REPRO_CHECK_INTERVAL, REPRO_CHANCE_BASE, REPRO_BOND_BONUS,
+    REPRO_BONDED_AFFINITY, REPRO_BONDED_CHANCE,
     REPRO_SPAWN_OFFSET,
     REL_FRIEND_THRESHOLD,
 )
@@ -87,10 +88,13 @@ def _pair_can_reproduce(a: Creature, b: Creature, world: "World") -> bool:
 def _reproduction_chance(a: Creature, b: Creature) -> float:
     aff_ab, aff_ba = _mutual_affinity(a, b)
     avg = (aff_ab + aff_ba) / 2.0
-    chance = REPRO_CHANCE_BASE * (avg / REPRO_AFFINITY_MIN)
+    if avg >= REPRO_BONDED_AFFINITY:
+        chance = REPRO_BONDED_CHANCE
+    else:
+        chance = REPRO_CHANCE_BASE * min(1.0, avg / REPRO_AFFINITY_MIN)
     if aff_ab >= REL_FRIEND_THRESHOLD and aff_ba >= REL_FRIEND_THRESHOLD:
         chance += REPRO_BOND_BONUS
-    return min(1.0, chance)
+    return min(0.65, chance)
 
 
 def _spawn_position(a: Creature, b: Creature) -> tuple[float, float]:

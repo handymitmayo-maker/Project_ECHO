@@ -86,6 +86,7 @@ class Logger:
             FOOD_SPAWN_INTERVAL, FOOD_SPAWN_BATCH, FOOD_MAX_COUNT,
             BIOME_COUNT, MAX_POPULATION, REPRO_AFFINITY_MIN, REPRO_AGE_MIN,
         )
+        from world_seed import get_mode, seed_display
         ts        = self._session_start.strftime("%Y-%m-%d %H:%M:%S")
         sep_thick = "=" * 62
         sep_thin  = "-" * 62
@@ -99,6 +100,9 @@ class Logger:
             f"  PROJECT ECHO  –  Session {ts}",
             sep_thick,
             f"  File              : {self._log_path or '(console only)'}",
+            sep_thin,
+            f"  Mode              : {get_mode()}",
+            f"  World seed        : {seed_display()}",
             sep_thin,
             f"  Initial population: {CREATURE_COUNT}",
             f"  Biomes            : {len(world.biomes)}  →  {biome_summary}",
@@ -179,6 +183,55 @@ class Logger:
         )
         self._emit(line)
         self.log_generation_stats(world)
+        self.log_ecology_snapshot(world)
+
+    def log_ecology_snapshot(self, world: "World") -> None:
+        """Periodic social-ecology metrics for the observation log."""
+        from settings import REPRO_AFFINITY_MIN
+
+        alive = [c for c in world.creatures if c.alive]
+        if len(alive) < 2:
+            return
+
+        pairs: list[tuple[float, str, str]] = []
+        bonded = 0
+        best_mutuals: list[float] = []
+
+        for i, a in enumerate(alive):
+            best = 0.0
+            for b in alive[i + 1:]:
+                aff_ab = a.get_affinity_to(b)
+                aff_ba = b.get_affinity_to(a)
+                if aff_ab >= REPRO_AFFINITY_MIN and aff_ba >= REPRO_AFFINITY_MIN:
+                    bonded += 1
+                mutual = min(aff_ab, aff_ba)
+                if mutual > 0:
+                    pairs.append((mutual, a.label, b.label))
+                best = max(best, mutual)
+            if best > 0:
+                best_mutuals.append(best)
+
+        pairs.sort(reverse=True)
+        top = pairs[:3]
+        top_str = "  ".join(
+            f"{a}<->{b}:{v:.1f}" for v, a, b in top
+        ) if top else "none"
+
+        lineage_counts: dict[str, int] = {}
+        for c in alive:
+            if c.generation > 0:
+                key = str(c.lineage_id)[:8]
+                lineage_counts[key] = lineage_counts.get(key, 0) + 1
+        lineage_str = "  ".join(
+            f"{k}x{v}" for k, v in sorted(lineage_counts.items(), key=lambda x: -x[1])[:4]
+        ) if lineage_counts else "none"
+
+        avg_bond = sum(best_mutuals) / len(best_mutuals) if best_mutuals else 0.0
+        msg = (
+            f"bonded_pairs={bonded}  avg_best_bond={avg_bond:.1f}  "
+            f"top=[{top_str}]  lineages=[{lineage_str}]"
+        )
+        self.log_event("ECOLOGY_SNAPSHOT", msg)
 
     # ------------------------------------------------------------------
     # Relationship events
@@ -245,7 +298,7 @@ class Logger:
     # Lifetime summary (called from Creature._die)
     # ------------------------------------------------------------------
 
-    def log_lifetime_summary(self, creature: "Creature") -> None:
+    def log_lifetime_summary(self, creature: "Creature", world: "World | None" = None) -> None:
         """Log a complete life recap and store it for the session summary."""
         sep = "-" * 62
 
@@ -281,8 +334,9 @@ class Logger:
             f"  Time socializing    : {creature.time_socializing:.1f}s",
             f"  Time seeking food   : {creature.time_seeking_food:.1f}s",
             f"  Dominant state      : {dominant}",
-            f"  Best friend         : {best_friend_label}"
+            f"  Best bond           : {best_friend_label}"
             + (f"  (affinity={best_friend_affinity:.1f})" if best_friend_affinity > 0 else ""),
+            f"  Peak bond (memory)  : {self._peak_bond(creature):.1f}",
             f"  Personality         : risk={creature.risk_tolerance:.2f}"
             f"  lazy={creature.laziness:.2f}"
             f"  social={creature.social_dependency:.2f}"
@@ -294,6 +348,19 @@ class Logger:
         ]
         for line in lines:
             self._emit(line)
+
+        if world is not None and creature.generation > 0:
+            others = [
+                c for c in world.creatures
+                if c.alive and c.lineage_id == creature.lineage_id and c.id != creature.id
+            ]
+            if not others:
+                self.log_event(
+                    "LINEAGE_EXTINCT",
+                    f"lineage={str(creature.lineage_id)[:8]}  last={creature.label}"
+                    f"  gen={creature.generation}",
+                    creature.label,
+                )
 
         # Store for session summary
         self._death_records.append({
@@ -313,7 +380,17 @@ class Logger:
             },
             "generation"         : creature.generation,
             "offspring_count"    : creature.offspring_count,
+            "peak_bond"          : self._peak_bond(creature),
         })
+
+    @staticmethod
+    def _peak_bond(creature: "Creature") -> float:
+        if not creature.relationships:
+            return 0.0
+        return max(
+            e.get("peak_affinity", e.get("affinity", 0.0))
+            for e in creature.relationships.values()
+        )
 
     # ------------------------------------------------------------------
     # Counters
@@ -350,6 +427,7 @@ class Logger:
             f"  Total social events    : {self._total_social}",
             f"  Total births           : {repro['births']}",
             f"  Peak generation        : {max(self._peak_generation, repro['max_gen'])}",
+            f"  Dominant lineage       : {self._dominant_lineage(alive)}",
         ]
 
         if records:
@@ -398,6 +476,17 @@ class Logger:
         if LOG_TO_FILE and self._file:
             self._file.write(line + "\n")
             self._file.flush()
+
+    @staticmethod
+    def _dominant_lineage(alive: list) -> str:
+        counts: dict[str, int] = {}
+        for c in alive:
+            key = str(c.lineage_id)[:8]
+            counts[key] = counts.get(key, 0) + 1
+        if not counts:
+            return "none"
+        best = max(counts, key=counts.get)
+        return f"{best} ({counts[best]} alive)"
 
     @staticmethod
     def _timestamp() -> str:

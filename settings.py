@@ -13,6 +13,10 @@ FPS           = 60
 WORLD_WIDTH   = WINDOW_WIDTH
 WORLD_HEIGHT  = WINDOW_HEIGHT
 
+# World seed (reproducible research runs vs chaotic sessions)
+USE_FIXED_SEED = True         # True = RESEARCH mode, False = CHAOS mode
+WORLD_SEED     = 1337         # used when USE_FIXED_SEED is True
+
 # --- Creature -----------------------------------------------------------------
 CREATURE_COUNT        = 12          # initial population
 CREATURE_RADIUS       = 6           # visual size (px)
@@ -154,14 +158,28 @@ COLOR_BIOME_LABEL    = (235, 245, 235)
 COLOR_BIOME_LABEL_BG = (0, 0, 0, 140)
 
 # --- Relationships ------------------------------------------------------------
-REL_SOCIAL_GAIN      = 0.4          # affinity/s while actively socializing
-REL_PASSIVE_GAIN     = 0.06         # affinity/s just from proximity
-REL_COMPETITION_LOSS = 3.0          # affinity lost when another steals the same food
-REL_DECAY_RATE       = 0.03         # affinity decay/s (forgetting over time)
-REL_MAX              = 60.0
-REL_MIN              = -20.0
-REL_FRIEND_THRESHOLD = 15.0         # affinity >= this = friend
-REL_FRIEND_PULL      = 0.12         # wander angle pull strength toward nearest friend
+REL_SOCIAL_GAIN            = 0.55   # affinity/s while actively socializing
+REL_PASSIVE_GAIN           = 0.10   # affinity/s from proximity
+REL_COMPETITION_LOSS        = 1.5    # affinity lost when another steals the same food
+REL_RIVALRY_FLOOR          = 2.0    # skip full rivalry penalty above this affinity
+REL_DECAY_RATE             = 0.004  # base affinity decay/s (slow forgetting)
+REL_MEMORY_PEAK_THRESHOLD  = 3.0    # memories above this decay slower
+REL_DECAY_FLOOR_FACTOR     = 0.2    # minimum decay multiplier for strong memories
+REL_MUTUAL_SOCIAL_MULT     = 1.4    # gain multiplier when both socialize with each other
+REL_MAX                    = 60.0
+REL_MIN                    = -20.0
+REL_FRIEND_THRESHOLD       = 8.0    # affinity >= this = friend
+REL_FRIEND_PULL            = 0.12   # wander pull toward friends
+REL_ATTRACT_MIN            = 2.0     # start attraction bias above this affinity
+REL_ATTRACT_PULL           = 0.10   # wander pull scaled by affinity / REL_MAX
+REL_BOND_TIERS             = (3.0, 6.0, 10.0)  # BOND_STRENGTHENED log thresholds
+
+# --- Social survival rewards (cooperative evolution) ----------------------------
+SOCIAL_HUNGER_RELIEF       = 0.30   # hunger decay reduction while socializing with target
+SOCIAL_TRUST_THRESHOLD     = 3.0    # mutual affinity for trust bonuses
+SOCIAL_TRUST_ENERGY_RATE   = 2.5    # energy/s when near trusted partner
+SOCIAL_TRUST_HUNGER_RELIEF = 0.15   # hunger decay reduction when near trusted partner
+COOPERATIVE_LOG_COOLDOWN   = 30.0   # seconds between COOPERATIVE_SURVIVAL logs per pair
 
 # --- Survival / Personality ---------------------------------------------------
 PERS_RISK_TOLERANCE_MIN    = 0.2   # willingness to seek food at low energy
@@ -211,19 +229,21 @@ SURVIVAL_LOG_COOLDOWN      = 6.0   # min seconds between SURVIVAL_DECISION logs 
 
 # --- Reproduction (pair-only, two parents required) ---------------------------
 MAX_POPULATION           = 40
-REPRO_AFFINITY_MIN       = 25.0    # mutual affinity threshold
+REPRO_AFFINITY_MIN       = 4.0     # mutual affinity threshold (reachable in live sim)
 REPRO_DISTANCE_MAX       = 35.0    # px between partners
-REPRO_ENERGY_MIN         = 75.0    # both parents must exceed
+REPRO_ENERGY_MIN         = 55.0    # both parents must exceed
 REPRO_HUNGER_MAX         = 25.0    # both parents must stay below
-REPRO_AGE_MIN            = 60.0    # seconds alive (_lifespan)
+REPRO_AGE_MIN            = 45.0    # seconds alive (_lifespan)
 REPRO_COST_ENERGY        = 40.0    # deducted from each parent on success
 REPRO_COST_HUNGER        = 20.0    # added to each parent on success
 REPRO_COOLDOWN           = 90.0    # per-creature cooldown after reproducing
 REPRO_PAIR_COOLDOWN      = 120.0   # shared pair cooldown (world dict)
 REPRO_CHECK_INTERVAL     = 2.0     # seconds between reproduction scans
-REPRO_CHANCE_BASE        = 0.15    # probability after all gates pass
-REPRO_BOND_THRESHOLD     = 20.0    # mutual affinity for PAIR_BOND log
-REPRO_BOND_BONUS         = 0.10    # chance bonus when both are friends
+REPRO_CHANCE_BASE        = 0.22    # probability after gates (scaled by affinity)
+REPRO_BONDED_AFFINITY    = 6.0     # avg affinity for bonded-pair reproduction chance
+REPRO_BONDED_CHANCE      = 0.40    # reproduction chance for strongly bonded pairs
+REPRO_BOND_THRESHOLD     = 3.5     # mutual affinity for PAIR_BOND log
+REPRO_BOND_BONUS         = 0.08    # extra chance when both are friends
 REPRO_OFFSPRING_SCALE    = 0.55    # visual scale at birth
 REPRO_GROWTH_DURATION    = 45.0    # seconds to reach full scale
 REPRO_MUTATION_MIN       = 0.10

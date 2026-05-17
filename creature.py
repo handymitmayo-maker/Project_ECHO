@@ -36,9 +36,14 @@ from settings import (
     SURVIVAL_LOG_COOLDOWN,
     DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
     DEATH_CRITICAL_TIME, CORPSE_DURATION,
-    REL_SOCIAL_GAIN, REL_PASSIVE_GAIN, REL_COMPETITION_LOSS,
+    REL_SOCIAL_GAIN, REL_PASSIVE_GAIN, REL_COMPETITION_LOSS, REL_RIVALRY_FLOOR,
     REL_DECAY_RATE, REL_MAX, REL_MIN,
-    REL_FRIEND_THRESHOLD, REL_FRIEND_PULL,
+    REL_MEMORY_PEAK_THRESHOLD, REL_DECAY_FLOOR_FACTOR, REL_MUTUAL_SOCIAL_MULT,
+    REL_FRIEND_THRESHOLD, REL_FRIEND_PULL, REL_ATTRACT_MIN, REL_ATTRACT_PULL,
+    REL_BOND_TIERS,
+    SOCIAL_HUNGER_RELIEF, SOCIAL_TRUST_THRESHOLD,
+    SOCIAL_TRUST_ENERGY_RATE, SOCIAL_TRUST_HUNGER_RELIEF,
+    COOPERATIVE_LOG_COOLDOWN,
     PERS_RISK_TOLERANCE_MIN, PERS_RISK_TOLERANCE_MAX,
     PERS_LAZINESS_MIN, PERS_LAZINESS_MAX,
     PERS_SOCIAL_DEPENDENCY_MIN, PERS_SOCIAL_DEPENDENCY_MAX,
@@ -111,6 +116,11 @@ class Creature:
     """
 
     _counter: int = 0
+
+    @classmethod
+    def reset_label_counter(cls) -> None:
+        """Reset ECHO-NN numbering (called when a fixed world seed is applied)."""
+        cls._counter = 0
 
     def __init__(self, x: float, y: float) -> None:
         Creature._counter += 1
@@ -192,6 +202,8 @@ class Creature:
         self.offspring_count : int = 0
         self.scale           : float = 1.0
         self._pair_bonds_logged: set = set()
+        self._bond_tiers_logged : set = set()   # frozenset pairs + tier index
+        self._coop_log_timers  : dict = {}     # frozenset -> cooldown remaining
 
         # --- Extension placeholders ---
         self.memory        : list = []
@@ -301,12 +313,16 @@ class Creature:
         if self._contest_log_timer   > 0: self._contest_log_timer   = max(0.0, self._contest_log_timer   - dt)
         if self._crowd_log_timer     > 0: self._crowd_log_timer     = max(0.0, self._crowd_log_timer     - dt)
         if self.repro_cooldown       > 0: self.repro_cooldown       = max(0.0, self.repro_cooldown       - dt)
+        for k in list(self._coop_log_timers):
+            self._coop_log_timers[k] = max(0.0, self._coop_log_timers[k] - dt)
+            if self._coop_log_timers[k] <= 0:
+                del self._coop_log_timers[k]
 
         if self.scale < 1.0:
             t = min(1.0, self._lifespan / REPRO_GROWTH_DURATION)
             self.scale = REPRO_OFFSPRING_SCALE + (1.0 - REPRO_OFFSPRING_SCALE) * t
 
-        self._decay_stats(dt)
+        self._decay_stats(dt, world)
 
         # Decay food memory over time
         if self._last_seen_food_pos is not None:
@@ -519,7 +535,7 @@ class Creature:
         if at_critical:
             self._death_timer += dt
             if self._death_timer >= DEATH_CRITICAL_TIME:
-                self._die()
+                self._die(world)
                 return True
         else:
             # Slowly bleed off death timer when recovering
@@ -533,7 +549,7 @@ class Creature:
 
         return False
 
-    def _die(self) -> None:
+    def _die(self, world: "World") -> None:
         """Mark creature as dead, log death event + full life summary, start corpse fade."""
         self._cause_of_death = "starvation" if self.hunger >= 100 else "exhaustion"
         get_logger().log_event(
@@ -547,7 +563,7 @@ class Creature:
             ),
             self.label,
         )
-        get_logger().log_lifetime_summary(self)
+        get_logger().log_lifetime_summary(self, world)
         # Release any held food claim so others can take it
         if self.target is not None:
             self._release_claim(self.target)
@@ -603,6 +619,19 @@ class Creature:
                             self.label,
                         )
                         get_logger().increment_social()
+                    # Rate-limited cooperative survival log for mutual pairs
+                    t = self.target
+                    if (t.state == State.SOCIALIZE and t.target is self):
+                        pair_key = frozenset((self.id, t.id))
+                        if self._coop_log_timers.get(pair_key, 0) <= 0 and self.id < t.id:
+                            aff = (self.get_affinity_to(t) + t.get_affinity_to(self)) / 2
+                            get_logger().log_event(
+                                "COOPERATIVE_SURVIVAL",
+                                f"with {t.label}  mutual_affinity={aff:.1f}",
+                                self.label,
+                            )
+                            self._coop_log_timers[pair_key] = COOPERATIVE_LOG_COOLDOWN
+                            t._coop_log_timers[pair_key] = COOPERATIVE_LOG_COOLDOWN
                 else:
                     self._in_social_interaction = False
             else:
@@ -690,8 +719,8 @@ class Creature:
                 )
                 return
 
-        # --- Friend pull (gentle bias toward nearest friend) ---
-        self._apply_friend_pull(world, dt)
+        # --- Attraction pull (bias toward known partners) ---
+        self._apply_attraction_pull(world, dt)
 
         # --- Crowd avoidance (gentle bias away from seeker clusters) ---
         self._apply_crowd_avoidance(world, dt)
@@ -715,38 +744,85 @@ class Creature:
         )
         self._steer_arrive(wander_target)
 
+    def _relationship_entry(self, c: "Creature") -> dict:
+        """Get or create a relationship record with memory fields."""
+        if c.id not in self.relationships:
+            self.relationships[c.id] = {
+                "affinity"          : 0.0,
+                "label"             : c.label,
+                "last_seen_time"    : 0.0,
+                "peak_affinity"     : 0.0,
+                "interaction_count" : 0,
+            }
+        return self.relationships[c.id]
+
+    def _decay_relationships(self, dt: float) -> None:
+        """Forget slowly; strong memories decay much less."""
+        for entry in self.relationships.values():
+            peak  = entry.get("peak_affinity", entry["affinity"])
+            decay = REL_DECAY_RATE * dt
+            if peak >= REL_MEMORY_PEAK_THRESHOLD:
+                decay *= max(REL_DECAY_FLOOR_FACTOR, 1.0 - peak / REL_MAX)
+            entry["affinity"] = max(REL_MIN, entry["affinity"] - decay)
+            entry["peak_affinity"] = max(peak, entry["affinity"])
+
+    def _log_bond_milestones(self, c: "Creature", aff_self: float, aff_other: float) -> None:
+        """Log PAIR_BOND and BOND_STRENGTHENED tiers once per pair."""
+        pair_key = frozenset((self.id, c.id))
+        avg = (aff_self + aff_other) / 2.0
+
+        if (aff_self >= REPRO_BOND_THRESHOLD and aff_other >= REPRO_BOND_THRESHOLD
+                and pair_key not in self._pair_bonds_logged and self.id < c.id):
+            self._pair_bonds_logged.add(pair_key)
+            c._pair_bonds_logged.add(pair_key)
+            get_logger().log_event(
+                "PAIR_BOND",
+                f"with {c.label}  mutual_affinity={avg:.1f}",
+                self.label,
+            )
+
+        if self.id >= c.id:
+            return
+        for tier_idx, tier_val in enumerate(REL_BOND_TIERS):
+            tier_key = (pair_key, tier_idx)
+            if avg >= tier_val and tier_key not in self._bond_tiers_logged:
+                self._bond_tiers_logged.add(tier_key)
+                c._bond_tiers_logged.add(tier_key)
+                get_logger().log_event(
+                    "BOND_STRENGTHENED",
+                    f"with {c.label}  tier={tier_val:.0f}  mutual={avg:.1f}",
+                    self.label,
+                )
+
     def _update_relationships(self, world: "World", dt: float) -> None:
         """
-        Update affinity values with nearby creatures.
-        - Passive gain from proximity
-        - Stronger gain while actively socializing
-        - Slow decay over time (forgetting)
+        Update affinity with memory-weighted decay, proximity gain,
+        mutual socialize bonus, and bond milestone logging.
         """
         nearby = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
+        self._decay_relationships(dt)
 
-        # Decay all existing relationships
-        for data in self.relationships.values():
-            data["affinity"] = max(REL_MIN, data["affinity"] - REL_DECAY_RATE * dt)
-
-        # Update proximity-based affinity
         for c in nearby:
-            if c.id not in self.relationships:
-                self.relationships[c.id] = {
-                    "affinity"      : 0.0,
-                    "label"         : c.label,
-                    "last_seen_time": 0.0,
-                }
-            entry = self.relationships[c.id]
+            entry = self._relationship_entry(c)
             entry["last_seen_time"] = self._lifespan
             prev_affinity = entry["affinity"]
-            entry["affinity"] = min(REL_MAX, entry["affinity"] + REL_PASSIVE_GAIN * dt)
 
-            # Extra gain when this creature is our active social target
+            gain = REL_PASSIVE_GAIN * dt
+            mutual = (
+                self.state == State.SOCIALIZE and self.target is c
+                and c.state == State.SOCIALIZE and c.target is self
+            )
             if self.state == State.SOCIALIZE and self.target is c:
-                entry["affinity"] = min(REL_MAX,
-                    entry["affinity"] + REL_SOCIAL_GAIN * dt)
+                gain += REL_SOCIAL_GAIN * dt
+            if mutual:
+                gain *= REL_MUTUAL_SOCIAL_MULT
+                entry["interaction_count"] = entry.get("interaction_count", 0) + 1
+                other_entry = c._relationship_entry(self)
+                other_entry["interaction_count"] = other_entry.get("interaction_count", 0) + 1
 
-            # Log first-time friendship milestone
+            entry["affinity"] = min(REL_MAX, entry["affinity"] + gain)
+            entry["peak_affinity"] = max(entry.get("peak_affinity", 0.0), entry["affinity"])
+
             if (prev_affinity < REL_FRIEND_THRESHOLD
                     <= entry["affinity"]
                     and c.id not in self._logged_friends):
@@ -755,49 +831,54 @@ class Creature:
                     "BEST_FRIEND", self.label, c.label, entry["affinity"]
                 )
 
-            # Log pair bond when mutual affinity crosses reproduction bond threshold
             their_aff = c.get_affinity_to(self)
-            if (entry["affinity"] >= REPRO_BOND_THRESHOLD
-                    and their_aff >= REPRO_BOND_THRESHOLD):
-                pair_key = frozenset((self.id, c.id))
-                if pair_key not in self._pair_bonds_logged and self.id < c.id:
-                    self._pair_bonds_logged.add(pair_key)
-                    c._pair_bonds_logged.add(pair_key)
-                    avg = (entry["affinity"] + their_aff) / 2.0
-                    get_logger().log_event(
-                        "PAIR_BOND",
-                        f"with {c.label}  mutual_affinity={avg:.1f}",
-                        self.label,
-                    )
+            self._log_bond_milestones(c, entry["affinity"], their_aff)
 
     def _best_social_target(self, nearby: list) -> "Creature | None":
-        """Pick the nearby creature with the highest known affinity."""
+        """Prefer highest affinity; tie-break toward creatures already targeting us."""
         if not nearby:
             return None
 
-        def affinity(c):
+        def score(c: "Creature") -> tuple:
             d = self.relationships.get(c.id)
-            return d["affinity"] if d else 0.0
+            aff = d["affinity"] if d else 0.0
+            mutual = 1 if c.state == State.SOCIALIZE and c.target is self else 0
+            return (aff, mutual)
 
-        return max(nearby, key=affinity)
+        return max(nearby, key=score)
 
-    def _apply_friend_pull(self, world: "World", dt: float) -> None:
-        """Gently bias the wander angle toward the nearest friend."""
-        best, best_aff = None, REL_FRIEND_THRESHOLD
-        for c in world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self):
+    def _pull_toward(self, target_pos: pygame.Vector2, strength: float, dt: float) -> None:
+        """Nudge wander angle toward a world position."""
+        to_target = target_pos - self.pos
+        if to_target.length() < 1.0:
+            return
+        angle = math.atan2(to_target.y, to_target.x)
+        diff = angle - self._wander_angle
+        while diff >  math.pi: diff -= math.tau
+        while diff < -math.pi: diff += math.tau
+        self._wander_angle += diff * strength * dt
+
+    def _apply_attraction_pull(self, world: "World", dt: float) -> None:
+        """Bias wander toward known partners; stronger pull for friends."""
+        best, best_aff = None, REL_ATTRACT_MIN
+        for c in world.get_nearby_creatures(self.pos, SOCIAL_RADIUS * 1.5, exclude=self):
             d = self.relationships.get(c.id)
-            if d and d["affinity"] > best_aff:
+            if d and d["affinity"] >= REL_ATTRACT_MIN and d["affinity"] > best_aff:
                 best_aff, best = d["affinity"], c
         if best is None:
             return
-        to_friend = best.pos - self.pos
-        if to_friend.length() < 1.0:
-            return
-        friend_angle = math.atan2(to_friend.y, to_friend.x)
-        diff = friend_angle - self._wander_angle
-        while diff >  math.pi: diff -= math.tau
-        while diff < -math.pi: diff += math.tau
-        self._wander_angle += diff * REL_FRIEND_PULL * dt
+        scaled = REL_ATTRACT_PULL * (best_aff / REL_MAX)
+        if best_aff >= REL_FRIEND_THRESHOLD:
+            scaled += REL_FRIEND_PULL
+        self._pull_toward(best.pos, scaled, dt)
+
+    def _has_trusted_partner(self, world: "World") -> "Creature | None":
+        """Return nearby creature with mutual affinity >= trust threshold."""
+        for c in world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self):
+            if (self.get_affinity_to(c) >= SOCIAL_TRUST_THRESHOLD
+                    and c.get_affinity_to(self) >= SOCIAL_TRUST_THRESHOLD):
+                return c
+        return None
 
     def _apply_crowd_avoidance(self, world: "World", dt: float) -> None:
         """Gently bias wander angle away from overcrowded SEEK_FOOD clusters."""
@@ -1021,9 +1102,13 @@ class Creature:
     # Private – Stats
     # ------------------------------------------------------------------
 
-    def _decay_stats(self, dt: float) -> None:
+    def _decay_stats(self, dt: float, world: "World") -> None:
         """Drain stats over time; energy cost differs per state. Also tracks time per state."""
-        self.hunger = min(100, self.hunger + HUNGER_DECAY_RATE * dt)
+        hunger_rate = HUNGER_DECAY_RATE
+        if self.state == State.SOCIALIZE and self.target is not None and self.target.alive:
+            hunger_rate *= (1.0 - SOCIAL_HUNGER_RELIEF)
+
+        self.hunger = min(100, self.hunger + hunger_rate * dt)
 
         if self.state == State.REST:
             self.energy = min(100, self.energy + ENERGY_REST_RATE * dt)
@@ -1043,6 +1128,11 @@ class Creature:
         if self.state != State.SOCIALIZE:
             self.social = max(0, self.social - SOCIAL_DECAY_RATE * dt)
 
+        # Cooperative survival: trust bonuses when near a mutual partner
+        if self._has_trusted_partner(world) is not None:
+            self.hunger = max(0.0, self.hunger - HUNGER_DECAY_RATE * SOCIAL_TRUST_HUNGER_RELIEF * dt)
+            self.energy = min(100.0, self.energy + SOCIAL_TRUST_ENERGY_RATE * dt)
+
     def _eat(self, food, world: "World") -> None:
         """Consume food. Apply competition penalty to any rival that was targeting it."""
         self.hunger      = max(0, self.hunger - food.nutrition)
@@ -1055,18 +1145,17 @@ class Creature:
             f"ate at ({int(self.pos.x)}, {int(self.pos.y)})  total={self.food_eaten}",
             self.label,
         )
-        # Penalize rivals who were also heading for this food
+        # Penalize rivals who were also heading for this food (softened for bonded pairs)
         for c in world.creatures:
             if c.alive and c is not self and c.target is food:
-                if c.id not in self.relationships:
-                    self.relationships[c.id] = {
-                        "affinity"      : 0.0,
-                        "label"         : c.label,
-                        "last_seen_time": self._lifespan,
-                    }
-                old_aff = self.relationships[c.id]["affinity"]
-                new_aff = max(REL_MIN, old_aff - REL_COMPETITION_LOSS)
-                self.relationships[c.id]["affinity"] = new_aff
+                entry = self._relationship_entry(c)
+                old_aff = entry["affinity"]
+                loss = REL_COMPETITION_LOSS
+                if old_aff >= REL_RIVALRY_FLOOR:
+                    loss *= 0.25
+                new_aff = max(REL_MIN, old_aff - loss)
+                entry["affinity"] = new_aff
+                entry["peak_affinity"] = max(entry.get("peak_affinity", old_aff), entry["affinity"])
                 get_logger().log_relationship(
                     "RIVALRY", self.label, c.label, new_aff,
                     delta=new_aff - old_aff,
