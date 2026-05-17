@@ -116,9 +116,35 @@ SHOW_CREATURE_LABELS  = True        # render ECHO-NN label above each creature
 LABEL_FONT_SIZE       = 11          # px – larger = easier to read
 LABEL_COLOR           = (200, 200, 200)  # bright enough to read on black bg
 
+# --- Biomes -------------------------------------------------------------------
+BIOME_COUNT          = 5
+BIOME_RADIUS_MIN     = 130
+BIOME_RADIUS_MAX     = 220
+BIOME_FERTILE_COUNT  = 2            # number of fertile biomes
+BIOME_BARREN_COUNT   = 1            # number of barren biomes (rest = neutral)
+BIOME_FERTILE_RATE   = 3.0          # spawn weight multiplier
+BIOME_NEUTRAL_RATE   = 1.0
+BIOME_BARREN_RATE    = 0.25
+BIOME_CLUSTER_STD    = 55           # px – Gaussian std for food scatter within biome
+DEBUG_SHOW_BIOMES    = False        # draw semi-transparent biome overlay
+
+COLOR_BIOME_FERTILE  = (15,  50,  20)
+COLOR_BIOME_NEUTRAL  = (15,  20,  45)
+COLOR_BIOME_BARREN   = (50,  15,  15)
+
+# --- Relationships ------------------------------------------------------------
+REL_SOCIAL_GAIN      = 0.4          # affinity/s while actively socializing
+REL_PASSIVE_GAIN     = 0.06         # affinity/s just from proximity
+REL_COMPETITION_LOSS = 3.0          # affinity lost when another steals the same food
+REL_DECAY_RATE       = 0.03         # affinity decay/s (forgetting over time)
+REL_MAX              = 60.0
+REL_MIN              = -20.0
+REL_FRIEND_THRESHOLD = 15.0         # affinity >= this = friend
+REL_FRIEND_PULL      = 0.12         # wander angle pull strength toward nearest friend
+
 # --- Debug --------------------------------------------------------------------
 DEBUG_MODE            = False       # show extra info when True
-DEBUG_SHOW_PERCEPTION = True       # draw food-perception radius on SEEK_FOOD creatures
+DEBUG_SHOW_PERCEPTION = False       # draw food-perception radius on SEEK_FOOD creatures
 
 # =============================================================================
 # Extension placeholders (filled in future versions)

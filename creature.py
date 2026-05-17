@@ -30,6 +30,9 @@ from settings import (
     FOOD_MEMORY_DURATION,
     DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
     DEATH_CRITICAL_TIME, CORPSE_DURATION,
+    REL_SOCIAL_GAIN, REL_PASSIVE_GAIN, REL_COMPETITION_LOSS,
+    REL_DECAY_RATE, REL_MAX, REL_MIN,
+    REL_FRIEND_THRESHOLD, REL_FRIEND_PULL,
     WORLD_WIDTH, WORLD_HEIGHT,
     COLOR_CREATURE, COLOR_CREATURE_REST, COLOR_CREATURE_SOCIAL,
     COLOR_CREATURE_SEEK, COLOR_CREATURE_DYING, COLOR_CORPSE,
@@ -159,6 +162,7 @@ class Creature:
                 self._last_seen_food_pos = None
                 self._food_memory_timer  = 0.0
 
+        self._update_relationships(world, dt)
         self._decide_state(world, dt)
         if self.alive:  # _decide_state may have triggered death
             self._act(world, dt)
@@ -275,7 +279,7 @@ class Creature:
             self.target = self._get_food_target(world)
         elif new_state == State.SOCIALIZE:
             nearby      = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
-            self.target = nearby[0] if nearby else None
+            self.target = self._best_social_target(nearby)
         else:
             self.target = None
 
@@ -336,7 +340,7 @@ class Creature:
             if self.target is not None and self.target.alive:
                 self._steer_arrive(self.target.pos)
                 if self.pos.distance_to(self.target.pos) < CREATURE_RADIUS + self.target.radius:
-                    self._eat(self.target)
+                    self._eat(self.target, world)
             else:
                 # Target gone – look for new visible food
                 self.target = self._get_food_target(world)
@@ -346,7 +350,7 @@ class Creature:
                     # Head toward last known food position
                     self._steer_arrive(self._last_seen_food_pos)
                     if self.pos.distance_to(self._last_seen_food_pos) < 20:
-                        self._last_seen_food_pos = None   # arrived – memory consumed
+                        self._last_seen_food_pos = None
                 else:
                     # No memory – sweep wider in search
                     self._steer_search_wander(dt)
@@ -371,14 +375,17 @@ class Creature:
                     self._in_social_interaction = False
             else:
                 self._in_social_interaction = False
-                self._steer_wander(dt)
+                # Pick best friend among newly visible creatures
+                nearby = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
+                self.target = self._best_social_target(nearby)
+                if self.target is None:
+                    self._steer_wander(world, dt)
 
         elif self.state == State.DYING:
-            # Very slow movement, no socialising
             self.vel *= max(0.0, 1.0 - dt * 2)
 
         else:  # WANDER
-            self._steer_wander(dt)
+            self._steer_wander(world, dt)
 
     # ------------------------------------------------------------------
     # Private – Steering
@@ -409,8 +416,8 @@ class Creature:
         desired_vel = to_target.normalize() * effective_speed
         self.vel    = self.vel.lerp(desired_vel, lerp)
 
-    def _steer_wander(self, dt: float) -> None:
-        """Reynolds Wander Circle with periodic idle pauses."""
+    def _steer_wander(self, world: "World", dt: float) -> None:
+        """Reynolds Wander Circle with periodic idle pauses and friend-pull bias."""
         # --- Idle sub-state ---
         if self._is_idle:
             self._idle_timer += dt
@@ -434,6 +441,9 @@ class Creature:
                 )
                 return
 
+        # --- Friend pull (gentle bias toward nearest friend) ---
+        self._apply_friend_pull(world, dt)
+
         # --- Perturb wander angle ---
         self._wander_angle += random.uniform(-WANDER_ANGLE_SPEED, WANDER_ANGLE_SPEED) * dt
 
@@ -452,6 +462,65 @@ class Creature:
             math.sin(self._wander_angle) * WANDER_CIRCLE_RADIUS,
         )
         self._steer_arrive(wander_target)
+
+    def _update_relationships(self, world: "World", dt: float) -> None:
+        """
+        Update affinity values with nearby creatures.
+        - Passive gain from proximity
+        - Stronger gain while actively socializing
+        - Slow decay over time (forgetting)
+        """
+        nearby = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
+
+        # Decay all existing relationships
+        for data in self.relationships.values():
+            data["affinity"] = max(REL_MIN, data["affinity"] - REL_DECAY_RATE * dt)
+
+        # Update proximity-based affinity
+        for c in nearby:
+            if c.id not in self.relationships:
+                self.relationships[c.id] = {
+                    "affinity"      : 0.0,
+                    "label"         : c.label,
+                    "last_seen_time": 0.0,
+                }
+            entry = self.relationships[c.id]
+            entry["last_seen_time"] = self._lifespan
+            entry["affinity"] = min(REL_MAX, entry["affinity"] + REL_PASSIVE_GAIN * dt)
+
+            # Extra gain when this creature is our active social target
+            if self.state == State.SOCIALIZE and self.target is c:
+                entry["affinity"] = min(REL_MAX,
+                    entry["affinity"] + REL_SOCIAL_GAIN * dt)
+
+    def _best_social_target(self, nearby: list) -> "Creature | None":
+        """Pick the nearby creature with the highest known affinity."""
+        if not nearby:
+            return None
+
+        def affinity(c):
+            d = self.relationships.get(c.id)
+            return d["affinity"] if d else 0.0
+
+        return max(nearby, key=affinity)
+
+    def _apply_friend_pull(self, world: "World", dt: float) -> None:
+        """Gently bias the wander angle toward the nearest friend."""
+        best, best_aff = None, REL_FRIEND_THRESHOLD
+        for c in world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self):
+            d = self.relationships.get(c.id)
+            if d and d["affinity"] > best_aff:
+                best_aff, best = d["affinity"], c
+        if best is None:
+            return
+        to_friend = best.pos - self.pos
+        if to_friend.length() < 1.0:
+            return
+        friend_angle = math.atan2(to_friend.y, to_friend.x)
+        diff = friend_angle - self._wander_angle
+        while diff >  math.pi: diff -= math.tau
+        while diff < -math.pi: diff += math.tau
+        self._wander_angle += diff * REL_FRIEND_PULL * dt
 
     def _get_food_target(self, world: "World"):
         """
@@ -511,8 +580,8 @@ class Creature:
         if self.state != State.SOCIALIZE:
             self.social = max(0, self.social - SOCIAL_DECAY_RATE * dt)
 
-    def _eat(self, food) -> None:
-        """Consume a food item."""
+    def _eat(self, food, world: "World") -> None:
+        """Consume food. Apply competition penalty to any rival that was targeting it."""
         self.hunger = max(0, self.hunger - food.nutrition)
         food.alive  = False
         self.target = None
@@ -521,6 +590,19 @@ class Creature:
             f"ate at ({int(self.pos.x)}, {int(self.pos.y)})",
             self.label,
         )
+        # Penalize any rival who was also heading for this food
+        for c in world.creatures:
+            if c.alive and c is not self and c.target is food:
+                if c.id not in self.relationships:
+                    self.relationships[c.id] = {
+                        "affinity"      : 0.0,
+                        "label"         : c.label,
+                        "last_seen_time": self._lifespan,
+                    }
+                self.relationships[c.id]["affinity"] = max(
+                    REL_MIN,
+                    self.relationships[c.id]["affinity"] - REL_COMPETITION_LOSS,
+                )
 
     # ------------------------------------------------------------------
     # Private – Physics
