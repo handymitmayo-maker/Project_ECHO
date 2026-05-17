@@ -1,0 +1,3 @@
+[16:10:14.130] [STATE_CHANGE        ] ECHO-01  | WANDER (0.0s) -> SEEK_PARTNER  [partner_separated]  h=22 e=70 s=69
+[16:10:14.131] [SEEK_PARTNER        ] ECHO-02  | with ECHO-01  dist=424px
+[16:10:14.131] [STATE_CHANGE        ] ECHO-02  | WANDER (0.0s) -> SEEK_PARTNER  [partner_separated]  h=37 e=90 s=63

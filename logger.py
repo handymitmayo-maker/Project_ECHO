@@ -87,7 +87,15 @@ class Logger:
             BIOME_COUNT, MAX_POPULATION, REPRO_AFFINITY_MIN, REPRO_AGE_MIN,
         )
         from world_seed import get_mode, seed_display
+        import random as _random
+
         ts        = self._session_start.strftime("%Y-%m-%d %H:%M:%S")
+        if get_mode() == "RESEARCH":
+            world_hash_line = f"  World hash          : {world.initial_hash}"
+            rng_state_line  = f"  RNG state[0]        : {_random.getstate()[1][0]}"
+        else:
+            world_hash_line = "  World hash          : (not fixed — chaos mode)"
+            rng_state_line  = "  RNG state[0]        : (chaos)"
         sep_thick = "=" * 62
         sep_thin  = "-" * 62
 
@@ -103,6 +111,8 @@ class Logger:
             sep_thin,
             f"  Mode              : {get_mode()}",
             f"  World seed        : {seed_display()}",
+            world_hash_line,
+            rng_state_line,
             sep_thin,
             f"  Initial population: {CREATURE_COUNT}",
             f"  Biomes            : {len(world.biomes)}  →  {biome_summary}",
@@ -297,6 +307,18 @@ class Logger:
     # ------------------------------------------------------------------
     # Lifetime summary (called from Creature._die)
     # ------------------------------------------------------------------
+
+    def log_creature_profile(self, creature: "Creature", world: "World") -> None:
+        """Dump full live creature profile to log ([I] hotkey)."""
+        from lineage_utils import format_creature_profile
+
+        sep = "-" * 62
+        self._emit(sep)
+        self._emit(f"  CREATURE PROFILE  –  {creature.label}")
+        for line in format_creature_profile(creature, world):
+            self._emit(f"  {line}")
+        self._emit(sep)
+        self.log_event("CREATURE_PROFILE", f"dumped {creature.label}", creature.label)
 
     def log_lifetime_summary(self, creature: "Creature", world: "World | None" = None) -> None:
         """Log a complete life recap and store it for the session summary."""

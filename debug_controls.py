@@ -23,6 +23,8 @@ _TOGGLE_SPECS: list[tuple[str, str, str, bool]] = [
     ("DEBUG_SHOW_PERCEPTION", "P", "Perception",      False),
     ("SHOW_CREATURE_LABELS",  "L", "Creature labels", False),
     ("SHOW_STATUS_BARS",      "V", "Status bars",     False),
+    ("DEBUG_SHOW_BOND_LINES", "G", "Bond lines",      False),
+    ("DEBUG_SHOW_LINEAGE_TINT", "T", "Lineage tint",  False),
 ]
 
 _KEY_MAP: dict[int, str] = {
@@ -69,10 +71,26 @@ def status_lines() -> list[str]:
     ]
 
 
+def dump_rng(world: "World | None" = None) -> None:
+    """Log current RNG / world hash state ([H])."""
+    from world_seed import dump_rng_status
+    from logger import get_logger
+
+    wh = world.initial_hash if world is not None else None
+    log = get_logger()
+    for line in dump_rng_status(wh):
+        log.log_event("RNG_DUMP", line, "SYSTEM")
+
+
 def help_lines() -> list[str]:
     """Full control reference for the help overlay."""
     lines = ["--- DEBUG CONTROLS ---"]
     lines.extend(status_lines())
+    lines.append("--- OBSERVER ---")
+    lines.append("[Click] Select creature")
+    lines.append("[F]   Freeze simulation")
+    lines.append("[I]   Dump creature profile")
+    lines.append("[H]   RNG / world hash dump")
     lines.append("[?] Help overlay")
     lines.append("[SPACE] Spawn food")
     lines.append("[ESC] Quit")

@@ -8,13 +8,14 @@ import pygame
 
 from settings import (
     WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, FPS,
-    HUD_BG_COLOR, HUD_BG_ALPHA, HUD_TEXT_COLOR, HUD_TEXT_SHADOW,
-    HUD_PADDING, HUD_LINE_HEIGHT, HUD_FONT_SIZE,
+    HUD_FONT_SIZE,
 )
 import settings
-from world_seed import init_world_seed
+from world_seed import init_world_seed, reseed_world_rng
 from boot_screen import BootScreen
-from debug_controls import handle_key, help_lines, is_on, status_lines
+from debug_controls import handle_key, help_lines, is_on, status_lines, dump_rng
+from observer import SimulationObserver
+from ui_panels import draw_panel
 from world import World
 
 
@@ -36,10 +37,13 @@ def main() -> None:
     BootScreen(screen, clock).run()
 
     # --- Simulation ---------------------------------------------------------
+    reseed_world_rng()
     world = World()
 
     from logger import get_logger
     get_logger().start_session(world)
+
+    observer = SimulationObserver()
 
     # --- Game loop ----------------------------------------------------------
     running = True
@@ -53,16 +57,24 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                _handle_keydown(event, world)
+                if not _handle_keydown(event, world, observer):
+                    pass
+            elif observer.handle_event(event, world):
+                pass
 
         # 3. Simulation update
-        world.update(dt)
+        if not observer.frozen:
+            world.update(dt)
+        observer.update(dt, world)
 
         # 4. Render
         world.draw(screen)
+        observer.draw_overlays(screen, world)
 
         if is_on("DEBUG_MODE"):
-            _draw_debug_hud(screen, hud_font, clock, world)
+            _draw_debug_hud(screen, hud_font, clock, world, observer)
+
+        observer.draw_inspector(screen, world)
 
         if settings.DEBUG_SHOW_HELP:
             _draw_help_overlay(screen, hud_font)
@@ -75,25 +87,39 @@ def main() -> None:
 
 
 # =============================================================================
-def _handle_keydown(event: pygame.event.Event, world: World) -> None:
+def _handle_keydown(
+    event: pygame.event.Event,
+    world: World,
+    observer: SimulationObserver,
+) -> bool:
     """
-    Keyboard controls.
+    Keyboard controls. Returns True if handled.
 
     ESC     – quit
-    ?       – toggle help overlay (lists all debug keys)
-    D/B/N/P/L/V – debug toggles (see debug_controls.py)
+    ?       – toggle help overlay
+    D/B/N/P/L/V/G/T – debug toggles
+    H       – RNG / world hash dump
+    F       – freeze (observer)
+    I       – profile dump (observer)
     SPACE   – spawn food burst
     """
     if event.key == pygame.K_ESCAPE:
         pygame.event.post(pygame.event.Event(pygame.QUIT))
-        return
+        return True
 
     if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
         settings.DEBUG_SHOW_HELP = not settings.DEBUG_SHOW_HELP
-        return
+        return True
+
+    if event.key == pygame.K_h:
+        dump_rng(world)
+        return True
+
+    if observer.handle_event(event, world):
+        return True
 
     if handle_key(event.key, world):
-        return
+        return True
 
     if event.key == pygame.K_SPACE:
         import random
@@ -104,40 +130,18 @@ def _handle_keydown(event: pygame.event.Event, world: World) -> None:
             fx = cx + random.uniform(-60, 60)
             fy = cy + random.uniform(-60, 60)
             world.foods.append(Food(fx, fy))
+        return True
+
+    return False
 
 
 # =============================================================================
-def _draw_panel(
-    screen: pygame.Surface,
-    font: pygame.font.Font,
-    lines: list[str],
-    x: int,
-    y: int,
-) -> None:
-    """Shared semi-transparent HUD panel renderer."""
-    pad     = HUD_PADDING
-    text_w  = max(font.size(line)[0] for line in lines)
-    text_h  = HUD_LINE_HEIGHT * len(lines)
-    panel_w = text_w + pad * 2
-    panel_h = text_h + pad * 2
-
-    panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
-    panel.fill((*HUD_BG_COLOR, HUD_BG_ALPHA))
-    screen.blit(panel, (x, y))
-
-    tx = x + pad
-    ty = y + pad
-    for line in lines:
-        screen.blit(font.render(line, True, HUD_TEXT_SHADOW), (tx + 1, ty + 1))
-        screen.blit(font.render(line, True, HUD_TEXT_COLOR), (tx, ty))
-        ty += HUD_LINE_HEIGHT
-
-
 def _draw_debug_hud(
     screen: pygame.Surface,
     font: pygame.font.Font,
     clock: pygame.time.Clock,
     world: World,
+    observer: SimulationObserver,
 ) -> None:
     """Top-left stats + live toggle states."""
     alive = [c for c in world.creatures if c.alive]
@@ -146,6 +150,9 @@ def _draw_debug_hud(
         f"Tick      : {world.tick}",
         f"Creatures : {len(alive)}",
         f"Food      : {len(world.foods)}",
+        f"World hash: {world.initial_hash}",
+        f"Frozen    : {'ON' if observer.frozen else 'off'}",
+        f"Selected  : {observer.selected.label if observer.selected else 'none'}",
         "---",
         *status_lines(),
         "[?] Help",
@@ -154,17 +161,17 @@ def _draw_debug_hud(
         for b in world.biomes:
             lines.append(f"  {b.type:7} r={int(b.radius):3}  ({int(b.center.x)},{int(b.center.y)})")
 
-    _draw_panel(screen, font, lines, 8, 8)
+    draw_panel(screen, font, lines, 8, 8)
 
 
 def _draw_help_overlay(screen: pygame.Surface, font: pygame.font.Font) -> None:
     """Bottom-right control reference."""
     lines = help_lines()
     text_w = max(font.size(line)[0] for line in lines)
-    pad = HUD_PADDING
+    pad = 10
     x = WINDOW_WIDTH - text_w - pad * 2 - 12
-    y = WINDOW_HEIGHT - HUD_LINE_HEIGHT * len(lines) - pad * 2 - 12
-    _draw_panel(screen, font, lines, x, y)
+    y = WINDOW_HEIGHT - 18 * len(lines) - pad * 2 - 12
+    draw_panel(screen, font, lines, x, y)
 
 
 # =============================================================================

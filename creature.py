@@ -52,7 +52,12 @@ from settings import (
     REST_ENERGY_TARGET,
     WORLD_WIDTH, WORLD_HEIGHT,
     COLOR_CREATURE, COLOR_CREATURE_REST, COLOR_CREATURE_SOCIAL,
-    COLOR_CREATURE_SEEK, COLOR_CREATURE_DYING, COLOR_CORPSE,
+    COLOR_CREATURE_SEEK, COLOR_CREATURE_PARTNER, COLOR_CREATURE_DYING, COLOR_CORPSE,
+    BOND_PARTNER_AFFINITY,
+    PARTNER_SEEK_DISTANCE, PARTNER_NEST_DISTANCE, PARTNER_REGROUP_DISTANCE,
+    PARTNER_PULL_STRENGTH, PARTNER_WANDER_NEAR_MULT, PARTNER_WANDER_MID_MULT,
+    NEST_HUNGER_RELIEF, NEST_ENERGY_RATE,
+    PARTNER_SEEK_LOG_COOLDOWN, PARTNER_REGROUP_LOG_COOLDOWN, NEST_LOG_COOLDOWN,
     COLOR_BAR_BG, COLOR_BAR_HUNGER, COLOR_BAR_ENERGY, COLOR_BAR_SOCIAL,
     BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
     LABEL_FONT_SIZE, LABEL_COLOR,
@@ -71,19 +76,21 @@ if TYPE_CHECKING:
 
 # =============================================================================
 class State(Enum):
-    WANDER     = auto()
-    SEEK_FOOD  = auto()
-    REST       = auto()
-    SOCIALIZE  = auto()
-    DYING      = auto()
+    WANDER         = auto()
+    SEEK_FOOD      = auto()
+    REST           = auto()
+    SOCIALIZE      = auto()
+    SEEK_PARTNER   = auto()
+    DYING          = auto()
 
 
 _STATE_COLOR = {
-    State.WANDER:    COLOR_CREATURE,
-    State.SEEK_FOOD: COLOR_CREATURE_SEEK,
-    State.REST:      COLOR_CREATURE_REST,
-    State.SOCIALIZE: COLOR_CREATURE_SOCIAL,
-    State.DYING:     COLOR_CREATURE_DYING,
+    State.WANDER:         COLOR_CREATURE,
+    State.SEEK_FOOD:      COLOR_CREATURE_SEEK,
+    State.REST:           COLOR_CREATURE_REST,
+    State.SOCIALIZE:      COLOR_CREATURE_SOCIAL,
+    State.SEEK_PARTNER:   COLOR_CREATURE_PARTNER,
+    State.DYING:          COLOR_CREATURE_DYING,
 }
 
 
@@ -205,6 +212,10 @@ class Creature:
         self._bond_tiers_logged : set = set()   # frozenset pairs + tier index
         self._coop_log_timers  : dict = {}     # frozenset -> cooldown remaining
 
+        # --- Bonded partner / pair cohesion ---
+        self.bonded_partner_id     : uuid.UUID | None = None
+        self._pair_cohesion_timers : dict = {}  # frozenset -> log cooldown
+
         # --- Extension placeholders ---
         self.memory        : list = []
         self.dna           : dict = {}
@@ -271,6 +282,53 @@ class Creature:
         data = self.relationships.get(other.id)
         return data["affinity"] if data else 0.0
 
+    def is_bonded_with(self, other: "Creature") -> bool:
+        """True when mutual affinity qualifies as bonded partners."""
+        return (
+            self.get_affinity_to(other) >= BOND_PARTNER_AFFINITY
+            and other.get_affinity_to(self) >= BOND_PARTNER_AFFINITY
+        )
+
+    def _refresh_bonded_partner(self, world: "World") -> None:
+        """Pick the strongest mutual bond as the primary partner."""
+        best: Creature | None = None
+        best_score = -1.0
+        for c in world.creatures:
+            if c is self or not c.alive:
+                continue
+            if not self.is_bonded_with(c):
+                continue
+            score = (self.get_affinity_to(c) + c.get_affinity_to(self)) / 2.0
+            if score > best_score:
+                best_score = score
+                best = c
+        self.bonded_partner_id = best.id if best else None
+
+    def _get_bonded_partner(self, world: "World") -> "Creature | None":
+        if self.bonded_partner_id is None:
+            return None
+        for c in world.creatures:
+            if c.id == self.bonded_partner_id and c.alive:
+                return c
+        return None
+
+    def _pair_cohesion_log(
+        self,
+        event: str,
+        partner: "Creature",
+        detail: str,
+        cooldown: float,
+    ) -> None:
+        """Rate-limited pair cohesion events (one log per pair per window)."""
+        pair_key = frozenset((self.id, partner.id))
+        if self._pair_cohesion_timers.get(pair_key, 0) > 0:
+            return
+        if self.id >= partner.id:
+            return
+        get_logger().log_event(event, f"with {partner.label}  {detail}", self.label)
+        self._pair_cohesion_timers[pair_key] = cooldown
+        partner._pair_cohesion_timers[pair_key] = cooldown
+
     def is_reproduction_viable(self) -> bool:
         """Per-creature gates (partner-independent)."""
         if not self.alive or self.state == State.DYING:
@@ -317,6 +375,10 @@ class Creature:
             self._coop_log_timers[k] = max(0.0, self._coop_log_timers[k] - dt)
             if self._coop_log_timers[k] <= 0:
                 del self._coop_log_timers[k]
+        for k in list(self._pair_cohesion_timers):
+            self._pair_cohesion_timers[k] = max(0.0, self._pair_cohesion_timers[k] - dt)
+            if self._pair_cohesion_timers[k] <= 0:
+                del self._pair_cohesion_timers[k]
 
         if self.scale < 1.0:
             t = min(1.0, self._lifespan / REPRO_GROWTH_DURATION)
@@ -332,6 +394,7 @@ class Creature:
                 self._food_memory_timer  = 0.0
 
         self._update_relationships(world, dt)
+        self._refresh_bonded_partner(world)
         self._decide_state(world, dt)
         if self.alive:  # _decide_state may have triggered death
             self._act(world, dt)
@@ -401,12 +464,36 @@ class Creature:
             self._force_transition(State.SEEK_FOOD, world, "emergency_hunger")
             return
 
+        # 4b. Bonded partner cohesion – regroup when separated (not during emergencies)
+        partner = self._get_bonded_partner(world)
+        if partner is not None and self.hunger < HUNGER_SEEK_ENTER:
+            dist = self.pos.distance_to(partner.pos)
+            if dist > PARTNER_SEEK_DISTANCE and self.energy >= ENERGY_SURVIVAL_ONLY:
+                if self.state != State.SEEK_PARTNER:
+                    self._pair_cohesion_log(
+                        "SEEK_PARTNER",
+                        partner,
+                        f"dist={dist:.0f}px",
+                        PARTNER_SEEK_LOG_COOLDOWN,
+                    )
+                    self._force_transition(State.SEEK_PARTNER, world, "partner_separated")
+                return
+            if self.state == State.SEEK_PARTNER and dist <= PARTNER_REGROUP_DISTANCE:
+                self._pair_cohesion_log(
+                    "PARTNER_REGROUP",
+                    partner,
+                    f"dist={dist:.0f}px",
+                    PARTNER_REGROUP_LOG_COOLDOWN,
+                )
+                self._force_transition(State.WANDER, world, "partner_regroup")
+                return
+
         # 5. Respect commitment – don't evaluate until min duration elapsed
         if self._state_timer < STATE_MIN_DURATION:
             return
 
         # 6. Hysteresis evaluation (personality-shifted)
-        new_state = self._evaluate_next_state()
+        new_state = self._evaluate_next_state(world)
         if new_state != self.state:
             # Log when a social need was overridden by survival pressure
             if self.state == State.SOCIALIZE and new_state != State.SOCIALIZE:
@@ -420,11 +507,13 @@ class Creature:
                 )
             self._force_transition(new_state, world, "normal")
 
-    def _evaluate_next_state(self) -> State:
+    def _evaluate_next_state(self, world: "World") -> State:
         """
         Hysteresis-based state selection with personality-shifted thresholds
         and energy-aware social suppression.
         """
+        partner = self._get_bonded_partner(world)
+
         # ----- Personality-adjusted thresholds -----
         # Lazier creatures enter REST sooner (higher effective threshold)
         rest_enter  = ENERGY_REST_ENTER  + self.laziness * 15
@@ -444,6 +533,13 @@ class Creature:
         if self.state == State.SOCIALIZE and self.social <= SOCIAL_EXIT:
             return State.SOCIALIZE
 
+        if self.state == State.SEEK_PARTNER:
+            if partner is None:
+                return State.WANDER
+            if self.pos.distance_to(partner.pos) > PARTNER_SEEK_DISTANCE:
+                return State.SEEK_PARTNER
+            return State.WANDER
+
         # ----- Priority enter thresholds -----
         if self.hunger >= HUNGER_SEEK_ENTER:
             return State.SEEK_FOOD
@@ -456,6 +552,9 @@ class Creature:
             self.energy < ENERGY_SOCIAL_SUPPRESS
             or self.hunger > STATE_EMERGENCY_HUNGER * 0.8
         )
+        # Prefer partner cohesion over weak social targets when bonded but apart
+        if partner is not None and self.pos.distance_to(partner.pos) > PARTNER_NEST_DISTANCE:
+            social_suppressed = True
         if not social_suppressed and self.social <= social_enter:
             return State.SOCIALIZE
 
@@ -638,9 +737,17 @@ class Creature:
                 self._in_social_interaction = False
                 # Pick best friend among newly visible creatures
                 nearby = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
-                self.target = self._best_social_target(nearby)
+                self.target = self._best_social_target(nearby, world)
                 if self.target is None:
                     self._steer_wander(world, dt)
+
+        elif self.state == State.SEEK_PARTNER:
+            partner = self._get_bonded_partner(world)
+            if partner is not None:
+                self.target = partner
+                self._steer_arrive(partner.pos)
+            else:
+                self._steer_wander(world, dt)
 
         elif self.state == State.DYING:
             self.vel *= max(0.0, 1.0 - dt * 2)
@@ -725,8 +832,11 @@ class Creature:
         # --- Crowd avoidance (gentle bias away from seeker clusters) ---
         self._apply_crowd_avoidance(world, dt)
 
-        # --- Perturb wander angle ---
-        self._wander_angle += random.uniform(-WANDER_ANGLE_SPEED, WANDER_ANGLE_SPEED) * dt
+        # --- Perturb wander angle (reduced when bonded partner is nearby) ---
+        wander_scale = self._partner_wander_scale(world)
+        self._wander_angle += (
+            random.uniform(-WANDER_ANGLE_SPEED, WANDER_ANGLE_SPEED) * dt * wander_scale
+        )
 
         # --- Project wander circle ---
         if self.vel.length() > 1.0:
@@ -834,10 +944,17 @@ class Creature:
             their_aff = c.get_affinity_to(self)
             self._log_bond_milestones(c, entry["affinity"], their_aff)
 
-    def _best_social_target(self, nearby: list) -> "Creature | None":
-        """Prefer highest affinity; tie-break toward creatures already targeting us."""
+    def _best_social_target(self, nearby: list, world: "World | None" = None) -> "Creature | None":
+        """Prefer bonded partner, then highest affinity; ignore weak targets when apart."""
         if not nearby:
             return None
+
+        if world is not None:
+            partner = self._get_bonded_partner(world)
+            if partner is not None and partner in nearby:
+                return partner
+            if partner is not None and self.pos.distance_to(partner.pos) > PARTNER_SEEK_DISTANCE:
+                return None
 
         def score(c: "Creature") -> tuple:
             d = self.relationships.get(c.id)
@@ -858,8 +975,27 @@ class Creature:
         while diff < -math.pi: diff += math.tau
         self._wander_angle += diff * strength * dt
 
+    def _partner_wander_scale(self, world: "World") -> float:
+        """Reduce random drift when nested with or near bonded partner."""
+        partner = self._get_bonded_partner(world)
+        if partner is None:
+            return 1.0
+        dist = self.pos.distance_to(partner.pos)
+        if dist < PARTNER_NEST_DISTANCE:
+            return PARTNER_WANDER_NEAR_MULT
+        if dist < PARTNER_SEEK_DISTANCE:
+            return PARTNER_WANDER_MID_MULT
+        return 1.0
+
     def _apply_attraction_pull(self, world: "World", dt: float) -> None:
-        """Bias wander toward known partners; stronger pull for friends."""
+        """Bias wander toward bonded partner first, then other known partners."""
+        partner = self._get_bonded_partner(world)
+        if partner is not None:
+            aff = self.get_affinity_to(partner)
+            scaled = PARTNER_PULL_STRENGTH * (aff / REL_MAX)
+            self._pull_toward(partner.pos, scaled, dt)
+            return
+
         best, best_aff = None, REL_ATTRACT_MIN
         for c in world.get_nearby_creatures(self.pos, SOCIAL_RADIUS * 1.5, exclude=self):
             d = self.relationships.get(c.id)
@@ -1119,6 +1255,9 @@ class Creature:
         elif self.state == State.SOCIALIZE:
             self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * dt)
             self.time_socializing   += dt
+        elif self.state == State.SEEK_PARTNER:
+            self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * 0.85 * dt)
+            self.time_wandering     += dt
         elif self.state == State.DYING:
             self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * 0.5 * dt)
         else:  # WANDER
@@ -1132,6 +1271,20 @@ class Creature:
         if self._has_trusted_partner(world) is not None:
             self.hunger = max(0.0, self.hunger - HUNGER_DECAY_RATE * SOCIAL_TRUST_HUNGER_RELIEF * dt)
             self.energy = min(100.0, self.energy + SOCIAL_TRUST_ENERGY_RATE * dt)
+
+        # Nesting comfort: bonded partners close together get survival bonuses
+        partner = self._get_bonded_partner(world)
+        if partner is not None:
+            nest_dist = self.pos.distance_to(partner.pos)
+            if nest_dist < PARTNER_NEST_DISTANCE:
+                self.hunger = max(0.0, self.hunger - HUNGER_DECAY_RATE * NEST_HUNGER_RELIEF * dt)
+                self.energy = min(100.0, self.energy + NEST_ENERGY_RATE * dt)
+                self._pair_cohesion_log(
+                    "NESTING",
+                    partner,
+                    f"dist={nest_dist:.0f}px",
+                    NEST_LOG_COOLDOWN,
+                )
 
     def _eat(self, food, world: "World") -> None:
         """Consume food. Apply competition penalty to any rival that was targeting it."""

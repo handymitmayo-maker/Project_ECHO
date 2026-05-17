@@ -40,6 +40,28 @@ def init_world_seed() -> None:
     Creature.reset_label_counter()
 
 
+def reseed_world_rng() -> None:
+    """
+    Re-apply the world seed immediately before World() construction.
+
+    Boot UI and other pre-world code must not advance the global RNG used
+    for biomes, spawns, and initial food layout.
+    """
+    global _active_seed, _mode
+
+    from creature import Creature
+
+    if settings.USE_FIXED_SEED:
+        _active_seed = int(settings.WORLD_SEED)
+        _mode = "RESEARCH"
+        random.seed(_active_seed)
+    else:
+        _active_seed = None
+        _mode = "CHAOS"
+
+    Creature.reset_label_counter()
+
+
 def get_mode() -> str:
     """RESEARCH or CHAOS."""
     return _mode
@@ -62,3 +84,17 @@ def boot_sidebar_seed() -> str:
     if _active_seed is not None:
         return str(_active_seed)
     return "RANDOM"
+
+
+def dump_rng_status(world_hash: str | None = None) -> list[str]:
+    """Lines for logger/console RNG diagnostic dump."""
+    state = random.getstate()
+    internal = state[1]
+    lines = [
+        f"mode={get_mode()}  seed={seed_display()}  active={_active_seed}",
+        f"rng_state[0]={internal[0] if internal else 'n/a'}",
+        f"rng_state_len={len(internal)}",
+    ]
+    if world_hash is not None:
+        lines.insert(1, f"world_hash={world_hash}")
+    return lines

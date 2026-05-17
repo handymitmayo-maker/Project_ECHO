@@ -96,6 +96,8 @@ COLOR_CREATURE_REST   = (0,   180, 255)     # ice blue – resting
 COLOR_CREATURE_SOCIAL = (255, 220, 0)       # amber – socialising
 COLOR_CREATURE_SEEK   = (255, 80,  80)      # alert red – hungry
 COLOR_CREATURE_DYING  = (180, 50,  50)      # dim red – dying
+COLOR_CREATURE_PARTNER = (120, 220, 255)    # soft cyan – seeking bonded partner
+COLOR_BOND_LINE       = (255, 140, 200)     # faint pink glow between partners
 COLOR_CORPSE          = (55,  25,  25)      # very dim – corpse
 COLOR_FOOD            = (255, 60,  60)      # deep red
 COLOR_BAR_BG          = (30,  30,  30)      # status bar background
@@ -174,6 +176,20 @@ REL_ATTRACT_MIN            = 2.0     # start attraction bias above this affinity
 REL_ATTRACT_PULL           = 0.10   # wander pull scaled by affinity / REL_MAX
 REL_BOND_TIERS             = (3.0, 6.0, 10.0)  # BOND_STRENGTHENED log thresholds
 
+# --- Pair cohesion / nesting (bonded partners) --------------------------------
+BOND_PARTNER_AFFINITY      = 6.0    # mutual affinity to count as bonded partners
+PARTNER_SEEK_DISTANCE      = 140.0  # px – enter SEEK_PARTNER when farther apart
+PARTNER_NEST_DISTANCE      = 70.0   # px – nesting comfort zone
+PARTNER_REGROUP_DISTANCE   = 85.0  # px – exit SEEK_PARTNER when reunited
+PARTNER_PULL_STRENGTH      = 0.28   # wander bias toward bonded partner
+PARTNER_WANDER_NEAR_MULT   = 0.32  # wander perturbation scale when nested
+PARTNER_WANDER_MID_MULT    = 0.55  # wander scale when within seek radius
+NEST_HUNGER_RELIEF         = 0.35  # hunger decay reduction when nested
+NEST_ENERGY_RATE           = 2.0   # energy/s bonus when nested with partner
+PARTNER_SEEK_LOG_COOLDOWN  = 15.0  # seconds between SEEK_PARTNER logs per pair
+PARTNER_REGROUP_LOG_COOLDOWN = 12.0
+NEST_LOG_COOLDOWN          = 20.0  # seconds between NESTING logs per pair
+
 # --- Social survival rewards (cooperative evolution) ----------------------------
 SOCIAL_HUNGER_RELIEF       = 0.30   # hunger decay reduction while socializing with target
 SOCIAL_TRUST_THRESHOLD     = 3.0    # mutual affinity for trust bonuses
@@ -227,12 +243,12 @@ CONTEST_LOG_COOLDOWN       = 4.0   # min seconds between FOOD_CONTEST log events
 # Logger anti-spam
 SURVIVAL_LOG_COOLDOWN      = 6.0   # min seconds between SURVIVAL_DECISION logs per creature
 
-# --- Reproduction (pair-only, two parents required) ---------------------------
+# --- Reproduction (bonded pair only, intentional nesting) ---------------------
 MAX_POPULATION           = 40
-REPRO_AFFINITY_MIN       = 4.0     # mutual affinity threshold (reachable in live sim)
-REPRO_DISTANCE_MAX       = 35.0    # px between partners
-REPRO_ENERGY_MIN         = 55.0    # both parents must exceed
-REPRO_HUNGER_MAX         = 25.0    # both parents must stay below
+REPRO_AFFINITY_MIN       = 6.0     # mutual affinity – bonded partners only
+REPRO_DISTANCE_MAX       = 70.0    # px – must be nested together
+REPRO_ENERGY_MIN         = 60.0    # both parents must exceed
+REPRO_HUNGER_MAX         = 40.0    # both parents must stay below
 REPRO_AGE_MIN            = 45.0    # seconds alive (_lifespan)
 REPRO_COST_ENERGY        = 40.0    # deducted from each parent on success
 REPRO_COST_HUNGER        = 20.0    # added to each parent on success
@@ -258,7 +274,13 @@ GRASS_TILE_DARK  = 30            # 0–255 darkness overlay on the tiled backgro
 # --- Debug (runtime toggles – keys in debug_controls.py) --------------------
 DEBUG_MODE            = True        # [D] stats HUD
 DEBUG_SHOW_PERCEPTION = True        # [P] food detection radius while seeking
+DEBUG_SHOW_BOND_LINES = False       # [G] faint lines between bonded partners
+DEBUG_SHOW_LINEAGE_TINT = False     # [T] subtle lineage color tint on creatures
 DEBUG_SHOW_HELP       = False       # [?] control reference overlay
+
+# --- Observer / Inspector -----------------------------------------------------
+INSPECTOR_PICK_SLOP   = 8           # extra px radius for mouse picking
+COLOR_SELECTION_RING  = (0, 255, 200) # cyan ring on selected creature
 
 # =============================================================================
 # Extension placeholders (filled in future versions)

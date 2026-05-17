@@ -43,7 +43,12 @@ _FONT_SIZE   = 15                     # main terminal font
 _TITLE_SIZE  = 36                     # PROJECT ECHO heading
 _SUB_SIZE    = 13                     # sub-text / metadata
 _SIDEBAR_SIZE = 14                    # sidebar metadata (slightly larger)
-_LOGO_RADIUS  = 52                    # line-art emblem radius (px)
+_LOGO_RADIUS       = 62               # animated emblem radius (px)
+_LOGO_BOX_H        = 150              # reserved vertical space for logo + wordmark
+_LOGO_SCAN_SPEED   = 1.4              # rad/s – rotating scan line
+_LOGO_PULSE_SPEED  = 1.2              # Hz – ring breathe
+_LOGO_WAVE_SPEED   = 2.0              # Hz – echo arc pulse
+_LOGO_PULSE_AMP    = 3                # px – ring radius oscillation
 
 _SCANLINE_ALPHA = 25                  # scanline overlay opacity
 _NOISE_ALPHA    = 12                  # static noise opacity
@@ -103,6 +108,10 @@ class BootScreen:
 
         self._scanline_surf = self._build_scanlines()
         self._noise_surf    = self._build_noise()
+        # Isolated RNG – boot CRT noise must not advance world simulation random
+        import settings as _settings
+        noise_seed = int(_settings.WORLD_SEED) if _settings.USE_FIXED_SEED else 42
+        self._noise_rng = random.Random(noise_seed)
 
         # Phase state
         self._phase   : str   = "blackout"
@@ -123,6 +132,9 @@ class BootScreen:
         # Metadata values (animated counter-style)
         self._pop_display   = 0
         self._food_display  = 0
+
+        # Logo animation clock (runs for entire boot sequence)
+        self._anim_t: float = 0.0
 
     # ------------------------------------------------------------------
     # Public
@@ -201,6 +213,8 @@ class BootScreen:
             self._fade_alpha = min(255, (self._timer / _PHASE_FADE) * 255)
             if self._timer >= _PHASE_FADE:
                 self._next_phase("done")
+
+        self._anim_t += dt
 
     def _next_phase(self, phase: str) -> None:
         self._phase = phase
@@ -287,17 +301,15 @@ class BootScreen:
         )
 
     def _draw_sidebar(self, alpha: float) -> None:
-        """Right column: line-art logo + readable metadata panel."""
+        """Right column: animated logo + readable metadata panel."""
         panel_w = 280
         panel_x = self._w - panel_w - 36
-        logo_cy = 200
-        meta_y  = logo_cy + _LOGO_RADIUS + 36
+        logo_cy = 175
+        meta_y  = logo_cy + _LOGO_BOX_H // 2 + 28
 
-        # --- Line-art emblem (echo / observation motif) ---
-        self._draw_line_logo(panel_x + panel_w // 2, logo_cy, _LOGO_RADIUS, alpha)
-
-        # Wireframe "ECHO" under emblem
-        self._draw_wireframe_echo(panel_x + panel_w // 2, logo_cy + _LOGO_RADIUS + 14, alpha)
+        self._draw_animated_logo(
+            panel_x + panel_w // 2, logo_cy, alpha, self._anim_t,
+        )
 
         # --- Metadata panel ---
         ts = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
@@ -332,83 +344,107 @@ class BootScreen:
             self._screen.blit(val, (panel_x + 118, y))
             y += lh
 
-    def _draw_line_logo(self, cx: int, cy: int, radius: int, alpha: float) -> None:
-        """
-        Stroke-based emblem: concentric rings, crosshair, echo arcs, corner brackets.
-        Evokes sonar / observation chamber without raster graphics.
-        """
+    def _draw_corner_frame(
+        self, cx: int, cy: int, half: int, alpha: float,
+    ) -> None:
+        """Observation frame with chamfered corners (8 segments)."""
+        col = self._dim(_C_BORDER, alpha)
+        c   = 14
+        x0, x1 = cx - half, cx + half
+        y0, y1 = cy - half, cy + half
+        pygame.draw.line(self._screen, col, (x0 + c, y0), (x1 - c, y0), 2)
+        pygame.draw.line(self._screen, col, (x0 + c, y1), (x1 - c, y1), 2)
+        pygame.draw.line(self._screen, col, (x0, y0 + c), (x0, y1 - c), 2)
+        pygame.draw.line(self._screen, col, (x1, y0 + c), (x1, y1 - c), 2)
+        pygame.draw.line(self._screen, col, (x0, y0), (x0 + c, y0 + c), 2)
+        pygame.draw.line(self._screen, col, (x1, y0), (x1 - c, y0 + c), 2)
+        pygame.draw.line(self._screen, col, (x0, y1), (x0 + c, y1 - c), 2)
+        pygame.draw.line(self._screen, col, (x1, y1), (x1 - c, y1 - c), 2)
+
+    def _draw_animated_logo(
+        self, cx: int, cy: int, alpha: float, t: float,
+    ) -> None:
+        """Sonar emblem: pulsing rings, rotating scan, echo waves, ECHO wordmark."""
         bright = self._dim(_C_BRIGHT, alpha)
         mid    = self._dim(_C_MID, alpha)
-        dim    = self._dim(_C_BORDER, alpha)
 
-        # Corner targeting brackets
-        b = radius + 14
-        blen = 16
-        corners = [
-            (cx - b, cy - b,  1,  1), (cx + b, cy - b, -1,  1),
-            (cx - b, cy + b,  1, -1), (cx + b, cy + b, -1, -1),
-        ]
-        for px, py, sx, sy in corners:
-            pygame.draw.line(self._screen, dim, (px, py), (px + sx * blen, py), 2)
-            pygame.draw.line(self._screen, dim, (px, py), (px, py + sy * blen), 2)
+        # Soft CRT glow under emblem
+        glow_r = _LOGO_RADIUS + 18
+        glow = pygame.Surface((glow_r * 2, glow_r * 2), pygame.SRCALPHA)
+        pygame.draw.circle(
+            glow, (0, 255, 136, int(22 * alpha)),
+            (glow_r, glow_r), glow_r,
+        )
+        self._screen.blit(glow, (cx - glow_r, cy - glow_r))
 
-        # Concentric rings
-        pygame.draw.circle(self._screen, bright, (cx, cy), radius, 2)
-        pygame.draw.circle(self._screen, mid,    (cx, cy), int(radius * 0.62), 1)
-        pygame.draw.circle(self._screen, mid,    (cx, cy), int(radius * 0.32), 1)
+        pulse_r = _LOGO_RADIUS + math.sin(t * _LOGO_PULSE_SPEED * math.tau) * _LOGO_PULSE_AMP
+        radius  = int(pulse_r)
 
-        # Crosshair
-        gap = 8
-        pygame.draw.line(
-            self._screen, dim,
-            (cx - radius - 6, cy), (cx - gap, cy), 1,
-        )
-        pygame.draw.line(
-            self._screen, dim,
-            (cx + gap, cy), (cx + radius + 6, cy), 1,
-        )
-        pygame.draw.line(
-            self._screen, dim,
-            (cx, cy - radius - 6), (cx, cy - gap), 1,
-        )
-        pygame.draw.line(
-            self._screen, dim,
-            (cx, cy + gap), (cx, cy + radius + 6), 1,
-        )
+        self._draw_corner_frame(cx, cy, radius + 16, alpha)
 
-        # Echo wave arcs (right side – sound propagation)
-        for i, scale in enumerate((0.45, 0.72, 1.0)):
+        for i, scale in enumerate((1.0, 0.62, 0.32)):
+            r = max(2, int(radius * scale))
+            w = 2 if i == 0 else 1
+            pygame.draw.circle(
+                self._screen, bright if i == 0 else mid,
+                (cx, cy), r, w,
+            )
+
+        # Rotating scan line
+        angle = t * _LOGO_SCAN_SPEED
+        scan_len = radius + 10
+        x2 = int(cx + math.cos(angle) * scan_len)
+        y2 = int(cy + math.sin(angle) * scan_len)
+        pygame.draw.line(self._screen, bright, (cx, cy), (x2, y2), 2)
+
+        # Echo arcs – right (outbound) and left (inbound), staggered pulse
+        arc_specs = (
+            (0.45, 0.0),
+            (0.72, 0.7),
+            (1.0,  1.4),
+        )
+        for scale, phase in arc_specs:
             r = int(radius * scale)
             rect = pygame.Rect(cx - r, cy - r, r * 2, r * 2)
-            start = -math.pi / 4
-            end   =  math.pi / 4
-            width = 2 if i == 2 else 1
-            col   = bright if i == 2 else mid
-            pygame.draw.arc(self._screen, col, rect, start, end, width)
+            wave = 0.5 + 0.5 * math.sin(t * _LOGO_WAVE_SPEED * math.tau + phase)
+            col  = self._dim(_C_BRIGHT if scale >= 1.0 else _C_MID, alpha * wave)
+            w    = 2 if scale >= 1.0 else 1
+            pygame.draw.arc(self._screen, col, rect, -math.pi / 4,  math.pi / 4, w)
+            pygame.draw.arc(self._screen, col, rect, math.pi * 0.55, math.pi * 1.45, w)
 
-        # Pulse lines on left (incoming signal)
-        for dy in (-18, 0, 18):
-            x0 = cx - radius - 22
-            x1 = cx - radius - 6
-            pygame.draw.line(self._screen, mid, (x0, cy + dy), (x1, cy + dy), 1)
+        # Incoming signal ticks (left), length modulated
+        for dy in (-20, 0, 20):
+            tick = 0.5 + 0.5 * math.sin(t * 3.0 + dy * 0.1)
+            x1 = cx - radius - 8
+            x0 = x1 - int(10 + 8 * tick)
+            pygame.draw.line(
+                self._screen, self._dim(_C_MID, alpha * tick),
+                (x0, cy + dy), (x1, cy + dy), 1,
+            )
 
-        # Core node
-        pygame.draw.circle(self._screen, bright, (cx, cy), 4)
+        # Pulsing core
+        core_pulse = 0.7 + 0.3 * math.sin(t * 2.0 * math.tau)
+        core_col   = self._dim(_C_BRIGHT, alpha * core_pulse)
+        pygame.draw.circle(self._screen, core_col, (cx, cy), 5)
         pygame.draw.circle(self._screen, _C_BG, (cx, cy), 2)
 
-    def _draw_wireframe_echo(self, cx: int, cy: int, alpha: float) -> None:
-        """Compact ECHO lettermark built from line segments."""
-        col   = self._dim(_C_BRIGHT, alpha)
-        h     = 10
-        w     = 7
-        gap   = 4
-        total = 4 * w + 3 * gap
-        x0    = cx - total // 2
+        self._draw_echo_wordmark(cx, cy + radius + 20, alpha, t)
+
+    def _draw_echo_wordmark(
+        self, cx: int, cy: int, alpha: float, t: float,
+    ) -> None:
+        """Larger wireframe ECHO with subtle bar pulse animation."""
+        pulse_bar = 0.6 + 0.4 * math.sin(t * 4.0 * math.tau)
+        col       = self._dim(_C_BRIGHT, alpha)
+        col_dim   = self._dim(_C_MID, alpha * pulse_bar)
+        h, w, gap = 12, 8, 5
+        total     = 4 * w + 3 * gap
+        x0        = cx - total // 2
 
         def letter_e(x: int) -> None:
             pygame.draw.line(self._screen, col, (x, cy - h), (x, cy + h), 2)
             pygame.draw.line(self._screen, col, (x, cy - h), (x + w, cy - h), 2)
-            pygame.draw.line(self._screen, col, (x, cy),     (x + w - 2, cy), 1)
+            pygame.draw.line(self._screen, col_dim, (x, cy), (x + w - 1, cy), 2)
             pygame.draw.line(self._screen, col, (x, cy + h), (x + w, cy + h), 2)
 
         def letter_c(x: int) -> None:
@@ -421,7 +457,7 @@ class BootScreen:
         def letter_h(x: int) -> None:
             pygame.draw.line(self._screen, col, (x, cy - h), (x, cy + h), 2)
             pygame.draw.line(self._screen, col, (x + w, cy - h), (x + w, cy + h), 2)
-            pygame.draw.line(self._screen, col, (x, cy), (x + w, cy), 1)
+            pygame.draw.line(self._screen, col_dim, (x, cy), (x + w, cy), 2)
 
         def letter_o(x: int) -> None:
             pygame.draw.rect(
@@ -545,11 +581,15 @@ class BootScreen:
     def _update_noise(self) -> None:
         """Randomise a sparse set of pixels each frame to simulate CRT static."""
         self._noise_surf.fill((0, 0, 0, 0))
+        rng = self._noise_rng
         for _ in range(200):
-            nx = random.randint(0, self._w - 1)
-            ny = random.randint(0, self._h - 1)
-            br = random.randint(0, 180)
-            self._noise_surf.set_at((nx, ny), (br, min(255, br + 60), br, _NOISE_ALPHA + random.randint(0, 20)))
+            nx = rng.randint(0, self._w - 1)
+            ny = rng.randint(0, self._h - 1)
+            br = rng.randint(0, 180)
+            self._noise_surf.set_at(
+                (nx, ny),
+                (br, min(255, br + 60), br, _NOISE_ALPHA + rng.randint(0, 20)),
+            )
 
     # ------------------------------------------------------------------
     # Helpers

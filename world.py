@@ -103,6 +103,9 @@ class World:
 
         self._spawn_initial_entities()
 
+        from simulation_hash import compute_world_hash
+        self.initial_hash: str = compute_world_hash(self)
+
         if settings.DEBUG_SHOW_BIOMES:
             self._rebuild_biome_overlay()
 
@@ -228,6 +231,8 @@ class World:
         for creature in self.creatures:
             if creature.alive:
                 creature.draw(surface)
+
+        self._draw_bond_lines(surface)
 
         self._draw_scanlines(surface)
 
@@ -361,6 +366,36 @@ class World:
                 return c
         return None
 
+    def creature_at_pos(self, pos: pygame.Vector2) -> Creature | None:
+        """Pick living creature at screen/world position; corpses as fallback."""
+        from settings import INSPECTOR_PICK_SLOP, CREATURE_RADIUS
+
+        best: Creature | None = None
+        best_dist = float("inf")
+
+        for c in self.creatures:
+            if not c.alive:
+                continue
+            r = CREATURE_RADIUS * c.scale + INSPECTOR_PICK_SLOP
+            d = pos.distance_to(c.pos)
+            if d <= r and d < best_dist:
+                best_dist = d
+                best = c
+
+        if best is not None:
+            return best
+
+        for c in self.creatures:
+            if not c.is_corpse:
+                continue
+            r = CREATURE_RADIUS * c.scale + INSPECTOR_PICK_SLOP
+            d = pos.distance_to(c.pos)
+            if d <= r and d < best_dist:
+                best_dist = d
+                best = c
+
+        return best
+
     def get_nearby_creatures(
         self,
         pos     : pygame.Vector2,
@@ -471,6 +506,31 @@ class World:
         if self._biome_surf is None:
             self._rebuild_biome_overlay()
         surface.blit(self._biome_surf, (0, 0))
+
+    def _draw_bond_lines(self, surface: pygame.Surface) -> None:
+        """Faint lines between bonded partners when debug toggle is on."""
+        if not settings.DEBUG_SHOW_BOND_LINES:
+            return
+
+        drawn: set = set()
+        color = settings.COLOR_BOND_LINE
+        for c in self.creatures:
+            if not c.alive:
+                continue
+            partner = c._get_bonded_partner(self)
+            if partner is None:
+                continue
+            key = frozenset((c.id, partner.id))
+            if key in drawn:
+                continue
+            drawn.add(key)
+            pygame.draw.line(
+                surface,
+                color,
+                (int(c.pos.x), int(c.pos.y)),
+                (int(partner.pos.x), int(partner.pos.y)),
+                1,
+            )
 
     def _draw_scanlines(self, surface: pygame.Surface) -> None:
         """Overlay a subtle scanline pattern for retro atmosphere."""

@@ -13,6 +13,7 @@ import pygame
 from settings import (
     WORLD_WIDTH, WORLD_HEIGHT,
     MAX_POPULATION,
+    BOND_PARTNER_AFFINITY,
     REPRO_AFFINITY_MIN, REPRO_DISTANCE_MAX,
     REPRO_COST_ENERGY, REPRO_COST_HUNGER,
     REPRO_COOLDOWN, REPRO_PAIR_COOLDOWN,
@@ -68,7 +69,12 @@ def _pair_can_reproduce(a: Creature, b: Creature, world: "World") -> bool:
     if not a.is_reproduction_viable() or not b.is_reproduction_viable():
         return False
 
+    if not a.is_bonded_with(b):
+        return False
+
     aff_ab, aff_ba = _mutual_affinity(a, b)
+    if aff_ab < BOND_PARTNER_AFFINITY or aff_ba < BOND_PARTNER_AFFINITY:
+        return False
     if aff_ab < REPRO_AFFINITY_MIN or aff_ba < REPRO_AFFINITY_MIN:
         return False
 
@@ -111,6 +117,18 @@ def _attempt_pair(a: Creature, b: Creature, world: "World") -> Creature | None:
     if not _pair_can_reproduce(a, b, world):
         return None
 
+    aff_ab, aff_ba = _mutual_affinity(a, b)
+    dist = a.pos.distance_to(b.pos)
+    log = get_logger()
+    log.log_event(
+        "REPRODUCTION_ATTEMPT",
+        (
+            f"{a.label} + {b.label}  "
+            f"affinity={aff_ab:.1f}/{aff_ba:.1f}  dist={dist:.0f}px"
+        ),
+        a.label,
+    )
+
     if random.random() > _reproduction_chance(a, b):
         return None
 
@@ -132,8 +150,15 @@ def _attempt_pair(a: Creature, b: Creature, world: "World") -> Creature | None:
     pair_key = frozenset((a.id, b.id))
     world._pair_cooldowns[pair_key] = REPRO_PAIR_COOLDOWN
 
-    log = get_logger()
     log.log_reproduction(a, b, child)
+    log.log_event(
+        "REPRODUCTION_SUCCESS",
+        (
+            f"{a.label} + {b.label} -> {child.label}  "
+            f"GEN-{child.generation}"
+        ),
+        child.label,
+    )
     log.log_offspring_born(child)
     log.log_family_line(child)
 
