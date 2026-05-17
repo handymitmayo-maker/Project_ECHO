@@ -27,12 +27,18 @@ from settings import (
     WANDER_ANGLE_SPEED, SOCIAL_RADIUS,
     IDLE_CHANCE, IDLE_DURATION_MIN, IDLE_DURATION_MAX,
     FOOD_DETECTION_RADIUS, FOOD_DETECTION_RADIUS_HUNGRY, FOOD_HUNGER_SCAN_BOOST,
-    FOOD_MEMORY_DURATION,
+    FOOD_MEMORY_DURATION, FOOD_SAFE_SEEK_RADIUS,
     DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
     DEATH_CRITICAL_TIME, CORPSE_DURATION,
     REL_SOCIAL_GAIN, REL_PASSIVE_GAIN, REL_COMPETITION_LOSS,
     REL_DECAY_RATE, REL_MAX, REL_MIN,
     REL_FRIEND_THRESHOLD, REL_FRIEND_PULL,
+    PERS_RISK_TOLERANCE_MIN, PERS_RISK_TOLERANCE_MAX,
+    PERS_LAZINESS_MIN, PERS_LAZINESS_MAX,
+    PERS_SOCIAL_DEPENDENCY_MIN, PERS_SOCIAL_DEPENDENCY_MAX,
+    PERS_FOOD_GREED_MIN, PERS_FOOD_GREED_MAX,
+    ENERGY_SOCIAL_SUPPRESS, ENERGY_SURVIVAL_ONLY, ENERGY_MINIMAL_MOVE,
+    REST_ENERGY_TARGET,
     WORLD_WIDTH, WORLD_HEIGHT,
     COLOR_CREATURE, COLOR_CREATURE_REST, COLOR_CREATURE_SOCIAL,
     COLOR_CREATURE_SEEK, COLOR_CREATURE_DYING, COLOR_CORPSE,
@@ -104,8 +110,12 @@ class Creature:
             random.uniform(-1, 1), random.uniform(-1, 1)
         ).normalize() * random.uniform(CREATURE_SPEED_MIN * 0.3, CREATURE_SPEED_MIN * 0.7)
 
-        # --- Personality ---
-        self._speed = random.uniform(CREATURE_SPEED_MIN, CREATURE_SPEED_MAX)
+        # --- Personality (sampled once, shapes all survival decisions) ---
+        self._speed            = random.uniform(CREATURE_SPEED_MIN, CREATURE_SPEED_MAX)
+        self.risk_tolerance    = random.uniform(PERS_RISK_TOLERANCE_MIN,    PERS_RISK_TOLERANCE_MAX)
+        self.laziness          = random.uniform(PERS_LAZINESS_MIN,           PERS_LAZINESS_MAX)
+        self.social_dependency = random.uniform(PERS_SOCIAL_DEPENDENCY_MIN,  PERS_SOCIAL_DEPENDENCY_MAX)
+        self.food_greed        = random.uniform(PERS_FOOD_GREED_MIN,         PERS_FOOD_GREED_MAX)
 
         # --- Vital stats (0–100) ---
         self.hunger = random.uniform(20, 60)
@@ -203,7 +213,7 @@ class Creature:
           1. Death check (always runs, can interrupt everything)
           2. Emergency hunger override (breaks commitment)
           3. State commitment (min duration)
-          4. Hysteresis evaluation
+          4. Hysteresis evaluation (personality-modulated)
         """
         # 1. Death / dying check – always evaluated
         if self._check_death_conditions(world, dt):
@@ -219,40 +229,81 @@ class Creature:
                 self._force_transition(State.REST, world, "dying_rest")
             return
 
-        # 3. Emergency: critical hunger always breaks commitment
+        # 3. Survival-only mode: critical energy → only REST or emergency food
+        if self.energy < ENERGY_SURVIVAL_ONLY and self.state not in (
+            State.REST, State.SEEK_FOOD
+        ):
+            get_logger().log_event(
+                "SURVIVAL_DECISION", "emergency_rest – energy critical", self.label
+            )
+            self._force_transition(State.REST, world, "emergency_rest")
+            return
+
+        # 4. Emergency: critical hunger always breaks commitment
         if self.hunger >= STATE_EMERGENCY_HUNGER and self.state != State.SEEK_FOOD:
             self._force_transition(State.SEEK_FOOD, world, "emergency_hunger")
             return
 
-        # 4. Respect commitment – don't evaluate until min duration elapsed
+        # 5. Respect commitment – don't evaluate until min duration elapsed
         if self._state_timer < STATE_MIN_DURATION:
             return
 
-        # 5. Hysteresis evaluation
+        # 6. Hysteresis evaluation (personality-shifted)
         new_state = self._evaluate_next_state()
         if new_state != self.state:
+            # Log when a social need was overridden by survival pressure
+            if self.state == State.SOCIALIZE and new_state != State.SOCIALIZE:
+                pass  # already handled – transitioning away naturally
+            if new_state == State.WANDER and self.social <= SOCIAL_ENTER and (
+                self.energy < ENERGY_SOCIAL_SUPPRESS
+                or self.hunger > STATE_EMERGENCY_HUNGER * 0.8
+            ):
+                get_logger().log_event(
+                    "SURVIVAL_DECISION",
+                    f"ignored_social_due_to_low_energy | energy={self.energy:.1f} hunger={self.hunger:.1f}",
+                    self.label,
+                )
             self._force_transition(new_state, world, "normal")
 
     def _evaluate_next_state(self) -> State:
         """
-        Hysteresis-based state selection.
-        Sticky exits prevent the creature from leaving a state too quickly.
+        Hysteresis-based state selection with personality-shifted thresholds
+        and energy-aware social suppression.
         """
-        # Sticky exits: keep current state until recovery thresholds are met
+        # ----- Personality-adjusted thresholds -----
+        # Lazier creatures enter REST sooner (higher effective threshold)
+        rest_enter  = ENERGY_REST_ENTER  + self.laziness * 15
+        # More socially dependent creatures enter SOCIALIZE at a lower social value
+        social_enter = SOCIAL_ENTER - self.social_dependency * 10
+
+        # ----- Sticky exits -----
         if self.state == State.SEEK_FOOD and self.hunger >= HUNGER_SEEK_EXIT:
             return State.SEEK_FOOD
-        if self.state == State.REST and self.energy <= ENERGY_REST_EXIT:
-            return State.REST
+
+        # REST: hold until reaching the recovery target (adjusted by laziness)
+        if self.state == State.REST:
+            recovery_target = REST_ENERGY_TARGET - (1.0 - self.laziness) * 15
+            if self.energy < recovery_target:
+                return State.REST
+
         if self.state == State.SOCIALIZE and self.social <= SOCIAL_EXIT:
             return State.SOCIALIZE
 
-        # Priority enter thresholds (evaluated top-down)
+        # ----- Priority enter thresholds -----
         if self.hunger >= HUNGER_SEEK_ENTER:
             return State.SEEK_FOOD
-        if self.energy <= ENERGY_REST_ENTER:
+
+        if self.energy <= rest_enter:
             return State.REST
-        if self.social <= SOCIAL_ENTER:
+
+        # Social suppression: ignore socialising when energy or food situation is bad
+        social_suppressed = (
+            self.energy < ENERGY_SOCIAL_SUPPRESS
+            or self.hunger > STATE_EMERGENCY_HUNGER * 0.8
+        )
+        if not social_suppressed and self.social <= social_enter:
             return State.SOCIALIZE
+
         return State.WANDER
 
     def _force_transition(
@@ -270,6 +321,23 @@ class Creature:
             f"{old_state.name} ({duration:.1f}s) -> {new_state.name} [{reason}]",
             self.label,
         )
+
+        # Extra survival log events on notable transitions
+        if new_state == State.REST:
+            if reason == "emergency_rest":
+                rest_detail = f"emergency_rest | energy={self.energy:.1f}"
+            elif self.energy <= ENERGY_REST_ENTER + self.laziness * 15:
+                rest_detail = f"low_energy | energy={self.energy:.1f} laziness={self.laziness:.2f}"
+            else:
+                rest_detail = f"lazy_rest | energy={self.energy:.1f} laziness={self.laziness:.2f}"
+            get_logger().log_event("REST_REASON", rest_detail, self.label)
+
+        if new_state == State.SOCIALIZE and self.energy < ENERGY_SOCIAL_SUPPRESS:
+            get_logger().log_event(
+                "SURVIVAL_DECISION",
+                f"socialising despite low energy={self.energy:.1f} social_dep={self.social_dependency:.2f}",
+                self.label,
+            )
 
         self.state        = new_state
         self._state_timer = 0.0
@@ -392,7 +460,10 @@ class Creature:
     # ------------------------------------------------------------------
 
     def _steer_arrive(self, target_pos: pygame.Vector2) -> None:
-        """Arrive steering: slows down near target. Urgency increases when hungry."""
+        """
+        Arrive steering: slows down near target.
+        At critical energy levels acceleration and speed are heavily reduced.
+        """
         to_target = target_pos - self.pos
         dist      = to_target.length()
         if dist < 0.1:
@@ -401,12 +472,26 @@ class Creature:
         energy_factor   = 0.5 + 0.5 * (self.energy / 100)
         effective_speed = self._speed * energy_factor
 
-        if self.state == State.SEEK_FOOD:
-            effective_speed *= 1.4
-            lerp = CREATURE_ACCEL_FACTOR * 1.8
+        if self.energy < ENERGY_MINIMAL_MOVE:
+            # Near-death crawl: tiny acceleration, minimal speed
+            effective_speed *= 0.15
+            lerp = CREATURE_ACCEL_FACTOR * 0.2
+        elif self.state == State.SEEK_FOOD:
+            # Risk-tolerant creatures push harder when hungry
+            speed_boost = 1.2 + self.risk_tolerance * 0.4
+            effective_speed *= speed_boost
+            lerp = CREATURE_ACCEL_FACTOR * (1.4 + self.risk_tolerance * 0.6)
         elif self.state == State.DYING:
             effective_speed *= 0.4
             lerp = CREATURE_ACCEL_FACTOR * 0.5
+        elif self.energy < ENERGY_SURVIVAL_ONLY:
+            # Low-energy: softer corrections, conserve momentum
+            effective_speed *= 0.6
+            lerp = CREATURE_ACCEL_FACTOR * 0.5
+        elif self.energy < ENERGY_SOCIAL_SUPPRESS:
+            # Reduced efficiency at moderate-low energy
+            effective_speed *= 0.8
+            lerp = CREATURE_ACCEL_FACTOR * 0.75
         else:
             lerp = CREATURE_ACCEL_FACTOR
 
@@ -524,12 +609,37 @@ class Creature:
 
     def _get_food_target(self, world: "World"):
         """
-        Radius-based food lookup. Updates the food memory on every hit.
-        Hungry creatures scan farther.
+        Radius-based food lookup. Updates food memory on every hit.
+
+        Priority order:
+          1. Critically low energy → prefer food within FOOD_SAFE_SEEK_RADIUS
+             (unless risk_tolerant creature finds nothing safe)
+          2. Hungry → expanded perception radius boosted by food_greed personality
+          3. Normal → standard radius
         """
-        radius = (FOOD_DETECTION_RADIUS_HUNGRY
-                  if self.hunger >= FOOD_HUNGER_SCAN_BOOST
-                  else FOOD_DETECTION_RADIUS)
+        # --- Critically low energy: try the safe short radius first ---
+        if self.energy < ENERGY_SURVIVAL_ONLY:
+            food = world.get_nearest_food_in_radius(self.pos, FOOD_SAFE_SEEK_RADIUS)
+            if food is not None:
+                self._last_seen_food_pos = food.pos.copy()
+                self._food_memory_timer  = 0.0
+                return food
+            # No nearby food – risk-tolerant creatures still try the full radius
+            if self.risk_tolerance < 0.5:
+                return None  # cautious: don't risk the long trip
+            get_logger().log_event(
+                "SURVIVAL_DECISION",
+                f"risky_food_search | energy={self.energy:.1f} risk={self.risk_tolerance:.2f}",
+                self.label,
+            )
+
+        # --- Normal / hungry scan – food_greed widens hungry perception ---
+        if self.hunger >= FOOD_HUNGER_SCAN_BOOST:
+            greed_boost = 1.0 + self.food_greed * 0.5  # up to 1.5×
+            radius = FOOD_DETECTION_RADIUS_HUNGRY * greed_boost
+        else:
+            radius = FOOD_DETECTION_RADIUS
+
         food = world.get_nearest_food_in_radius(self.pos, radius)
         if food is not None:
             self._last_seen_food_pos = food.pos.copy()
@@ -614,10 +724,17 @@ class Creature:
 
         energy_factor = 0.5 + 0.5 * (self.energy / 100)
         max_speed     = self._speed * energy_factor
-        if self.state == State.SEEK_FOOD:
-            max_speed *= 1.4
+
+        if self.energy < ENERGY_MINIMAL_MOVE:
+            max_speed = self._speed * 0.12          # near-death crawl
+        elif self.state == State.SEEK_FOOD:
+            max_speed *= 1.2 + self.risk_tolerance * 0.4
         elif self.state == State.DYING:
             max_speed *= 0.3
+        elif self.energy < ENERGY_SURVIVAL_ONLY:
+            max_speed *= 0.55                       # conserve energy while moving
+        elif self.energy < ENERGY_SOCIAL_SUPPRESS:
+            max_speed *= 0.75
 
         if self.vel.length() > max_speed:
             self.vel = self.vel.normalize() * max_speed

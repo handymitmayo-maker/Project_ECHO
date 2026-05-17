@@ -142,6 +142,28 @@ REL_MIN              = -20.0
 REL_FRIEND_THRESHOLD = 15.0         # affinity >= this = friend
 REL_FRIEND_PULL      = 0.12         # wander angle pull strength toward nearest friend
 
+# --- Survival / Personality ---------------------------------------------------
+PERS_RISK_TOLERANCE_MIN    = 0.2   # willingness to seek food at low energy
+PERS_RISK_TOLERANCE_MAX    = 0.8
+PERS_LAZINESS_MIN          = 0.2   # rest entry bias – higher = rests sooner / longer
+PERS_LAZINESS_MAX          = 0.8
+PERS_SOCIAL_DEPENDENCY_MIN = 0.2   # social entry bias – higher = socialises more readily
+PERS_SOCIAL_DEPENDENCY_MAX = 0.8
+PERS_FOOD_GREED_MIN        = 0.2   # perception radius boost when hungry
+PERS_FOOD_GREED_MAX        = 0.8
+
+# Energy Priority Scaling
+ENERGY_SOCIAL_SUPPRESS     = 35    # below this, SOCIALIZE is suppressed
+ENERGY_SURVIVAL_ONLY       = 20    # below this, only REST or nearby SEEK_FOOD allowed
+ENERGY_MINIMAL_MOVE        = 10    # below this, movement is near-zero
+
+# Smart REST
+REST_ENERGY_TARGET         = 65    # creature tries to recover to this before leaving REST
+REST_MIN_SOCIAL_OVERRIDE   = 0.3   # social_dependency must exceed this to exit REST for social
+
+# Safe food-seeking distance (used when energy is critically low)
+FOOD_SAFE_SEEK_RADIUS      = 220   # preferred max dist when energy < ENERGY_SURVIVAL_ONLY
+
 # --- Debug --------------------------------------------------------------------
 DEBUG_MODE            = False       # show extra info when True
 DEBUG_SHOW_PERCEPTION = False       # draw food-perception radius on SEEK_FOOD creatures
