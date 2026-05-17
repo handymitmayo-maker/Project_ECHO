@@ -165,6 +165,18 @@ REST_MIN_SOCIAL_OVERRIDE   = 0.3   # social_dependency must exceed this to exit 
 # Safe food-seeking distance (used when energy is critically low)
 FOOD_SAFE_SEEK_RADIUS      = 220   # preferred max dist when energy < ENERGY_SURVIVAL_ONLY
 
+# Food Claim System
+FOOD_CLAIM_TTL             = 4.0   # seconds before an uncollected claim auto-expires
+FOOD_CLAIM_OVERRIDE_FACTOR = 0.55  # creature may contest if it is ≤ this fraction of claimer distance
+
+# Logger anti-spam
+SURVIVAL_LOG_COOLDOWN      = 6.0   # min seconds between SURVIVAL_DECISION logs per creature
+
+# --- Background / Tiles -------------------------------------------------------
+GRASS_TILE_PATH  = "grass.png"   # path to the grass tile (relative to working dir)
+GRASS_TILE_DARK  = 30            # 0–255 darkness overlay on the tiled background
+                                 # 0 = no darkening, 255 = fully black
+
 # --- Debug --------------------------------------------------------------------
 DEBUG_MODE            = True        # show extra info when True
 DEBUG_SHOW_PERCEPTION = True        # draw food-perception radius on SEEK_FOOD creatures

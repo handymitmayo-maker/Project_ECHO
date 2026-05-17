@@ -28,6 +28,8 @@ from settings import (
     IDLE_CHANCE, IDLE_DURATION_MIN, IDLE_DURATION_MAX,
     FOOD_DETECTION_RADIUS, FOOD_DETECTION_RADIUS_HUNGRY, FOOD_HUNGER_SCAN_BOOST,
     FOOD_MEMORY_DURATION, FOOD_SAFE_SEEK_RADIUS,
+    FOOD_CLAIM_OVERRIDE_FACTOR,
+    SURVIVAL_LOG_COOLDOWN,
     DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
     DEATH_CRITICAL_TIME, CORPSE_DURATION,
     REL_SOCIAL_GAIN, REL_PASSIVE_GAIN, REL_COMPETITION_LOSS,
@@ -162,6 +164,9 @@ class Creature:
         # Friendship milestones already logged (avoid duplicate events)
         self._logged_friends     : set   = set()
 
+        # Anti-spam: SURVIVAL_DECISION log cooldown
+        self._survival_log_timer : float = 0.0
+
         # --- Extension placeholders ---
         self.memory        : list = []
         self.dna           : dict = {}
@@ -175,6 +180,8 @@ class Creature:
         """Main update tick – only called while self.alive is True."""
         self._lifespan    += dt
         self._state_timer += dt
+        if self._survival_log_timer > 0:
+            self._survival_log_timer = max(0.0, self._survival_log_timer - dt)
         self._decay_stats(dt)
 
         # Decay food memory over time
@@ -245,9 +252,7 @@ class Creature:
         if self.energy < ENERGY_SURVIVAL_ONLY and self.state not in (
             State.REST, State.SEEK_FOOD
         ):
-            get_logger().log_event(
-                "SURVIVAL_DECISION", "emergency_rest – energy critical", self.label
-            )
+            self._log_survival(f"emergency_rest | energy={self.energy:.1f}")
             self._force_transition(State.REST, world, "emergency_rest")
             return
 
@@ -270,10 +275,8 @@ class Creature:
                 self.energy < ENERGY_SOCIAL_SUPPRESS
                 or self.hunger > STATE_EMERGENCY_HUNGER * 0.8
             ):
-                get_logger().log_event(
-                    "SURVIVAL_DECISION",
-                    f"ignored_social_due_to_low_energy | energy={self.energy:.1f} hunger={self.hunger:.1f}",
-                    self.label,
+                self._log_survival(
+                    f"ignored_social | energy={self.energy:.1f} hunger={self.hunger:.1f}"
                 )
             self._force_transition(new_state, world, "normal")
 
@@ -328,6 +331,10 @@ class Creature:
         old_state = self.state
         duration  = self._state_timer
 
+        # Release food claim when leaving SEEK_FOOD without eating
+        if old_state == State.SEEK_FOOD and self.target is not None:
+            self._release_claim(self.target)
+
         target_dist = (
             f"  tgt={int(self.pos.distance_to(self.target.pos))}px"
             if self.target is not None and hasattr(self.target, "pos")
@@ -355,10 +362,9 @@ class Creature:
             get_logger().log_event("REST_REASON", rest_detail, self.label)
 
         if new_state == State.SOCIALIZE and self.energy < ENERGY_SOCIAL_SUPPRESS:
-            get_logger().log_event(
-                "SURVIVAL_DECISION",
-                f"socialising despite low energy={self.energy:.1f} social_dep={self.social_dependency:.2f}",
-                self.label,
+            self._log_survival(
+                f"socialising_low_energy | energy={self.energy:.1f}"
+                f" social_dep={self.social_dependency:.2f}"
             )
 
         self.state        = new_state
@@ -417,6 +423,9 @@ class Creature:
             self.label,
         )
         get_logger().log_lifetime_summary(self)
+        # Release any held food claim so others can take it
+        if self.target is not None:
+            self._release_claim(self.target)
         self.alive        = False
         self.is_corpse    = True
         self._death_timer = 0.0   # reset – now used for corpse fade
@@ -429,6 +438,7 @@ class Creature:
         """Translate current state into movement and interaction."""
         if self.state == State.SEEK_FOOD:
             if self.target is not None and self.target.alive:
+                self._claim(self.target)          # refresh TTL while chasing
                 self._steer_arrive(self.target.pos)
                 if self.pos.distance_to(self.target.pos) < CREATURE_RADIUS + self.target.radius:
                     self._eat(self.target, world)
@@ -643,28 +653,25 @@ class Creature:
 
     def _get_food_target(self, world: "World"):
         """
-        Radius-based food lookup. Updates food memory on every hit.
+        Claim-aware food lookup. Uses get_best_food_target for claim coordination.
 
         Priority order:
-          1. Critically low energy → prefer food within FOOD_SAFE_SEEK_RADIUS
-             (unless risk_tolerant creature finds nothing safe)
-          2. Hungry → expanded perception radius boosted by food_greed personality
-          3. Normal → standard radius
+          1. Critically low energy → safe radius, claim result; cautious creatures
+             refuse long trips if nothing found nearby
+          2. Hungry → expanded radius boosted by food_greed personality
+          3. Normal → standard detection radius
         """
         # --- Critically low energy: try the safe short radius first ---
         if self.energy < ENERGY_SURVIVAL_ONLY:
-            food = world.get_nearest_food_in_radius(self.pos, FOOD_SAFE_SEEK_RADIUS)
+            food = world.get_best_food_target(self.pos, FOOD_SAFE_SEEK_RADIUS, self)
             if food is not None:
-                self._last_seen_food_pos = food.pos.copy()
-                self._food_memory_timer  = 0.0
+                self._claim(food)
                 return food
-            # No nearby food – risk-tolerant creatures still try the full radius
+            # No nearby food – cautious creatures refuse the risky long trip
             if self.risk_tolerance < 0.5:
-                return None  # cautious: don't risk the long trip
-            get_logger().log_event(
-                "SURVIVAL_DECISION",
-                f"risky_food_search | energy={self.energy:.1f} risk={self.risk_tolerance:.2f}",
-                self.label,
+                return None
+            self._log_survival(
+                f"risky_food_search | energy={self.energy:.1f} risk={self.risk_tolerance:.2f}"
             )
 
         # --- Normal / hungry scan – food_greed widens hungry perception ---
@@ -674,11 +681,62 @@ class Creature:
         else:
             radius = FOOD_DETECTION_RADIUS
 
-        food = world.get_nearest_food_in_radius(self.pos, radius)
+        food = world.get_best_food_target(self.pos, radius, self)
         if food is not None:
-            self._last_seen_food_pos = food.pos.copy()
-            self._food_memory_timer  = 0.0
+            self._claim(food)
         return food
+
+    def _log_survival(self, message: str) -> None:
+        """Rate-limited SURVIVAL_DECISION log (max once per SURVIVAL_LOG_COOLDOWN seconds)."""
+        if self._survival_log_timer <= 0:
+            get_logger().log_event("SURVIVAL_DECISION", message, self.label)
+            self._survival_log_timer = SURVIVAL_LOG_COOLDOWN
+
+    def _claim(self, food: "Food") -> None:
+        """
+        Soft-claim a food item for this creature.
+        Resets the TTL timer; logs FOOD_CLAIM or FOOD_CONTEST.
+        Also fires TARGET_SWITCH if this creature was already heading elsewhere.
+        """
+        if food.claimed_by == self.id:
+            food._claim_timer = 0.0   # refresh TTL while still targeting
+            return
+
+        was_contested = food.claimed_by is not None
+
+        # Log TARGET_SWITCH when already mid-seek toward a different food
+        if (self.state == State.SEEK_FOOD
+                and self.target is not None
+                and self.target is not food
+                and hasattr(self.target, "pos")):
+            get_logger().log_event(
+                "TARGET_SWITCH",
+                f"({int(self.target.pos.x)},{int(self.target.pos.y)})"
+                f" -> ({int(food.pos.x)},{int(food.pos.y)})",
+                self.label,
+            )
+
+        food.claimed_by   = self.id
+        food._claim_timer = 0.0
+        self._last_seen_food_pos = food.pos.copy()
+        self._food_memory_timer  = 0.0
+
+        get_logger().log_event(
+            "FOOD_CONTEST" if was_contested else "FOOD_CLAIM",
+            f"food at ({int(food.pos.x)},{int(food.pos.y)})",
+            self.label,
+        )
+
+    def _release_claim(self, food: "Food") -> None:
+        """Release this creature's claim on a food item."""
+        if hasattr(food, "claimed_by") and food.claimed_by == self.id:
+            food.claimed_by   = None
+            food._claim_timer = 0.0
+            get_logger().log_event(
+                "FOOD_CLAIM_RELEASE",
+                f"food at ({int(food.pos.x)},{int(food.pos.y)})",
+                self.label,
+            )
 
     def _steer_search_wander(self, dt: float) -> None:
         """

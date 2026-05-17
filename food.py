@@ -6,6 +6,7 @@
 import pygame
 from settings import (
     FOOD_NUTRITION, FOOD_RADIUS,
+    FOOD_CLAIM_TTL,
     COLOR_FOOD, COLOR_BAR_BG,
 )
 
@@ -19,13 +20,23 @@ class Food:
         self.radius    = FOOD_RADIUS
         self.alive     = True           # set False when eaten; World removes it
 
+        # Claim system – soft reservation by a targeting creature
+        self.claimed_by   = None        # uuid.UUID of claiming creature, or None
+        self._claim_timer : float = 0.0 # seconds since claimed; resets when claim refreshed
+
         # Pulse animation state
         self._pulse_t  = 0.0
 
     # ------------------------------------------------------------------
     def update(self, dt: float) -> None:
-        """Animate the food (gentle pulse)."""
+        """Animate the food and tick claim TTL."""
         self._pulse_t += dt * 2.5
+
+        if self.claimed_by is not None:
+            self._claim_timer += dt
+            if self._claim_timer >= FOOD_CLAIM_TTL:
+                self.claimed_by   = None
+                self._claim_timer = 0.0
 
     # ------------------------------------------------------------------
     def draw(self, surface: pygame.Surface) -> None:

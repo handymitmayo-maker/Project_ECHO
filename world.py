@@ -12,16 +12,21 @@ from dataclasses import dataclass
 
 import pygame
 
+import os
+
 from settings import (
     WORLD_WIDTH, WORLD_HEIGHT,
     CREATURE_COUNT,
     FOOD_INITIAL_COUNT, FOOD_SPAWN_INTERVAL, FOOD_SPAWN_BATCH, FOOD_MAX_COUNT,
+    FOOD_CLAIM_OVERRIDE_FACTOR,
     BIOME_COUNT, BIOME_RADIUS_MIN, BIOME_RADIUS_MAX,
     BIOME_FERTILE_COUNT, BIOME_BARREN_COUNT,
     BIOME_FERTILE_RATE, BIOME_NEUTRAL_RATE, BIOME_BARREN_RATE,
     BIOME_CLUSTER_STD, DEBUG_SHOW_BIOMES,
     COLOR_BIOME_FERTILE, COLOR_BIOME_NEUTRAL, COLOR_BIOME_BARREN,
     COLOR_BG, SCANLINE_ALPHA, STATS_INTERVAL,
+    STATE_EMERGENCY_HUNGER,
+    GRASS_TILE_PATH, GRASS_TILE_DARK,
 )
 from creature import Creature
 from food import Food
@@ -76,7 +81,8 @@ class World:
         self._food_timer  = 0.0
         self._stats_timer = 0.0
 
-        # Scanline + biome overlay surfaces (built once, reused)
+        # Pre-rendered surfaces (built once, reused every frame)
+        self._bg_surf       : pygame.Surface | None = self._build_background()
         self._scanline_surf : pygame.Surface | None = None
         self._biome_surf    : pygame.Surface | None = None
 
@@ -183,8 +189,13 @@ class World:
 
     def draw(self, surface: pygame.Surface) -> None:
         """Render the entire world to surface."""
-        surface.fill(COLOR_BG)
+        # 1. Tiled grass background (or solid fallback)
+        if self._bg_surf is not None:
+            surface.blit(self._bg_surf, (0, 0))
+        else:
+            surface.fill(COLOR_BG)
 
+        # 2. Biome debug overlay
         if DEBUG_SHOW_BIOMES:
             self._draw_biomes(surface)
 
@@ -230,6 +241,87 @@ class World:
             if d <= r2 and d < best_dist:
                 best_dist = d
                 best      = food
+        return best
+
+    def get_best_food_target(
+        self,
+        pos      : pygame.Vector2,
+        radius   : float,
+        creature : "Creature",
+    ) -> "Food | None":
+        """
+        Return the best food item for this creature within radius, applying
+        the claim system.
+
+        Selection priority (per candidate food):
+          1. Unclaimed              → always eligible
+          2. Claimed by dead/non-SEEK creature → treat as free
+          3. Emergency override     → hunger >= STATE_EMERGENCY_HUNGER allows
+                                      contesting any claim (logs EMERGENCY_OVERRIDE)
+          4. Claimer distance check → eligible only when this creature is at most
+                                      FOOD_CLAIM_OVERRIDE_FACTOR × claimer's distance
+          5. Skip                   → all other claimed food is ignored
+
+        Among eligible candidates the nearest (lowest distance²) wins.
+        Logs TARGET_SWITCH when this creature is already heading somewhere else.
+        """
+        from creature import State  # local import avoids circular import at module level
+
+        r2           = radius * radius
+        best         = None
+        best_dist2   = float("inf")
+        best_contest = False   # was best found via contest/override?
+
+        for food in self.foods:
+            d2 = pos.distance_squared_to(food.pos)
+            if d2 > r2 or d2 >= best_dist2:
+                continue
+
+            # --- Claim evaluation ---
+            if food.claimed_by is None or food.claimed_by == creature.id:
+                # Free or already ours
+                best        = food
+                best_dist2  = d2
+                best_contest = False
+                continue
+
+            # Claimed by someone else – find the claimer
+            claimer = None
+            for c in self.creatures:
+                if c.id == food.claimed_by:
+                    claimer = c
+                    break
+
+            # If claimer is dead / not actively seeking this food → treat as free
+            if claimer is None or not claimer.alive or claimer.state != State.SEEK_FOOD:
+                best        = food
+                best_dist2  = d2
+                best_contest = False
+                continue
+
+            # Emergency hunger: override any claim
+            if creature.hunger >= STATE_EMERGENCY_HUNGER:
+                best        = food
+                best_dist2  = d2
+                best_contest = True
+                continue
+
+            # Distance contest: eligible only if significantly closer than claimer
+            claimer_dist2 = claimer.pos.distance_squared_to(food.pos)
+            if d2 <= claimer_dist2 * (FOOD_CLAIM_OVERRIDE_FACTOR ** 2):
+                best        = food
+                best_dist2  = d2
+                best_contest = True
+
+        if best is not None and best_contest and creature.hunger >= STATE_EMERGENCY_HUNGER:
+            from logger import get_logger
+            get_logger().log_event(
+                "EMERGENCY_OVERRIDE",
+                f"contesting food at ({int(best.pos.x)},{int(best.pos.y)})"
+                f"  hunger={creature.hunger:.0f}",
+                creature.label,
+            )
+
         return best
 
     def get_nearby_creatures(
@@ -287,6 +379,34 @@ class World:
     # ------------------------------------------------------------------
     # Visual effects
     # ------------------------------------------------------------------
+
+    def _build_background(self) -> "pygame.Surface | None":
+        """
+        Tile grass.png across the entire world and bake it into a single surface.
+        The result is blitted every frame with a single call.
+        Falls back to None (solid COLOR_BG) if the file is missing or unreadable.
+        """
+        if not os.path.isfile(GRASS_TILE_PATH):
+            return None
+        try:
+            tile = pygame.image.load(GRASS_TILE_PATH).convert()
+        except Exception:
+            return None
+
+        tw, th = tile.get_size()
+        bg     = pygame.Surface((WORLD_WIDTH, WORLD_HEIGHT))
+
+        for ty in range(0, WORLD_HEIGHT, th):
+            for tx in range(0, WORLD_WIDTH, tw):
+                bg.blit(tile, (tx, ty))
+
+        # Optional: subtle darkening overlay for atmosphere
+        if GRASS_TILE_DARK > 0:
+            dark = pygame.Surface((WORLD_WIDTH, WORLD_HEIGHT), pygame.SRCALPHA)
+            dark.fill((0, 0, 0, GRASS_TILE_DARK))
+            bg.blit(dark, (0, 0))
+
+        return bg
 
     def _draw_biomes(self, surface: pygame.Surface) -> None:
         """Draw semi-transparent biome circles (debug overlay, built once)."""

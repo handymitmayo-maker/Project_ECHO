@@ -1,0 +1,1329 @@
+==============================================================
+  PROJECT ECHO  –  Session 2026-05-17 14:25:39
+==============================================================
+  File              : logs\echo_2026-05-17_14-25-39.log
+--------------------------------------------------------------
+  Initial population: 12
+  Biomes            : 5  →  fertile(3.0x)  fertile(3.0x)  barren(0.2x)  neutral(1.0x)  neutral(1.0x)
+  Initial food      : 20  (cap 60, spawn 3 / 3.0s)
+--------------------------------------------------------------
+  Hunger decay      : 4.0/s
+  Energy wander/seek: 1.2/2.8 /s
+  Energy rest rate  : 18.0/s
+  Target FPS        : 60
+==============================================================
+
+[14:25:41.507] [STATE_CHANGE        ] ECHO-03  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=62 e=58 s=82
+[14:25:41.508] [STATE_CHANGE        ] ECHO-04  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=67 e=50 s=79
+[14:25:41.508] [STATE_CHANGE        ] ECHO-09  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=57 e=94 s=57
+[14:25:43.999] [IDLE_ENTER          ] ECHO-01  | pausing for 3.4s
+[14:25:43.999] [IDLE_ENTER          ] ECHO-07  | pausing for 2.7s
+[14:25:43.999] [IDLE_ENTER          ] ECHO-08  | pausing for 3.9s
+[14:25:43.999] [IDLE_ENTER          ] ECHO-11  | pausing for 3.6s
+[14:25:44.015] [STATE_CHANGE        ] ECHO-10  | WANDER (4.5s) -> SEEK_FOOD  [normal]  h=55 e=59 s=64
+[14:25:44.502] [STATS               ]          | pop=12  avg_hunger= 54.6  avg_energy= 64.6  hungry=4  social_events=0
+[14:25:45.324] [FOOD_FOUND          ] ECHO-09  | ate at (981, 300)  total=1
+[14:25:45.359] [STATE_CHANGE        ] ECHO-05  | WANDER (5.9s) -> SEEK_FOOD  [normal]  h=55 e=62 s=39
+[14:25:45.676] [STATE_CHANGE        ] ECHO-12  | WANDER (6.2s) -> SEEK_FOOD  [normal]  h=55 e=76 s=75
+[14:25:45.692] [STATE_CHANGE        ] ECHO-01  | WANDER (6.2s) -> SEEK_FOOD  [normal]  h=55 e=48 s=50
+[14:25:46.193] [STATE_CHANGE        ] ECHO-11  | WANDER (6.7s) -> SEEK_FOOD  [normal]  h=55 e=82 s=61
+[14:25:46.393] [STATE_CHANGE        ] ECHO-06  | WANDER (6.9s) -> SEEK_FOOD  [normal]  h=55 e=49 s=68
+[14:25:46.907] [STATE_CHANGE        ] ECHO-07  | WANDER (7.4s) -> SEEK_FOOD  [normal]  h=55 e=82 s=65
+[14:25:47.324] [FOOD_FOUND          ] ECHO-03  | ate at (884, 436)  total=1
+[14:25:47.735] [FOOD_FOUND          ] ECHO-05  | ate at (1070, 170)  total=1
+[14:25:47.751] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (2.4s) -> WANDER  [normal]  h=30 e=55 s=35
+[14:25:47.947] [STATE_CHANGE        ] ECHO-08  | WANDER (8.5s) -> SEEK_FOOD  [normal]  h=55 e=77 s=75
+[14:25:47.982] [STATE_CHANGE        ] ECHO-02  | WANDER (8.5s) -> SEEK_FOOD  [normal]  h=55 e=46 s=70
+[14:25:48.414] [FOOD_FOUND          ] ECHO-09  | ate at (949, 325)  total=2
+[14:25:48.429] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (6.9s) -> WANDER  [normal]  h=15 e=75 s=46
+[14:25:49.510] [STATS               ]          | pop=12  avg_hunger= 62.9  avg_energy= 53.1  hungry=10  social_events=0
+[14:25:50.508] [FOOD_FOUND          ] ECHO-01  | ate at (623, 98)  total=1
+[14:25:50.623] [FOOD_FOUND          ] ECHO-10  | ate at (547, 189)  total=1
+[14:25:50.791] [FOOD_FOUND          ] ECHO-03  | ate at (901, 399)  total=2
+[14:25:50.807] [STATE_CHANGE        ] ECHO-03  | SEEK_FOOD (9.3s) -> WANDER  [normal]  h=29 e=32 s=68
+[14:25:50.961] [FOOD_FOUND          ] ECHO-11  | ate at (594, 152)  total=1
+[14:25:50.961] [RIVALRY             ] ECHO-11  | with ECHO-01  | affinity=  -2.7 (Δ-3.0)
+[14:25:51.378] [FOOD_FOUND          ] ECHO-08  | ate at (998, 522)  total=1
+[14:25:51.394] [STATE_CHANGE        ] ECHO-08  | SEEK_FOOD (3.4s) -> WANDER  [normal]  h=34 e=67 s=70
+[14:25:51.826] [FOOD_FOUND          ] ECHO-02  | ate at (1208, 619)  total=1
+[14:25:52.176] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=20.0 risk=0.73
+[14:25:52.193] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.9 risk=0.73
+[14:25:52.210] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.9 risk=0.73
+[14:25:52.226] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.8 risk=0.73
+[14:25:52.243] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.8 risk=0.73
+[14:25:52.259] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.7 risk=0.73
+[14:25:52.276] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.7 risk=0.73
+[14:25:52.293] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.6 risk=0.73
+[14:25:52.309] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.6 risk=0.73
+[14:25:52.326] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.5 risk=0.73
+[14:25:52.342] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.5 risk=0.73
+[14:25:52.358] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.4 risk=0.73
+[14:25:52.374] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.4 risk=0.73
+[14:25:52.391] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.4 risk=0.73
+[14:25:52.408] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.3 risk=0.73
+[14:25:52.425] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.3 risk=0.73
+[14:25:52.441] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.2 risk=0.73
+[14:25:52.458] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.2 risk=0.73
+[14:25:52.475] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.1 risk=0.73
+[14:25:52.491] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.1 risk=0.73
+[14:25:52.509] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.0 risk=0.73
+[14:25:52.525] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=19.0 risk=0.73
+[14:25:52.542] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.9 risk=0.73
+[14:25:52.560] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.9 risk=0.73
+[14:25:52.576] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.8 risk=0.73
+[14:25:52.592] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.8 risk=0.73
+[14:25:52.609] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.7 risk=0.73
+[14:25:52.626] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.7 risk=0.73
+[14:25:52.642] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.7 risk=0.73
+[14:25:52.659] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.6 risk=0.73
+[14:25:52.676] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.6 risk=0.73
+[14:25:52.693] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.5 risk=0.73
+[14:25:52.709] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.5 risk=0.73
+[14:25:52.726] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.4 risk=0.73
+[14:25:52.744] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.4 risk=0.73
+[14:25:52.760] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.3 risk=0.73
+[14:25:52.777] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.3 risk=0.73
+[14:25:52.794] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.2 risk=0.73
+[14:25:52.809] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.2 risk=0.73
+[14:25:52.825] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.1 risk=0.73
+[14:25:52.841] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.1 risk=0.73
+[14:25:52.858] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.0 risk=0.73
+[14:25:52.874] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.0 risk=0.73
+[14:25:52.891] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=18.0 risk=0.73
+[14:25:52.908] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.9 risk=0.73
+[14:25:52.924] [STATE_CHANGE        ] ECHO-03  | WANDER (2.1s) -> REST  [normal]  h=38 e=29 s=65
+[14:25:52.925] [REST_REASON         ] ECHO-03  | low_energy | energy=29.2 laziness=0.28
+[14:25:52.925] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.9 risk=0.73
+[14:25:52.940] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.8 risk=0.73
+[14:25:52.957] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.8 risk=0.73
+[14:25:52.973] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.7 risk=0.73
+[14:25:52.999] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.7 risk=0.73
+[14:25:53.015] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.6 risk=0.73
+[14:25:53.042] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.5 risk=0.73
+[14:25:53.060] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.5 risk=0.73
+[14:25:53.078] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.4 risk=0.73
+[14:25:53.094] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.4 risk=0.73
+[14:25:53.110] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.3 risk=0.73
+[14:25:53.127] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.3 risk=0.73
+[14:25:53.143] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.2 risk=0.73
+[14:25:53.160] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.2 risk=0.73
+[14:25:53.177] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.2 risk=0.73
+[14:25:53.195] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.1 risk=0.73
+[14:25:53.212] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.1 risk=0.73
+[14:25:53.229] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.0 risk=0.73
+[14:25:53.246] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=17.0 risk=0.73
+[14:25:53.247] [FOOD_FOUND          ] ECHO-10  | ate at (521, 182)  total=2
+[14:25:53.247] [RIVALRY             ] ECHO-10  | with ECHO-07  | affinity=  -2.9 (Δ-3.0)
+[14:25:53.263] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.9 risk=0.73
+[14:25:53.264] [STATE_CHANGE        ] ECHO-10  | SEEK_FOOD (9.2s) -> WANDER  [normal]  h=22 e=33 s=50
+[14:25:53.282] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.9 risk=0.73
+[14:25:53.301] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.8 risk=0.73
+[14:25:53.315] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.8 risk=0.73
+[14:25:53.331] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.7 risk=0.73
+[14:25:53.351] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.7 risk=0.73
+[14:25:53.396] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.5 risk=0.73
+[14:25:53.427] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.5 risk=0.73
+[14:25:53.436] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.4 risk=0.73
+[14:25:53.452] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.4 risk=0.73
+[14:25:53.511] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.2 risk=0.73
+[14:25:53.542] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.2 risk=0.73
+[14:25:53.560] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.1 risk=0.73
+[14:25:53.577] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.1 risk=0.73
+[14:25:53.594] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.0 risk=0.73
+[14:25:53.610] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=16.0 risk=0.73
+[14:25:53.626] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.9 risk=0.73
+[14:25:53.643] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.9 risk=0.73
+[14:25:53.660] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.8 risk=0.73
+[14:25:53.677] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.8 risk=0.73
+[14:25:53.695] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.7 risk=0.73
+[14:25:53.712] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.7 risk=0.73
+[14:25:53.729] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.6 risk=0.73
+[14:25:53.746] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.6 risk=0.73
+[14:25:53.795] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.4 risk=0.73
+[14:25:53.814] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.4 risk=0.73
+[14:25:53.832] [FOOD_FOUND          ] ECHO-11  | ate at (553, 151)  total=2
+[14:25:53.869] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.3 risk=0.73
+[14:25:53.894] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (7.7s) -> WANDER  [normal]  h=16 e=60 s=50
+[14:25:53.919] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.1 risk=0.73
+[14:25:53.953] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=15.0 risk=0.73
+[14:25:54.009] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.9 risk=0.73
+[14:25:54.025] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.8 risk=0.73
+[14:25:54.043] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.8 risk=0.73
+[14:25:54.067] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.7 risk=0.73
+[14:25:54.084] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.7 risk=0.73
+[14:25:54.101] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.6 risk=0.73
+[14:25:54.117] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.6 risk=0.73
+[14:25:54.117] [STATE_CHANGE        ] ECHO-05  | WANDER (6.3s) -> SEEK_FOOD  [normal]  h=55 e=48 s=26
+[14:25:54.134] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.5 risk=0.73
+[14:25:54.151] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.5 risk=0.73
+[14:25:54.168] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.4 risk=0.73
+[14:25:54.185] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.4 risk=0.73
+[14:25:54.202] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.3 risk=0.73
+[14:25:54.218] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.3 risk=0.73
+[14:25:54.235] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.2 risk=0.73
+[14:25:54.251] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.2 risk=0.73
+[14:25:54.267] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.2 risk=0.73
+[14:25:54.284] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.1 risk=0.73
+[14:25:54.301] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.1 risk=0.73
+[14:25:54.317] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.0 risk=0.73
+[14:25:54.333] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=14.0 risk=0.73
+[14:25:54.349] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.9 risk=0.73
+[14:25:54.365] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.9 risk=0.73
+[14:25:54.382] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.8 risk=0.73
+[14:25:54.399] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.8 risk=0.73
+[14:25:54.416] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.7 risk=0.73
+[14:25:54.432] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.7 risk=0.73
+[14:25:54.449] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.6 risk=0.73
+[14:25:54.465] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.6 risk=0.73
+[14:25:54.482] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.6 risk=0.73
+[14:25:54.499] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.5 risk=0.73
+[14:25:54.516] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.5 risk=0.73
+[14:25:54.532] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.4 risk=0.73
+[14:25:54.533] [STATS               ]          | pop=12  avg_hunger= 58.0  avg_energy= 44.1  hungry=6  social_events=0
+[14:25:54.549] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.4 risk=0.73
+[14:25:54.565] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.3 risk=0.73
+[14:25:54.582] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.3 risk=0.73
+[14:25:54.598] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.2 risk=0.73
+[14:25:54.614] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.2 risk=0.73
+[14:25:54.631] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.1 risk=0.73
+[14:25:54.648] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.1 risk=0.73
+[14:25:54.664] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.0 risk=0.73
+[14:25:54.680] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.0 risk=0.73
+[14:25:54.697] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=13.0 risk=0.73
+[14:25:54.714] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.9 risk=0.73
+[14:25:54.731] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.9 risk=0.73
+[14:25:54.748] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.8 risk=0.73
+[14:25:54.765] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.8 risk=0.73
+[14:25:54.781] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.7 risk=0.73
+[14:25:54.798] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.7 risk=0.73
+[14:25:54.815] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.6 risk=0.73
+[14:25:54.831] [FOOD_FOUND          ] ECHO-02  | ate at (1177, 602)  total=2
+[14:25:54.831] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.6 risk=0.73
+[14:25:54.848] [STATE_CHANGE        ] ECHO-02  | SEEK_FOOD (6.8s) -> REST  [normal]  h=12 e=26 s=60
+[14:25:54.849] [REST_REASON         ] ECHO-02  | low_energy | energy=26.4 laziness=0.53
+[14:25:54.850] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.5 risk=0.73
+[14:25:54.866] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.5 risk=0.73
+[14:25:54.883] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.4 risk=0.73
+[14:25:54.900] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.4 risk=0.73
+[14:25:54.917] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.3 risk=0.73
+[14:25:54.933] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.3 risk=0.73
+[14:25:54.950] [STATE_CHANGE        ] ECHO-03  | REST (2.0s) -> WANDER  [normal]  h=46 e=65 s=62
+[14:25:54.950] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.2 risk=0.73
+[14:25:54.967] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.2 risk=0.73
+[14:25:54.984] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.1 risk=0.73
+[14:25:55.002] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.1 risk=0.73
+[14:25:55.019] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.1 risk=0.73
+[14:25:55.036] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.0 risk=0.73
+[14:25:55.052] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=12.0 risk=0.73
+[14:25:55.068] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.9 risk=0.73
+[14:25:55.085] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.9 risk=0.73
+[14:25:55.101] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.8 risk=0.73
+[14:25:55.118] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.8 risk=0.73
+[14:25:55.135] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.7 risk=0.73
+[14:25:55.152] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.7 risk=0.73
+[14:25:55.169] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.6 risk=0.73
+[14:25:55.186] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.6 risk=0.73
+[14:25:55.203] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.5 risk=0.73
+[14:25:55.220] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.5 risk=0.73
+[14:25:55.237] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.4 risk=0.73
+[14:25:55.255] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.4 risk=0.73
+[14:25:55.271] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.3 risk=0.73
+[14:25:55.287] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.3 risk=0.73
+[14:25:55.288] [STATE_CHANGE        ] ECHO-10  | WANDER (2.0s) -> REST  [normal]  h=30 e=31 s=47
+[14:25:55.288] [REST_REASON         ] ECHO-10  | low_energy | energy=30.8 laziness=0.40
+[14:25:55.303] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.3 risk=0.73
+[14:25:55.319] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.2 risk=0.73
+[14:25:55.336] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.2 risk=0.73
+[14:25:55.353] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.1 risk=0.73
+[14:25:55.371] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.1 risk=0.73
+[14:25:55.391] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.0 risk=0.73
+[14:25:55.408] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=11.0 risk=0.73
+[14:25:55.425] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.9 risk=0.73
+[14:25:55.442] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.9 risk=0.73
+[14:25:55.458] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.8 risk=0.73
+[14:25:55.459] [IDLE_ENTER          ] ECHO-09  | pausing for 3.6s
+[14:25:55.474] [FOOD_FOUND          ] ECHO-01  | ate at (545, 127)  total=2
+[14:25:55.474] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.8 risk=0.73
+[14:25:55.490] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (9.8s) -> REST  [normal]  h=24 e=21 s=36
+[14:25:55.491] [REST_REASON         ] ECHO-01  | low_energy | energy=20.8 laziness=0.61
+[14:25:55.491] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.7 risk=0.73
+[14:25:55.507] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.7 risk=0.73
+[14:25:55.524] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.6 risk=0.73
+[14:25:55.541] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.6 risk=0.73
+[14:25:55.559] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.5 risk=0.73
+[14:25:55.576] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.5 risk=0.73
+[14:25:55.591] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.4 risk=0.73
+[14:25:55.608] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.4 risk=0.73
+[14:25:55.624] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.4 risk=0.73
+[14:25:55.625] [FOOD_FOUND          ] ECHO-07  | ate at (514, 169)  total=1
+[14:25:55.641] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.3 risk=0.73
+[14:25:55.657] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.3 risk=0.73
+[14:25:55.658] [FOOD_FOUND          ] ECHO-07  | ate at (515, 169)  total=2
+[14:25:55.674] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.2 risk=0.73
+[14:25:55.674] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (8.7s) -> WANDER  [normal]  h=20 e=58 s=52
+[14:25:55.691] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.2 risk=0.73
+[14:25:55.708] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.1 risk=0.73
+[14:25:55.725] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.1 risk=0.73
+[14:25:55.742] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.0 risk=0.73
+[14:25:55.759] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=10.0 risk=0.73
+[14:25:55.776] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=9.9 risk=0.73
+[14:25:55.792] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=9.9 risk=0.73
+[14:25:55.809] [SURVIVAL_DECISION   ] ECHO-04  | risky_food_search | energy=9.8 risk=0.73
+[14:25:55.825] [DEATH               ] ECHO-04  | cause=starvation | lifespan=16.3s | state=SEEK_FOOD | hunger=100.0 | energy=9.8
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-04
+  Lifespan            : 16.3s
+  Cause of death      : starvation
+  Food eaten          : 0
+  Distance travelled  : 199 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 14.3s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.73  lazy=0.26  social=0.73  greed=0.75
+--------------------------------------------------------------
+[14:25:56.708] [STATE_CHANGE        ] ECHO-08  | WANDER (5.3s) -> SEEK_FOOD  [normal]  h=55 e=61 s=62
+[14:25:56.857] [STATE_CHANGE        ] ECHO-02  | REST (2.0s) -> WANDER  [normal]  h=20 e=63 s=57
+[14:25:57.222] [STATE_CHANGE        ] ECHO-03  | WANDER (2.3s) -> SEEK_FOOD  [normal]  h=55 e=63 s=59
+[14:25:57.302] [STATE_CHANGE        ] ECHO-10  | REST (2.0s) -> WANDER  [normal]  h=38 e=67 s=44
+[14:25:57.620] [STATE_CHANGE        ] ECHO-01  | REST (2.1s) -> WANDER  [normal]  h=33 e=59 s=32
+[14:25:57.836] [FOOD_FOUND          ] ECHO-03  | ate at (947, 379)  total=3
+[14:25:58.050] [FOOD_FOUND          ] ECHO-05  | ate at (932, 264)  total=2
+[14:25:58.249] [FOOD_FOUND          ] ECHO-03  | ate at (948, 381)  total=4
+[14:25:58.501] [STATE_CHANGE        ] ECHO-09  | WANDER (10.1s) -> SEEK_FOOD  [normal]  h=55 e=63 s=31
+[14:25:59.231] [STATE_CHANGE        ] ECHO-03  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=4 e=57 s=56  tgt=14px
+[14:25:59.545] [STATS               ]          | pop=11  avg_hunger= 51.4  avg_energy= 48.9  hungry=4  social_events=0
+[14:25:59.645] [FOOD_FOUND          ] ECHO-09  | ate at (895, 382)  total=3
+[14:25:59.776] [IDLE_ENTER          ] ECHO-10  | pausing for 2.3s
+[14:26:00.324] [FOOD_FOUND          ] ECHO-08  | ate at (1136, 516)  total=2
+[14:26:00.340] [STATE_CHANGE        ] ECHO-08  | SEEK_FOOD (3.6s) -> WANDER  [normal]  h=35 e=51 s=57
+[14:26:00.507] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=57 s=28  tgt=18px
+[14:26:01.525] [STATE_CHANGE        ] ECHO-10  | WANDER (4.2s) -> SEEK_FOOD  [normal]  h=55 e=62 s=38
+[14:26:01.858] [IDLE_ENTER          ] ECHO-03  | pausing for 4.4s
+[14:26:02.523] [STATE_CHANGE        ] ECHO-09  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=36 e=55 s=25
+[14:26:02.539] [FOOD_FOUND          ] ECHO-05  | ate at (947, 345)  total=3
+[14:26:02.555] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (8.4s) -> REST  [normal]  h=19 e=24 s=13
+[14:26:02.555] [REST_REASON         ] ECHO-05  | low_energy | energy=24.0 laziness=0.31
+[14:26:02.945] [DEATH               ] ECHO-12  | cause=starvation | lifespan=23.4s | state=SEEK_FOOD | hunger=100.0 | energy=27.8
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-12
+  Lifespan            : 23.4s
+  Cause of death      : starvation
+  Food eaten          : 0
+  Distance travelled  : 369 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 17.2s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.47  lazy=0.29  social=0.68  greed=0.70
+--------------------------------------------------------------
+[14:26:03.210] [STATE_CHANGE        ] ECHO-01  | WANDER (5.6s) -> SEEK_FOOD  [normal]  h=55 e=52 s=24
+[14:26:03.657] [DEATH               ] ECHO-06  | cause=starvation | lifespan=24.1s | state=SEEK_FOOD | hunger=100.0 | energy=0.8
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-06
+  Lifespan            : 24.1s
+  Cause of death      : starvation
+  Food eaten          : 0
+  Distance travelled  : 292 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 17.2s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.21  lazy=0.53  social=0.33  greed=0.66
+--------------------------------------------------------------
+[14:26:03.708] [STATE_CHANGE        ] ECHO-11  | WANDER (9.8s) -> SEEK_FOOD  [normal]  h=55 e=48 s=35
+[14:26:04.305] [FOOD_FOUND          ] ECHO-10  | ate at (553, 182)  total=3
+[14:26:04.306] [RIVALRY             ] ECHO-10  | with ECHO-01  | affinity=  -2.6 (Δ-3.0)
+[14:26:04.322] [STATE_CHANGE        ] ECHO-10  | SEEK_FOOD (2.8s) -> WANDER  [normal]  h=31 e=54 s=34
+[14:26:04.420] [STATE_CHANGE        ] ECHO-07  | WANDER (8.7s) -> SEEK_FOOD  [normal]  h=55 e=47 s=39
+[14:26:04.553] [STATS               ]          | pop=9  avg_hunger= 45.0  avg_energy= 50.8  hungry=3  social_events=0
+[14:26:04.569] [STATE_CHANGE        ] ECHO-05  | REST (2.0s) -> SOCIALIZE  [normal]  h=27 e=60 s=10
+[14:26:04.569] [SOCIAL              ] ECHO-05  | interacting with ECHO-03  total=1
+[14:26:05.538] [STATE_CHANGE        ] ECHO-08  | WANDER (5.1s) -> SEEK_FOOD  [normal]  h=55 e=44 s=49
+[14:26:05.572] [STATE_CHANGE        ] ECHO-02  | WANDER (8.6s) -> SEEK_FOOD  [normal]  h=55 e=52 s=44
+[14:26:06.157] [SOCIAL              ] ECHO-09  | interacting with ECHO-03  total=1
+[14:26:06.477] [FOOD_FOUND          ] ECHO-01  | ate at (557, 152)  total=3
+[14:26:06.493] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (3.2s) -> SOCIALIZE  [normal]  h=33 e=43 s=19
+[14:26:06.526] [FOOD_FOUND          ] ECHO-11  | ate at (474, 120)  total=3
+[14:26:06.526] [RIVALRY             ] ECHO-11  | with ECHO-07  | affinity=  -2.6 (Δ-3.0)
+[14:26:06.542] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (2.8s) -> WANDER  [normal]  h=31 e=41 s=31
+[14:26:08.640] [STATE_CHANGE        ] ECHO-11  | WANDER (2.1s) -> SOCIALIZE  [normal]  h=39 e=38 s=28
+[14:26:09.474] [SOCIAL              ] ECHO-01  | interacting with ECHO-11  total=1
+[14:26:09.474] [SOCIAL              ] ECHO-11  | interacting with ECHO-01  total=1
+[14:26:09.639] [STATE_CHANGE        ] ECHO-05  | SOCIALIZE (5.0s) -> WANDER  [normal]  h=47 e=54 s=50  tgt=29px
+[14:26:09.640] [STATS               ]          | pop=9  avg_hunger= 57.3  avg_energy= 41.8  hungry=4  social_events=4
+[14:26:09.775] [FOOD_FOUND          ] ECHO-07  | ate at (509, 101)  total=3
+[14:26:10.229] [STATE_CHANGE        ] ECHO-10  | WANDER (5.8s) -> SOCIALIZE  [normal]  h=55 e=47 s=25
+[14:26:11.695] [STATE_CHANGE        ] ECHO-05  | WANDER (2.1s) -> SEEK_FOOD  [normal]  h=55 e=52 s=47
+[14:26:12.077] [STATE_CHANGE        ] ECHO-03  | WANDER (12.8s) -> SEEK_FOOD  [normal]  h=55 e=42 s=36
+[14:26:12.275] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (3.6s) -> REST  [normal]  h=54 e=34 s=50  tgt=14px
+[14:26:12.275] [REST_REASON         ] ECHO-11  | low_energy | energy=33.7 laziness=0.64
+[14:26:12.644] [FOOD_FOUND          ] ECHO-07  | ate at (517, 130)  total=4
+[14:26:12.660] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (8.2s) -> REST  [normal]  h=18 e=24 s=27
+[14:26:12.661] [REST_REASON         ] ECHO-07  | low_energy | energy=24.2 laziness=0.64
+[14:26:13.111] [SOCIAL              ] ECHO-09  | interacting with ECHO-03  total=2
+[14:26:13.344] [STATE_CHANGE        ] ECHO-01  | SOCIALIZE (6.9s) -> SEEK_FOOD  [normal]  h=60 e=35 s=50  tgt=10px
+[14:26:13.562] [STATE_CHANGE        ] ECHO-09  | SOCIALIZE (11.0s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=42 s=43  tgt=55px
+[14:26:13.930] [FOOD_FOUND          ] ECHO-05  | ate at (979, 366)  total=4
+[14:26:13.930] [RIVALRY             ] ECHO-05  | with ECHO-09  | affinity=  -2.5 (Δ-3.0)
+[14:26:13.947] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (2.3s) -> WANDER  [normal]  h=29 e=46 s=44
+[14:26:13.997] [FOOD_FOUND          ] ECHO-03  | ate at (1047, 354)  total=5
+[14:26:14.082] [STATE_CHANGE        ] ECHO-03  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=36 s=33  tgt=19px
+[14:26:14.281] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> SEEK_FOOD  [normal]  h=62 e=70 s=47
+[14:26:14.645] [STATS               ]          | pop=9  avg_hunger= 61.8  avg_energy= 40.7  hungry=6  social_events=1
+[14:26:14.662] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> SOCIALIZE  [normal]  h=26 e=60 s=24
+[14:26:14.662] [SOCIAL              ] ECHO-07  | interacting with ECHO-11  total=1
+[14:26:14.978] [FOOD_FOUND          ] ECHO-01  | ate at (501, 140)  total=4
+[14:26:14.979] [RIVALRY             ] ECHO-01  | with ECHO-11  | affinity=   0.6 (Δ-3.0)
+[14:26:15.281] [FOOD_FOUND          ] ECHO-08  | ate at (1102, 369)  total=3
+[14:26:15.346] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (2.0s) -> REST  [normal]  h=33 e=30 s=47  tgt=14px
+[14:26:15.346] [REST_REASON         ] ECHO-01  | low_energy | energy=29.7 laziness=0.61
+[14:26:16.610] [STATE_CHANGE        ] ECHO-10  | SOCIALIZE (6.4s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=39 s=25
+[14:26:16.809] [FOOD_FOUND          ] ECHO-11  | ate at (503, 148)  total=4
+[14:26:17.074] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=20.0 risk=0.68
+[14:26:17.075] [FOOD_FOUND          ] ECHO-09  | ate at (982, 386)  total=4
+[14:26:17.091] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.9 risk=0.68
+[14:26:17.107] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.9 risk=0.68
+[14:26:17.124] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.8 risk=0.68
+[14:26:17.141] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.8 risk=0.68
+[14:26:17.157] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.8 risk=0.68
+[14:26:17.174] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.7 risk=0.68
+[14:26:17.192] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.7 risk=0.68
+[14:26:17.209] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.6 risk=0.68
+[14:26:17.226] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.6 risk=0.68
+[14:26:17.243] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.5 risk=0.68
+[14:26:17.260] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.5 risk=0.68
+[14:26:17.277] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.4 risk=0.68
+[14:26:17.293] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.4 risk=0.68
+[14:26:17.309] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.3 risk=0.68
+[14:26:17.309] [IDLE_ENTER          ] ECHO-03  | pausing for 2.3s
+[14:26:17.325] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.3 risk=0.68
+[14:26:17.341] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.2 risk=0.68
+[14:26:17.358] [STATE_CHANGE        ] ECHO-01  | REST (2.0s) -> WANDER  [normal]  h=41 e=66 s=44
+[14:26:17.359] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.2 risk=0.68
+[14:26:17.374] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.1 risk=0.68
+[14:26:17.391] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.1 risk=0.68
+[14:26:17.409] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.0 risk=0.68
+[14:26:17.425] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.0 risk=0.68
+[14:26:17.443] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=19.0 risk=0.68
+[14:26:17.460] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.9 risk=0.68
+[14:26:17.479] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.9 risk=0.68
+[14:26:17.496] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.8 risk=0.68
+[14:26:17.513] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.8 risk=0.68
+[14:26:17.529] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.7 risk=0.68
+[14:26:17.546] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.7 risk=0.68
+[14:26:17.563] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.6 risk=0.68
+[14:26:17.580] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.6 risk=0.68
+[14:26:17.597] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.5 risk=0.68
+[14:26:17.615] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.5 risk=0.68
+[14:26:17.632] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.4 risk=0.68
+[14:26:17.648] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.4 risk=0.68
+[14:26:17.665] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.3 risk=0.68
+[14:26:17.681] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.3 risk=0.68
+[14:26:17.697] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.2 risk=0.68
+[14:26:17.713] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.2 risk=0.68
+[14:26:17.729] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.2 risk=0.68
+[14:26:17.745] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.1 risk=0.68
+[14:26:17.762] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.1 risk=0.68
+[14:26:17.779] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.0 risk=0.68
+[14:26:17.795] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=18.0 risk=0.68
+[14:26:17.811] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.9 risk=0.68
+[14:26:17.827] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.9 risk=0.68
+[14:26:17.844] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.8 risk=0.68
+[14:26:17.861] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.8 risk=0.68
+[14:26:17.877] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.7 risk=0.68
+[14:26:17.893] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.7 risk=0.68
+[14:26:17.909] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.6 risk=0.68
+[14:26:17.927] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.6 risk=0.68
+[14:26:17.944] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.5 risk=0.68
+[14:26:17.961] [IDLE_ENTER          ] ECHO-01  | pausing for 4.2s
+[14:26:17.961] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.5 risk=0.68
+[14:26:17.978] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.5 risk=0.68
+[14:26:17.979] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (3.3s) -> WANDER  [normal]  h=39 e=56 s=50  tgt=10px
+[14:26:17.994] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.4 risk=0.68
+[14:26:18.010] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.4 risk=0.68
+[14:26:18.028] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.3 risk=0.68
+[14:26:18.045] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.3 risk=0.68
+[14:26:18.062] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.2 risk=0.68
+[14:26:18.079] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.2 risk=0.68
+[14:26:18.095] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.1 risk=0.68
+[14:26:18.112] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.1 risk=0.68
+[14:26:18.129] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.0 risk=0.68
+[14:26:18.146] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=17.0 risk=0.68
+[14:26:18.163] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.9 risk=0.68
+[14:26:18.180] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.9 risk=0.68
+[14:26:18.197] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.8 risk=0.68
+[14:26:18.214] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.8 risk=0.68
+[14:26:18.231] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.7 risk=0.68
+[14:26:18.231] [FOOD_FOUND          ] ECHO-11  | ate at (514, 148)  total=5
+[14:26:18.247] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.7 risk=0.68
+[14:26:18.247] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (4.0s) -> WANDER  [normal]  h=8 e=59 s=41
+[14:26:18.263] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.7 risk=0.68
+[14:26:18.280] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.6 risk=0.68
+[14:26:18.297] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.6 risk=0.68
+[14:26:18.313] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.5 risk=0.68
+[14:26:18.330] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.5 risk=0.68
+[14:26:18.347] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.4 risk=0.68
+[14:26:18.364] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.4 risk=0.68
+[14:26:18.381] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.3 risk=0.68
+[14:26:18.397] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.3 risk=0.68
+[14:26:18.414] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.2 risk=0.68
+[14:26:18.431] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.2 risk=0.68
+[14:26:18.448] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.1 risk=0.68
+[14:26:18.465] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.1 risk=0.68
+[14:26:18.481] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.0 risk=0.68
+[14:26:18.498] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.0 risk=0.68
+[14:26:18.514] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=16.0 risk=0.68
+[14:26:18.530] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.9 risk=0.68
+[14:26:18.547] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.9 risk=0.68
+[14:26:18.563] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.8 risk=0.68
+[14:26:18.579] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.8 risk=0.68
+[14:26:18.597] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.7 risk=0.68
+[14:26:18.614] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.7 risk=0.68
+[14:26:18.631] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.6 risk=0.68
+[14:26:18.647] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.6 risk=0.68
+[14:26:18.663] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.5 risk=0.68
+[14:26:18.680] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.5 risk=0.68
+[14:26:18.697] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.4 risk=0.68
+[14:26:18.714] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.4 risk=0.68
+[14:26:18.730] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.3 risk=0.68
+[14:26:18.747] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.3 risk=0.68
+[14:26:18.764] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.3 risk=0.68
+[14:26:18.781] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.2 risk=0.68
+[14:26:18.797] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.2 risk=0.68
+[14:26:18.814] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.1 risk=0.68
+[14:26:18.830] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.1 risk=0.68
+[14:26:18.846] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.0 risk=0.68
+[14:26:18.862] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=15.0 risk=0.68
+[14:26:18.879] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.9 risk=0.68
+[14:26:18.896] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.9 risk=0.68
+[14:26:18.912] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.8 risk=0.68
+[14:26:18.930] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.8 risk=0.68
+[14:26:18.946] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.7 risk=0.68
+[14:26:18.963] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.7 risk=0.68
+[14:26:18.979] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.6 risk=0.68
+[14:26:18.996] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.6 risk=0.68
+[14:26:19.013] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.6 risk=0.68
+[14:26:19.030] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.5 risk=0.68
+[14:26:19.047] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.5 risk=0.68
+[14:26:19.064] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.4 risk=0.68
+[14:26:19.081] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.4 risk=0.68
+[14:26:19.098] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.3 risk=0.68
+[14:26:19.114] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.3 risk=0.68
+[14:26:19.131] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.2 risk=0.68
+[14:26:19.147] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.2 risk=0.68
+[14:26:19.163] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.1 risk=0.68
+[14:26:19.179] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.1 risk=0.68
+[14:26:19.196] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.0 risk=0.68
+[14:26:19.213] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=14.0 risk=0.68
+[14:26:19.230] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.9 risk=0.68
+[14:26:19.247] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.9 risk=0.68
+[14:26:19.264] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.9 risk=0.68
+[14:26:19.281] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.8 risk=0.68
+[14:26:19.298] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.8 risk=0.68
+[14:26:19.314] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.7 risk=0.68
+[14:26:19.331] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.7 risk=0.68
+[14:26:19.347] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.6 risk=0.68
+[14:26:19.364] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.6 risk=0.68
+[14:26:19.381] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.5 risk=0.68
+[14:26:19.398] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.5 risk=0.68
+[14:26:19.415] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.4 risk=0.68
+[14:26:19.432] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.4 risk=0.68
+[14:26:19.448] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.3 risk=0.68
+[14:26:19.464] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.3 risk=0.68
+[14:26:19.480] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.2 risk=0.68
+[14:26:19.497] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.2 risk=0.68
+[14:26:19.513] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.2 risk=0.68
+[14:26:19.529] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.1 risk=0.68
+[14:26:19.545] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.1 risk=0.68
+[14:26:19.561] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.0 risk=0.68
+[14:26:19.578] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=13.0 risk=0.68
+[14:26:19.595] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.9 risk=0.68
+[14:26:19.612] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.9 risk=0.68
+[14:26:19.629] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.8 risk=0.68
+[14:26:19.646] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.8 risk=0.68
+[14:26:19.647] [STATS               ]          | pop=9  avg_hunger= 61.1  avg_energy= 35.1  hungry=4  social_events=1
+[14:26:19.662] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.7 risk=0.68
+[14:26:19.678] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.7 risk=0.68
+[14:26:19.695] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.6 risk=0.68
+[14:26:19.712] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.6 risk=0.68
+[14:26:19.729] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.6 risk=0.68
+[14:26:19.746] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.5 risk=0.68
+[14:26:19.763] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.5 risk=0.68
+[14:26:19.763] [STATE_CHANGE        ] ECHO-03  | WANDER (5.7s) -> REST  [normal]  h=51 e=29 s=25
+[14:26:19.763] [REST_REASON         ] ECHO-03  | low_energy | energy=29.2 laziness=0.28
+[14:26:19.779] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.4 risk=0.68
+[14:26:19.796] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.4 risk=0.68
+[14:26:19.813] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.3 risk=0.68
+[14:26:19.830] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.3 risk=0.68
+[14:26:19.846] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.2 risk=0.68
+[14:26:19.863] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.2 risk=0.68
+[14:26:19.880] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.1 risk=0.68
+[14:26:19.897] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.1 risk=0.68
+[14:26:19.913] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.0 risk=0.68
+[14:26:19.930] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=12.0 risk=0.68
+[14:26:19.947] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.9 risk=0.68
+[14:26:19.964] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.9 risk=0.68
+[14:26:19.980] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.8 risk=0.68
+[14:26:19.998] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.8 risk=0.68
+[14:26:20.014] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.8 risk=0.68
+[14:26:20.030] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.7 risk=0.68
+[14:26:20.047] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.7 risk=0.68
+[14:26:20.064] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.6 risk=0.68
+[14:26:20.080] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.6 risk=0.68
+[14:26:20.097] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.5 risk=0.68
+[14:26:20.114] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.5 risk=0.68
+[14:26:20.131] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.4 risk=0.68
+[14:26:20.148] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.4 risk=0.68
+[14:26:20.165] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.3 risk=0.68
+[14:26:20.181] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.3 risk=0.68
+[14:26:20.201] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.2 risk=0.68
+[14:26:20.217] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.2 risk=0.68
+[14:26:20.234] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.1 risk=0.68
+[14:26:20.251] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.1 risk=0.68
+[14:26:20.268] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.0 risk=0.68
+[14:26:20.284] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.0 risk=0.68
+[14:26:20.300] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=11.0 risk=0.68
+[14:26:20.316] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.9 risk=0.68
+[14:26:20.333] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.9 risk=0.68
+[14:26:20.350] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.8 risk=0.68
+[14:26:20.367] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.8 risk=0.68
+[14:26:20.383] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.7 risk=0.68
+[14:26:20.400] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.7 risk=0.68
+[14:26:20.417] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.6 risk=0.68
+[14:26:20.434] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.6 risk=0.68
+[14:26:20.450] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.5 risk=0.68
+[14:26:20.451] [STATE_CHANGE        ] ECHO-05  | WANDER (6.5s) -> SEEK_FOOD  [normal]  h=55 e=38 s=34
+[14:26:20.467] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.5 risk=0.68
+[14:26:20.484] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.4 risk=0.68
+[14:26:20.500] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.4 risk=0.68
+[14:26:20.517] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.3 risk=0.68
+[14:26:20.534] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.3 risk=0.68
+[14:26:20.551] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.2 risk=0.68
+[14:26:20.567] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.2 risk=0.68
+[14:26:20.584] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.2 risk=0.68
+[14:26:20.600] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.1 risk=0.68
+[14:26:20.617] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.1 risk=0.68
+[14:26:20.633] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.0 risk=0.68
+[14:26:20.650] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=10.0 risk=0.68
+[14:26:20.667] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.9 risk=0.68
+[14:26:20.684] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.9 risk=0.68
+[14:26:20.700] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.8 risk=0.68
+[14:26:20.717] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.8 risk=0.68
+[14:26:20.733] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.7 risk=0.68
+[14:26:20.749] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.7 risk=0.68
+[14:26:20.765] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.6 risk=0.68
+[14:26:20.783] [STATE_CHANGE        ] ECHO-01  | WANDER (3.4s) -> SEEK_FOOD  [normal]  h=55 e=62 s=39
+[14:26:20.783] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.6 risk=0.68
+[14:26:20.800] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.6 risk=0.68
+[14:26:20.817] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.5 risk=0.68
+[14:26:20.834] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.5 risk=0.68
+[14:26:20.850] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.4 risk=0.68
+[14:26:20.867] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.4 risk=0.68
+[14:26:20.884] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.3 risk=0.68
+[14:26:20.900] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.3 risk=0.68
+[14:26:20.917] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.2 risk=0.68
+[14:26:20.933] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.2 risk=0.68
+[14:26:20.949] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.1 risk=0.68
+[14:26:20.966] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.1 risk=0.68
+[14:26:20.966] [FOOD_FOUND          ] ECHO-09  | ate at (960, 364)  total=5
+[14:26:20.982] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.0 risk=0.68
+[14:26:20.999] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=9.0 risk=0.68
+[14:26:21.016] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.9 risk=0.68
+[14:26:21.033] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.9 risk=0.68
+[14:26:21.050] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.9 risk=0.68
+[14:26:21.067] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.8 risk=0.68
+[14:26:21.084] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.8 risk=0.68
+[14:26:21.101] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.7 risk=0.68
+[14:26:21.118] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.7 risk=0.68
+[14:26:21.134] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.6 risk=0.68
+[14:26:21.150] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.6 risk=0.68
+[14:26:21.167] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.5 risk=0.68
+[14:26:21.184] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.5 risk=0.68
+[14:26:21.200] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.4 risk=0.68
+[14:26:21.217] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.4 risk=0.68
+[14:26:21.234] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.3 risk=0.68
+[14:26:21.251] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.3 risk=0.68
+[14:26:21.294] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.2 risk=0.68
+[14:26:21.410] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=8.0 risk=0.68
+[14:26:21.482] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.9 risk=0.68
+[14:26:21.582] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.7 risk=0.68
+[14:26:21.624] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.6 risk=0.68
+[14:26:21.640] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.6 risk=0.68
+[14:26:21.676] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.5 risk=0.68
+[14:26:21.710] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.4 risk=0.68
+[14:26:21.727] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.3 risk=0.68
+[14:26:21.744] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.3 risk=0.68
+[14:26:21.760] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.3 risk=0.68
+[14:26:21.777] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.2 risk=0.68
+[14:26:21.793] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.2 risk=0.68
+[14:26:21.810] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.1 risk=0.68
+[14:26:21.827] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.1 risk=0.68
+[14:26:21.844] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.0 risk=0.68
+[14:26:21.860] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=7.0 risk=0.68
+[14:26:21.877] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.9 risk=0.68
+[14:26:21.894] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.9 risk=0.68
+[14:26:21.910] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.8 risk=0.68
+[14:26:21.911] [STATE_CHANGE        ] ECHO-03  | REST (2.0s) -> SEEK_FOOD  [normal]  h=59 e=65 s=22
+[14:26:21.912] [FOOD_FOUND          ] ECHO-05  | ate at (890, 414)  total=5
+[14:26:21.926] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.8 risk=0.68
+[14:26:21.942] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.7 risk=0.68
+[14:26:21.960] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.7 risk=0.68
+[14:26:21.976] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.6 risk=0.68
+[14:26:21.993] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.6 risk=0.68
+[14:26:22.010] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.6 risk=0.68
+[14:26:22.027] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.5 risk=0.68
+[14:26:22.043] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.5 risk=0.68
+[14:26:22.059] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.4 risk=0.68
+[14:26:22.076] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.4 risk=0.68
+[14:26:22.093] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.3 risk=0.68
+[14:26:22.110] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.3 risk=0.68
+[14:26:22.127] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.2 risk=0.68
+[14:26:22.143] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.2 risk=0.68
+[14:26:22.144] [STATE_CHANGE        ] ECHO-07  | WANDER (4.0s) -> SEEK_FOOD  [normal]  h=55 e=51 s=44
+[14:26:22.160] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.1 risk=0.68
+[14:26:22.177] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.1 risk=0.68
+[14:26:22.193] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.0 risk=0.68
+[14:26:22.209] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=6.0 risk=0.68
+[14:26:22.226] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.9 risk=0.68
+[14:26:22.243] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.9 risk=0.68
+[14:26:22.293] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.8 risk=0.68
+[14:26:22.340] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.6 risk=0.68
+[14:26:22.383] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.5 risk=0.68
+[14:26:22.476] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.4 risk=0.68
+[14:26:22.528] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.2 risk=0.68
+[14:26:22.561] [FOOD_FOUND          ] ECHO-01  | ate at (522, 151)  total=5
+[14:26:22.566] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.1 risk=0.68
+[14:26:22.578] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.1 risk=0.68
+[14:26:22.594] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.0 risk=0.68
+[14:26:22.611] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.0 risk=0.68
+[14:26:22.627] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=5.0 risk=0.68
+[14:26:22.644] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.9 risk=0.68
+[14:26:22.644] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=32 s=31  tgt=30px
+[14:26:22.660] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.9 risk=0.68
+[14:26:22.677] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.8 risk=0.68
+[14:26:22.693] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.8 risk=0.68
+[14:26:22.709] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.7 risk=0.68
+[14:26:22.729] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.7 risk=0.68
+[14:26:22.751] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.6 risk=0.68
+[14:26:22.796] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.5 risk=0.68
+[14:26:22.813] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.4 risk=0.68
+[14:26:22.830] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.4 risk=0.68
+[14:26:22.847] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.3 risk=0.68
+[14:26:22.863] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.3 risk=0.68
+[14:26:22.880] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.2 risk=0.68
+[14:26:22.897] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.2 risk=0.68
+[14:26:22.913] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.2 risk=0.68
+[14:26:22.930] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.1 risk=0.68
+[14:26:22.946] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.1 risk=0.68
+[14:26:22.963] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.0 risk=0.68
+[14:26:22.980] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=56 s=36  tgt=15px
+[14:26:22.980] [SURVIVAL_DECISION   ] ECHO-02  | risky_food_search | energy=4.0 risk=0.68
+[14:26:22.997] [DEATH               ] ECHO-02  | cause=starvation | lifespan=43.2s | state=SEEK_FOOD | hunger=100.0 | energy=3.9
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-02
+  Lifespan            : 43.2s
+  Cause of death      : starvation
+  Food eaten          : 2
+  Distance travelled  : 776 px
+  Social interactions : 0
+  Time resting        : 2.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 24.1s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.68  lazy=0.53  social=0.23  greed=0.37
+--------------------------------------------------------------
+[14:26:24.309] [FOOD_FOUND          ] ECHO-09  | ate at (947, 373)  total=6
+[14:26:24.326] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (10.6s) -> REST  [normal]  h=17 e=12 s=27
+[14:26:24.326] [REST_REASON         ] ECHO-09  | low_energy | energy=11.9 laziness=0.79
+[14:26:24.660] [STATE_CHANGE        ] ECHO-05  | WANDER (2.0s) -> REST  [normal]  h=36 e=30 s=28
+[14:26:24.661] [REST_REASON         ] ECHO-05  | low_energy | energy=29.7 laziness=0.31
+[14:26:24.662] [FOOD_FOUND          ] ECHO-10  | ate at (557, 239)  total=4
+[14:26:24.850] [STATS               ]          | pop=8  avg_hunger= 53.0  avg_energy= 34.7  hungry=4  social_events=0
+[14:26:24.908] [FOOD_FOUND          ] ECHO-03  | ate at (1042, 364)  total=6
+[14:26:24.911] [RIVALRY             ] ECHO-03  | with ECHO-08  | affinity=  -3.0 (Δ-3.0)
+[14:26:25.098] [FOOD_FOUND          ] ECHO-07  | ate at (494, 125)  total=5
+[14:26:25.114] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (2.9s) -> WANDER  [normal]  h=32 e=43 s=40
+[14:26:25.949] [IDLE_ENTER          ] ECHO-11  | pausing for 3.2s
+[14:26:26.666] [STATE_CHANGE        ] ECHO-05  | REST (2.0s) -> SOCIALIZE  [normal]  h=44 e=66 s=25
+[14:26:27.147] [STATE_CHANGE        ] ECHO-09  | REST (2.8s) -> SOCIALIZE  [normal]  h=28 e=62 s=23
+[14:26:27.161] [FOOD_FOUND          ] ECHO-03  | ate at (1031, 383)  total=7
+[14:26:27.161] [RIVALRY             ] ECHO-03  | with ECHO-08  | affinity=  -5.9 (Δ-3.0)
+[14:26:27.178] [STATE_CHANGE        ] ECHO-03  | SEEK_FOOD (5.2s) -> SOCIALIZE  [normal]  h=10 e=51 s=14
+[14:26:27.448] [STATE_CHANGE        ] ECHO-11  | WANDER (9.0s) -> SOCIALIZE  [normal]  h=44 e=48 s=28
+[14:26:27.565] [SOCIAL              ] ECHO-05  | interacting with ECHO-09  total=2
+[14:26:27.566] [DEATH               ] ECHO-08  | cause=starvation | lifespan=47.8s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-08
+  Lifespan            : 47.8s
+  Cause of death      : starvation
+  Food eaten          : 3
+  Distance travelled  : 581 px
+  Social interactions : 0
+  Time resting        : 0.0s
+  Time socializing    : 0.0s
+  Time seeking food   : 28.9s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-09  (affinity=0.4)
+  Personality         : risk=0.76  lazy=0.21  social=0.67  greed=0.51
+--------------------------------------------------------------
+[14:26:28.324] [SOCIAL              ] ECHO-09  | interacting with ECHO-03  total=3
+[14:26:28.341] [SOCIAL              ] ECHO-03  | interacting with ECHO-09  total=1
+[14:26:28.938] [IDLE_ENTER          ] ECHO-01  | pausing for 1.8s
+[14:26:29.748] [STATE_CHANGE        ] ECHO-01  | WANDER (6.7s) -> SEEK_FOOD  [normal]  h=55 e=48 s=26
+[14:26:29.882] [STATS               ]          | pop=7  avg_hunger= 51.7  avg_energy= 43.1  hungry=3  social_events=3
+[14:26:30.247] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (2.8s) -> SEEK_FOOD  [normal]  h=55 e=45 s=50  tgt=28px
+[14:26:30.714] [STATE_CHANGE        ] ECHO-05  | SOCIALIZE (4.0s) -> SEEK_FOOD  [normal]  h=60 e=61 s=50  tgt=30px
+[14:26:30.715] [FOOD_FOUND          ] ECHO-05  | ate at (948, 387)  total=6
+[14:26:30.964] [STATE_CHANGE        ] ECHO-07  | WANDER (5.8s) -> SEEK_FOOD  [normal]  h=55 e=36 s=31
+[14:26:31.331] [FOOD_FOUND          ] ECHO-01  | ate at (548, 201)  total=6
+[14:26:31.331] [RIVALRY             ] ECHO-01  | with ECHO-10  | affinity=  -2.5 (Δ-3.0)
+[14:26:31.683] [STATE_CHANGE        ] ECHO-09  | SOCIALIZE (4.5s) -> WANDER  [normal]  h=47 e=57 s=50  tgt=9px
+[14:26:31.732] [FOOD_FOUND          ] ECHO-05  | ate at (952, 395)  total=7
+[14:26:31.749] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (2.0s) -> SOCIALIZE  [normal]  h=28 e=42 s=23  tgt=20px
+[14:26:32.231] [FOOD_FOUND          ] ECHO-05  | ate at (950, 398)  total=8
+[14:26:32.727] [STATE_CHANGE        ] ECHO-05  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=2 e=55 s=47  tgt=13px
+[14:26:32.827] [STATE_CHANGE        ] ECHO-03  | SOCIALIZE (5.6s) -> WANDER  [normal]  h=32 e=44 s=50  tgt=11px
+[14:26:33.130] [FOOD_FOUND          ] ECHO-07  | ate at (476, 31)  total=6
+[14:26:33.131] [RIVALRY             ] ECHO-07  | with ECHO-11  | affinity=  -0.4 (Δ-3.0)
+[14:26:33.146] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (2.2s) -> REST  [normal]  h=29 e=30 s=28
+[14:26:33.146] [REST_REASON         ] ECHO-07  | low_energy | energy=30.2 laziness=0.64
+[14:26:33.785] [STATE_CHANGE        ] ECHO-09  | WANDER (2.1s) -> SEEK_FOOD  [normal]  h=55 e=54 s=47
+[14:26:34.898] [STATS               ]          | pop=7  avg_hunger= 51.5  avg_energy= 39.6  hungry=3  social_events=0
+[14:26:35.156] [STATE_CHANGE        ] ECHO-01  | SOCIALIZE (3.4s) -> WANDER  [normal]  h=42 e=38 s=50  tgt=4px
+[14:26:35.156] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> SOCIALIZE  [normal]  h=37 e=66 s=25
+[14:26:36.879] [FOOD_FOUND          ] ECHO-09  | ate at (981, 424)  total=7
+[14:26:36.896] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (3.1s) -> WANDER  [normal]  h=32 e=45 s=42
+[14:26:36.928] [DEATH               ] ECHO-10  | cause=starvation | lifespan=57.1s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-10
+  Lifespan            : 57.1s
+  Cause of death      : starvation
+  Food eaten          : 4
+  Distance travelled  : 684 px
+  Social interactions : 0
+  Time resting        : 2.0s
+  Time socializing    : 6.4s
+  Time seeking food   : 32.1s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.34  lazy=0.40  social=0.49  greed=0.64
+--------------------------------------------------------------
+[14:26:38.339] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (3.2s) -> WANDER  [normal]  h=49 e=63 s=50  tgt=37px
+[14:26:38.509] [STATE_CHANGE        ] ECHO-01  | WANDER (3.3s) -> SEEK_FOOD  [normal]  h=55 e=34 s=45
+[14:26:38.560] [STATE_CHANGE        ] ECHO-03  | WANDER (5.7s) -> SEEK_FOOD  [normal]  h=55 e=37 s=41
+[14:26:38.841] [FOOD_FOUND          ] ECHO-11  | ate at (534, 95)  total=6
+[14:26:39.908] [STATS               ]          | pop=6  avg_hunger= 51.8  avg_energy= 38.4  hungry=4  social_events=0
+[14:26:40.007] [FOOD_FOUND          ] ECHO-01  | ate at (563, 231)  total=7
+[14:26:40.354] [STATE_CHANGE        ] ECHO-07  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=58 e=60 s=47
+[14:26:40.518] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (2.0s) -> REST  [normal]  h=28 e=29 s=42  tgt=10px
+[14:26:40.519] [REST_REASON         ] ECHO-01  | low_energy | energy=28.7 laziness=0.61
+[14:26:41.706] [FOOD_FOUND          ] ECHO-11  | ate at (553, 107)  total=7
+[14:26:41.723] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (11.5s) -> REST  [normal]  h=31 e=12 s=33
+[14:26:41.724] [REST_REASON         ] ECHO-11  | low_energy | energy=12.5 laziness=0.64
+[14:26:42.337] [IDLE_ENTER          ] ECHO-09  | pausing for 3.1s
+[14:26:42.521] [STATE_CHANGE        ] ECHO-01  | REST (2.0s) -> WANDER  [normal]  h=36 e=65 s=39
+[14:26:42.539] [STATE_CHANGE        ] ECHO-09  | WANDER (5.6s) -> SEEK_FOOD  [normal]  h=55 e=39 s=34
+[14:26:42.969] [FOOD_FOUND          ] ECHO-03  | ate at (1015, 396)  total=8
+[14:26:43.827] [FOOD_FOUND          ] ECHO-07  | ate at (569, 86)  total=7
+[14:26:44.340] [STATE_CHANGE        ] ECHO-11  | REST (2.6s) -> WANDER  [normal]  h=41 e=60 s=29
+[14:26:44.910] [STATS               ]          | pop=6  avg_hunger= 48.4  avg_energy= 43.4  hungry=1  social_events=0
+[14:26:45.993] [STATE_CHANGE        ] ECHO-05  | WANDER (13.3s) -> SEEK_FOOD  [normal]  h=55 e=39 s=27
+[14:26:46.339] [FOOD_FOUND          ] ECHO-07  | ate at (567, 118)  total=8
+[14:26:46.356] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (6.0s) -> WANDER  [normal]  h=12 e=43 s=38
+[14:26:46.356] [STATE_CHANGE        ] ECHO-11  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=49 e=57 s=26
+[14:26:46.637] [FOOD_FOUND          ] ECHO-09  | ate at (949, 435)  total=8
+[14:26:46.638] [RIVALRY             ] ECHO-09  | with ECHO-03  | affinity=   4.9 (Δ-3.0)
+[14:26:47.250] [STATE_CHANGE        ] ECHO-01  | WANDER (4.7s) -> SEEK_FOOD  [normal]  h=55 e=59 s=32
+[14:26:49.373] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (3.0s) -> SEEK_FOOD  [normal]  h=61 e=54 s=50  tgt=19px
+[14:26:49.508] [FOOD_FOUND          ] ECHO-09  | ate at (941, 420)  total=9
+[14:26:49.508] [RIVALRY             ] ECHO-09  | with ECHO-03  | affinity=   2.0 (Δ-3.0)
+[14:26:49.526] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (7.0s) -> REST  [normal]  h=13 e=19 s=23
+[14:26:49.527] [REST_REASON         ] ECHO-09  | low_energy | energy=19.0 laziness=0.79
+[14:26:49.926] [STATS               ]          | pop=6  avg_hunger= 51.0  avg_energy= 33.8  hungry=4  social_events=0
+[14:26:50.190] [FOOD_FOUND          ] ECHO-01  | ate at (543, 264)  total=8
+[14:26:50.207] [STATE_CHANGE        ] ECHO-01  | SEEK_FOOD (3.0s) -> WANDER  [normal]  h=32 e=51 s=28
+[14:26:50.257] [FOOD_FOUND          ] ECHO-05  | ate at (836, 518)  total=9
+[14:26:50.390] [FOOD_FOUND          ] ECHO-11  | ate at (551, 103)  total=8
+[14:26:51.383] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=35 e=48 s=47  tgt=21px
+[14:26:51.916] [STATE_CHANGE        ] ECHO-09  | REST (2.4s) -> SOCIALIZE  [normal]  h=23 e=62 s=20
+[14:26:52.181] [IDLE_ENTER          ] ECHO-01  | pausing for 3.8s
+[14:26:52.777] [STATE_CHANGE        ] ECHO-01  | WANDER (2.6s) -> SOCIALIZE  [normal]  h=42 e=48 s=24
+[14:26:53.624] [STATE_CHANGE        ] ECHO-07  | WANDER (7.3s) -> REST  [normal]  h=41 e=35 s=27
+[14:26:53.625] [REST_REASON         ] ECHO-07  | low_energy | energy=34.6 laziness=0.64
+[14:26:54.926] [STATS               ]          | pop=6  avg_hunger= 53.5  avg_energy= 36.6  hungry=2  social_events=0
+[14:26:55.641] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> SOCIALIZE  [normal]  h=49 e=71 s=24
+[14:26:55.708] [STATE_CHANGE        ] ECHO-09  | SOCIALIZE (3.8s) -> WANDER  [normal]  h=38 e=57 s=50  tgt=3px
+[14:26:56.516] [STATE_CHANGE        ] ECHO-11  | WANDER (5.1s) -> SEEK_FOOD  [normal]  h=55 e=42 s=39
+[14:26:57.782] [SOCIAL              ] ECHO-07  | interacting with ECHO-11  total=2
+[14:26:57.848] [DEATH               ] ECHO-03  | cause=exhaustion | lifespan=78.0s | state=SEEK_FOOD | hunger=97.2 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-03
+  Lifespan            : 78.0s
+  Cause of death      : exhaustion
+  Food eaten          : 8
+  Distance travelled  : 712 px
+  Social interactions : 1
+  Time resting        : 4.0s
+  Time socializing    : 5.6s
+  Time seeking food   : 37.8s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-09  (affinity=4.3)
+  Personality         : risk=0.49  lazy=0.28  social=0.36  greed=0.37
+--------------------------------------------------------------
+[14:26:58.812] [FOOD_FOUND          ] ECHO-11  | ate at (522, 101)  total=9
+[14:26:58.829] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (2.3s) -> WANDER  [normal]  h=29 e=35 s=36
+[14:26:59.987] [STATS               ]          | pop=5  avg_hunger= 60.2  avg_energy= 38.3  hungry=3  social_events=1
+[14:27:00.102] [STATE_CHANGE        ] ECHO-09  | WANDER (4.3s) -> SEEK_FOOD  [normal]  h=55 e=52 s=43
+[14:27:00.552] [IDLE_ENTER          ] ECHO-01  | pausing for 2.2s
+[14:27:00.831] [STATE_CHANGE        ] ECHO-11  | WANDER (2.0s) -> REST  [normal]  h=37 e=33 s=33
+[14:27:00.832] [REST_REASON         ] ECHO-11  | low_energy | energy=33.0 laziness=0.64
+[14:27:01.078] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (5.4s) -> SEEK_FOOD  [normal]  h=70 e=64 s=50  tgt=14px
+[14:27:02.113] [FOOD_FOUND          ] ECHO-09  | ate at (936, 417)  total=10
+[14:27:02.129] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=47 s=40
+[14:27:02.250] [FOOD_FOUND          ] ECHO-05  | ate at (826, 393)  total=10
+[14:27:02.319] [STATE_CHANGE        ] ECHO-01  | SOCIALIZE (9.5s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=36 s=24
+[14:27:02.847] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> WANDER  [normal]  h=45 e=69 s=30
+[14:27:03.018] [FOOD_FOUND          ] ECHO-07  | ate at (532, 105)  total=9
+[14:27:04.854] [STATE_CHANGE        ] ECHO-11  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=53 e=67 s=27
+[14:27:05.004] [FOOD_FOUND          ] ECHO-07  | ate at (514, 119)  total=10
+[14:27:05.005] [STATS               ]          | pop=5  avg_hunger= 52.2  avg_energy= 38.4  hungry=2  social_events=0
+[14:27:05.022] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (3.9s) -> WANDER  [normal]  h=16 e=53 s=44
+[14:27:06.127] [DEATH               ] ECHO-05  | cause=exhaustion | lifespan=86.2s | state=SEEK_FOOD | hunger=65.3 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-05
+  Lifespan            : 86.2s
+  Cause of death      : exhaustion
+  Food eaten          : 10
+  Distance travelled  : 1168 px
+  Social interactions : 2
+  Time resting        : 4.0s
+  Time socializing    : 9.0s
+  Time seeking food   : 37.2s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-03  (affinity=1.6)
+  Personality         : risk=0.57  lazy=0.31  social=0.45  greed=0.64
+--------------------------------------------------------------
+[14:27:07.755] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (2.9s) -> SEEK_FOOD  [normal]  h=65 e=63 s=50  tgt=17px
+[14:27:08.857] [STATE_CHANGE        ] ECHO-09  | WANDER (6.7s) -> SEEK_FOOD  [normal]  h=55 e=39 s=30
+[14:27:08.891] [FOOD_FOUND          ] ECHO-01  | ate at (571, 234)  total=9
+[14:27:10.009] [STATS               ]          | pop=4  avg_hunger= 59.7  avg_energy= 38.6  hungry=3  social_events=0
+[14:27:10.974] [FOOD_FOUND          ] ECHO-11  | ate at (544, 61)  total=10
+[14:27:12.993] [IDLE_ENTER          ] ECHO-07  | pausing for 1.7s
+[14:27:14.397] [FOOD_FOUND          ] ECHO-09  | ate at (924, 413)  total=11
+[14:27:14.796] [STATE_CHANGE        ] ECHO-07  | WANDER (9.8s) -> SEEK_FOOD  [normal]  h=55 e=42 s=30
+[14:27:15.011] [STATS               ]          | pop=4  avg_hunger= 62.2  avg_energy= 26.5  hungry=3  social_events=0
+[14:27:15.076] [FOOD_FOUND          ] ECHO-11  | ate at (568, 119)  total=11
+[14:27:15.077] [RIVALRY             ] ECHO-11  | with ECHO-07  | affinity=  -0.0 (Δ-3.0)
+[14:27:15.092] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (7.3s) -> WANDER  [normal]  h=24 e=43 s=39
+[14:27:17.857] [FOOD_FOUND          ] ECHO-09  | ate at (941, 398)  total=12
+[14:27:17.874] [STATE_CHANGE        ] ECHO-09  | SEEK_FOOD (9.0s) -> REST  [normal]  h=21 e=13 s=17
+[14:27:17.874] [REST_REASON         ] ECHO-09  | low_energy | energy=13.3 laziness=0.79
+[14:27:20.023] [STATS               ]          | pop=4  avg_hunger= 62.4  avg_energy= 28.9  hungry=2  social_events=0
+[14:27:20.094] [FOOD_FOUND          ] ECHO-07  | ate at (559, 134)  total=11
+[14:27:20.229] [FOOD_FOUND          ] ECHO-07  | ate at (559, 134)  total=12
+[14:27:20.245] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (5.5s) -> REST  [normal]  h=7 e=26 s=21
+[14:27:20.246] [REST_REASON         ] ECHO-07  | low_energy | energy=26.4 laziness=0.64
+[14:27:20.577] [STATE_CHANGE        ] ECHO-09  | REST (2.7s) -> SOCIALIZE  [normal]  h=32 e=62 s=13
+[14:27:21.300] [DEATH               ] ECHO-01  | cause=starvation | lifespan=101.4s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-01
+  Lifespan            : 101.4s
+  Cause of death      : starvation
+  Food eaten          : 9
+  Distance travelled  : 995 px
+  Social interactions : 1
+  Time resting        : 6.1s
+  Time socializing    : 19.7s
+  Time seeking food   : 43.0s
+  Dominant state      : SEEK_FOOD
+  Best friend         : none
+  Personality         : risk=0.78  lazy=0.61  social=0.63  greed=0.34
+--------------------------------------------------------------
+[14:27:21.809] [STATE_CHANGE        ] ECHO-11  | WANDER (6.7s) -> REST  [normal]  h=51 e=35 s=29
+[14:27:21.810] [REST_REASON         ] ECHO-11  | low_energy | energy=34.6 laziness=0.64
+[14:27:22.253] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> SOCIALIZE  [normal]  h=15 e=63 s=18
+[14:27:23.342] [SOCIAL              ] ECHO-07  | interacting with ECHO-11  total=3
+[14:27:23.822] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> SEEK_FOOD  [normal]  h=59 e=71 s=26
+[14:27:25.023] [STATS               ]          | pop=3  avg_hunger= 46.5  avg_energy= 61.1  hungry=1  social_events=1
+[14:27:26.977] [FOOD_FOUND          ] ECHO-11  | ate at (512, 134)  total=12
+[14:27:27.311] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (5.1s) -> WANDER  [normal]  h=35 e=56 s=50  tgt=16px
+[14:27:28.408] [FOOD_FOUND          ] ECHO-11  | ate at (522, 141)  total=13
+[14:27:28.425] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (4.6s) -> SOCIALIZE  [normal]  h=7 e=58 s=19
+[14:27:30.025] [STATS               ]          | pop=3  avg_hunger= 43.2  avg_energy= 53.3  hungry=1  social_events=0
+[14:27:32.294] [STATE_CHANGE        ] ECHO-07  | WANDER (5.0s) -> SEEK_FOOD  [normal]  h=55 e=51 s=43
+[14:27:32.294] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (3.9s) -> WANDER  [normal]  h=23 e=53 s=50  tgt=44px
+[14:27:32.610] [STATE_CHANGE        ] ECHO-09  | SOCIALIZE (12.0s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=48 s=13
+[14:27:34.245] [IDLE_ENTER          ] ECHO-11  | pausing for 1.6s
+[14:27:35.039] [STATS               ]          | pop=3  avg_hunger= 63.2  avg_energy= 44.5  hungry=2  social_events=0
+[14:27:35.072] [FOOD_FOUND          ] ECHO-07  | ate at (570, 141)  total=13
+[14:27:35.089] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (2.8s) -> WANDER  [normal]  h=31 e=43 s=38
+[14:27:37.391] [FOOD_FOUND          ] ECHO-09  | ate at (866, 469)  total=13
+[14:27:40.042] [STATS               ]          | pop=3  avg_hunger= 59.9  avg_energy= 35.8  hungry=1  social_events=0
+[14:27:40.328] [STATE_CHANGE        ] ECHO-11  | WANDER (8.0s) -> SEEK_FOOD  [normal]  h=55 e=44 s=38
+[14:27:41.032] [STATE_CHANGE        ] ECHO-07  | WANDER (5.9s) -> SEEK_FOOD  [normal]  h=55 e=36 s=30
+[14:27:43.093] [FOOD_FOUND          ] ECHO-11  | ate at (513, 31)  total=14
+[14:27:43.109] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (2.8s) -> WANDER  [normal]  h=31 e=36 s=34
+[14:27:43.175] [IDLE_ENTER          ] ECHO-11  | pausing for 4.6s
+[14:27:45.007] [FOOD_FOUND          ] ECHO-07  | ate at (599, 156)  total=14
+[14:27:45.057] [STATS               ]          | pop=3  avg_hunger= 56.6  avg_energy= 23.5  hungry=1  social_events=0
+[14:27:45.124] [STATE_CHANGE        ] ECHO-11  | WANDER (2.0s) -> REST  [normal]  h=39 e=33 s=31
+[14:27:45.125] [REST_REASON         ] ECHO-11  | low_energy | energy=33.4 laziness=0.64
+[14:27:45.717] [FOOD_FOUND          ] ECHO-09  | ate at (931, 387)  total=14
+[14:27:47.139] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> WANDER  [normal]  h=47 e=70 s=28
+[14:27:48.439] [FOOD_FOUND          ] ECHO-07  | ate at (559, 165)  total=15
+[14:27:48.457] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (7.4s) -> REST  [normal]  h=15 e=15 s=18
+[14:27:48.457] [REST_REASON         ] ECHO-07  | low_energy | energy=14.8 laziness=0.64
+[14:27:49.151] [STATE_CHANGE        ] ECHO-11  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=55 e=67 s=25
+[14:27:50.058] [STATS               ]          | pop=3  avg_hunger= 53.3  avg_energy= 36.1  hungry=2  social_events=0
+[14:27:50.956] [STATE_CHANGE        ] ECHO-07  | REST (2.5s) -> SOCIALIZE  [normal]  h=25 e=60 s=15
+[14:27:52.975] [FOOD_FOUND          ] ECHO-11  | ate at (571, 61)  total=15
+[14:27:53.382] [SOCIAL              ] ECHO-07  | interacting with ECHO-11  total=4
+[14:27:55.061] [STATS               ]          | pop=3  avg_hunger= 61.6  avg_energy= 35.2  hungry=1  social_events=1
+[14:27:55.588] [DEATH               ] ECHO-09  | cause=starvation | lifespan=135.7s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-09
+  Lifespan            : 135.7s
+  Cause of death      : starvation
+  Food eaten          : 14
+  Distance travelled  : 1101 px
+  Social interactions : 3
+  Time resting        : 7.9s
+  Time socializing    : 31.3s
+  Time seeking food   : 63.6s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-03  (affinity=2.1)
+  Personality         : risk=0.74  lazy=0.79  social=0.40  greed=0.41
+--------------------------------------------------------------
+[14:27:56.641] [FOOD_FOUND          ] ECHO-11  | ate at (556, 114)  total=16
+[14:27:56.658] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (7.5s) -> SOCIALIZE  [normal]  h=15 e=46 s=14
+[14:27:57.807] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (6.9s) -> WANDER  [normal]  h=52 e=52 s=50  tgt=4px
+[14:27:59.820] [STATE_CHANGE        ] ECHO-07  | WANDER (2.0s) -> SEEK_FOOD  [normal]  h=60 e=49 s=47
+[14:28:00.073] [STATS               ]          | pop=2  avg_hunger= 45.1  avg_energy= 45.3  hungry=1  social_events=0
+[14:28:01.221] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (4.6s) -> WANDER  [normal]  h=34 e=41 s=50  tgt=11px
+[14:28:02.573] [FOOD_FOUND          ] ECHO-07  | ate at (558, 134)  total=16
+[14:28:03.341] [FOOD_FOUND          ] ECHO-07  | ate at (555, 138)  total=17
+[14:28:03.357] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (3.5s) -> WANDER  [normal]  h=4 e=39 s=42
+[14:28:03.869] [IDLE_ENTER          ] ECHO-07  | pausing for 2.7s
+[14:28:05.157] [STATS               ]          | pop=2  avg_hunger= 30.1  avg_energy= 36.6  hungry=0  social_events=0
+[14:28:06.482] [STATE_CHANGE        ] ECHO-11  | WANDER (5.2s) -> REST  [normal]  h=54 e=35 s=42
+[14:28:06.482] [REST_REASON         ] ECHO-11  | low_energy | energy=34.6 laziness=0.64
+[14:28:07.271] [STATE_CHANGE        ] ECHO-07  | WANDER (3.8s) -> REST  [normal]  h=20 e=35 s=36
+[14:28:07.271] [REST_REASON         ] ECHO-07  | low_energy | energy=34.6 laziness=0.64
+[14:28:08.492] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> SEEK_FOOD  [normal]  h=62 e=71 s=39
+[14:28:09.283] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> WANDER  [normal]  h=28 e=71 s=33
+[14:28:10.163] [STATS               ]          | pop=2  avg_hunger= 50.2  avg_energy= 67.9  hungry=1  social_events=0
+[14:28:11.467] [FOOD_FOUND          ] ECHO-11  | ate at (533, 133)  total=17
+[14:28:12.213] [FOOD_FOUND          ] ECHO-11  | ate at (534, 138)  total=18
+[14:28:12.229] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (3.7s) -> WANDER  [normal]  h=7 e=60 s=34
+[14:28:13.204] [IDLE_ENTER          ] ECHO-07  | pausing for 4.8s
+[14:28:13.589] [STATE_CHANGE        ] ECHO-07  | WANDER (4.3s) -> SOCIALIZE  [normal]  h=45 e=66 s=26
+[14:28:15.172] [STATS               ]          | pop=2  avg_hunger= 35.2  avg_energy= 60.2  hungry=0  social_events=0
+[14:28:16.201] [STATE_CHANGE        ] ECHO-11  | WANDER (4.0s) -> SOCIALIZE  [normal]  h=23 e=56 s=28
+[14:28:17.675] [SOCIAL              ] ECHO-11  | interacting with ECHO-07  total=2
+[14:28:17.692] [SOCIAL              ] ECHO-07  | interacting with ECHO-11  total=5
+[14:28:20.177] [STATS               ]          | pop=2  avg_hunger= 55.2  avg_energy= 54.2  hungry=1  social_events=2
+[14:28:20.475] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (4.3s) -> WANDER  [normal]  h=40 e=50 s=50  tgt=8px
+[14:28:20.641] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (7.1s) -> SEEK_FOOD  [normal]  h=73 e=57 s=50  tgt=7px
+[14:28:20.970] [IDLE_ENTER          ] ECHO-11  | pausing for 4.5s
+[14:28:22.297] [FOOD_FOUND          ] ECHO-07  | ate at (538, 137)  total=18
+[14:28:22.693] [FOOD_FOUND          ] ECHO-07  | ate at (537, 139)  total=19
+[14:28:22.710] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (2.1s) -> WANDER  [normal]  h=11 e=51 s=47
+[14:28:24.144] [STATE_CHANGE        ] ECHO-11  | WANDER (3.7s) -> SEEK_FOOD  [normal]  h=55 e=46 s=45
+[14:28:25.192] [STATS               ]          | pop=2  avg_hunger= 40.3  avg_energy= 45.7  hungry=1  social_events=0
+[14:28:25.656] [FOOD_FOUND          ] ECHO-11  | ate at (526, 126)  total=19
+[14:28:26.155] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=28 e=40 s=42  tgt=22px
+[14:28:30.191] [STATS               ]          | pop=2  avg_hunger= 42.8  avg_energy= 39.0  hungry=0  social_events=0
+[14:28:31.007] [STATE_CHANGE        ] ECHO-11  | WANDER (4.8s) -> REST  [normal]  h=47 e=35 s=34
+[14:28:31.038] [REST_REASON         ] ECHO-11  | low_energy | energy=34.6 laziness=0.64
+[14:28:31.661] [IDLE_ENTER          ] ECHO-07  | pausing for 4.5s
+[14:28:33.024] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> SEEK_FOOD  [normal]  h=55 e=71 s=31
+[14:28:33.624] [STATE_CHANGE        ] ECHO-07  | WANDER (10.9s) -> SEEK_FOOD  [normal]  h=55 e=38 s=31
+[14:28:35.206] [STATS               ]          | pop=2  avg_hunger= 62.8  avg_energy= 49.3  hungry=2  social_events=0
+[14:28:35.942] [FOOD_FOUND          ] ECHO-11  | ate at (526, 144)  total=20
+[14:28:35.958] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (2.9s) -> SOCIALIZE  [normal]  h=32 e=63 s=27
+[14:28:37.307] [FOOD_FOUND          ] ECHO-07  | ate at (555, 151)  total=20
+[14:28:37.323] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (3.7s) -> REST  [normal]  h=35 e=28 s=25
+[14:28:37.323] [REST_REASON         ] ECHO-07  | low_energy | energy=27.9 laziness=0.64
+[14:28:38.860] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (2.9s) -> WANDER  [normal]  h=44 e=59 s=50  tgt=11px
+[14:28:39.329] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> SOCIALIZE  [normal]  h=43 e=64 s=22
+[14:28:40.220] [STATS               ]          | pop=2  avg_hunger= 47.8  avg_energy= 60.3  hungry=0  social_events=0
+[14:28:41.655] [STATE_CHANGE        ] ECHO-11  | WANDER (2.8s) -> SEEK_FOOD  [normal]  h=55 e=56 s=46
+[14:28:42.433] [BEST_FRIEND         ] ECHO-07  | with ECHO-11  | affinity=  15.0
+[14:28:42.836] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (3.5s) -> SEEK_FOOD  [normal]  h=57 e=60 s=50  tgt=9px
+[14:28:43.337] [FOOD_FOUND          ] ECHO-07  | ate at (540, 141)  total=21
+[14:28:43.537] [FOOD_FOUND          ] ECHO-07  | ate at (540, 142)  total=22
+[14:28:43.538] [RIVALRY             ] ECHO-07  | with ECHO-11  | affinity=  12.2 (Δ-3.0)
+[14:28:46.387] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (2.0s) -> WANDER  [normal]  h=5 e=54 s=47  tgt=13px
+[14:28:46.766] [STATS               ]          | pop=2  avg_hunger= 38.0  avg_energy= 49.8  hungry=1  social_events=0
+[14:28:47.214] [FOOD_FOUND          ] ECHO-11  | ate at (533, 161)  total=21
+[14:28:48.888] [FOOD_FOUND          ] ECHO-11  | ate at (531, 174)  total=22
+[14:28:48.905] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (5.7s) -> WANDER  [normal]  h=8 e=40 s=37
+[14:28:53.009] [STATS               ]          | pop=2  avg_hunger= 23.0  avg_energy= 42.1  hungry=0  social_events=0
+[14:28:54.546] [STATE_CHANGE        ] ECHO-11  | WANDER (4.4s) -> REST  [normal]  h=25 e=35 s=31
+[14:28:54.547] [REST_REASON         ] ECHO-11  | low_energy | energy=34.5 laziness=0.64
+[14:28:56.554] [STATE_CHANGE        ] ECHO-11  | REST (2.0s) -> WANDER  [normal]  h=33 e=71 s=28
+[14:28:58.024] [STATS               ]          | pop=2  avg_hunger= 43.1  avg_energy= 55.3  hungry=0  social_events=0
+[14:28:58.557] [STATE_CHANGE        ] ECHO-11  | WANDER (2.0s) -> SOCIALIZE  [normal]  h=41 e=68 s=25
+[14:29:00.081] [STATE_CHANGE        ] ECHO-07  | WANDER (12.5s) -> SEEK_FOOD  [normal]  h=55 e=39 s=28
+[14:29:03.033] [STATS               ]          | pop=2  avg_hunger= 63.1  avg_energy= 47.0  hungry=2  social_events=0
+[14:29:06.550] [FOOD_FOUND          ] ECHO-07  | ate at (586, 183)  total=23
+[14:29:08.035] [STATS               ]          | pop=2  avg_hunger= 65.6  avg_energy= 37.0  hungry=1  social_events=0
+[14:29:08.188] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (9.6s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=57 s=25
+[14:29:10.383] [FOOD_FOUND          ] ECHO-07  | ate at (540, 193)  total=24
+[14:29:10.400] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (10.3s) -> REST  [normal]  h=26 e=10 s=13
+[14:29:10.403] [REST_REASON         ] ECHO-07  | low_energy | energy=10.4 laziness=0.64
+[14:29:13.044] [STATS               ]          | pop=2  avg_hunger= 68.2  avg_energy= 50.6  hungry=1  social_events=0
+[14:29:13.146] [STATE_CHANGE        ] ECHO-07  | REST (2.7s) -> SOCIALIZE  [normal]  h=37 e=60 s=9
+[14:29:15.110] [FOOD_FOUND          ] ECHO-11  | ate at (420, 206)  total=23
+[14:29:18.052] [STATS               ]          | pop=2  avg_hunger= 66.8  avg_energy= 41.5  hungry=2  social_events=0
+[14:29:18.400] [FOOD_FOUND          ] ECHO-11  | ate at (455, 202)  total=24
+[14:29:22.705] [FOOD_FOUND          ] ECHO-11  | ate at (503, 183)  total=25
+[14:29:22.721] [STATE_CHANGE        ] ECHO-11  | SEEK_FOOD (14.5s) -> REST  [normal]  h=25 e=16 s=3
+[14:29:22.722] [REST_REASON         ] ECHO-11  | low_energy | energy=16.0 laziness=0.64
+[14:29:23.054] [STATS               ]          | pop=2  avg_hunger= 51.9  avg_energy= 35.0  hungry=1  social_events=0
+[14:29:23.820] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (10.7s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=47 s=9
+[14:29:25.143] [STATE_CHANGE        ] ECHO-11  | REST (2.4s) -> SOCIALIZE  [normal]  h=35 e=60 s=0
+[14:29:28.069] [STATS               ]          | pop=2  avg_hunger= 71.9  avg_energy= 45.6  hungry=1  social_events=0
+[14:29:29.854] [IDLE_ENTER          ] ECHO-11  | pausing for 4.9s
+[14:29:31.675] [FOOD_FOUND          ] ECHO-07  | ate at (545, 142)  total=25
+[14:29:31.988] [FOOD_FOUND          ] ECHO-07  | ate at (544, 141)  total=26
+[14:29:32.004] [STATE_CHANGE        ] ECHO-07  | SEEK_FOOD (8.2s) -> REST  [normal]  h=31 e=24 s=0
+[14:29:32.004] [REST_REASON         ] ECHO-07  | low_energy | energy=24.1 laziness=0.64
+[14:29:33.069] [STATS               ]          | pop=2  avg_hunger= 51.2  avg_energy= 46.7  hungry=1  social_events=0
+[14:29:33.705] [SOCIAL              ] ECHO-11  | interacting with ECHO-07  total=3
+[14:29:34.015] [STATE_CHANGE        ] ECHO-07  | REST (2.0s) -> SOCIALIZE  [normal]  h=39 e=60 s=0
+[14:29:34.016] [SOCIAL              ] ECHO-07  | interacting with ECHO-11  total=6
+[14:29:36.361] [STATE_CHANGE        ] ECHO-11  | SOCIALIZE (11.2s) -> SEEK_FOOD  [emergency_hunger]  h=80 e=46 s=21  tgt=12px
+[14:29:38.081] [STATS               ]          | pop=2  avg_hunger= 71.3  avg_energy= 48.4  hungry=2  social_events=2
+[14:29:39.721] [FOOD_FOUND          ] ECHO-11  | ate at (521, 191)  total=26
+[14:29:40.281] [STATE_CHANGE        ] ECHO-07  | SOCIALIZE (6.3s) -> SEEK_FOOD  [normal]  h=64 e=53 s=50  tgt=29px
+[14:29:43.087] [STATS               ]          | pop=2  avg_hunger= 73.8  avg_energy= 36.1  hungry=2  social_events=0
+[14:29:44.238] [FOOD_FOUND          ] ECHO-11  | ate at (511, 253)  total=27
+[14:29:44.239] [RIVALRY             ] ECHO-11  | with ECHO-07  | affinity=   7.4 (Δ-3.0)
+[14:29:48.092] [STATS               ]          | pop=2  avg_hunger= 76.3  avg_energy= 22.1  hungry=2  social_events=0
+[14:29:49.713] [FOOD_FOUND          ] ECHO-07  | ate at (535, 153)  total=27
+[14:29:49.713] [RIVALRY             ] ECHO-07  | with ECHO-11  | affinity=  11.5 (Δ-3.0)
+[14:29:50.952] [FOOD_FOUND          ] ECHO-07  | ate at (541, 148)  total=28
+[14:29:50.953] [RIVALRY             ] ECHO-07  | with ECHO-11  | affinity=   8.6 (Δ-3.0)
+[14:29:50.969] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.3 risk=0.68
+[14:29:50.985] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.2 risk=0.68
+[14:29:51.002] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.2 risk=0.68
+[14:29:51.018] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.1 risk=0.68
+[14:29:51.035] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.1 risk=0.68
+[14:29:51.051] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.0 risk=0.68
+[14:29:51.069] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=5.0 risk=0.68
+[14:29:51.086] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.9 risk=0.68
+[14:29:51.102] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.9 risk=0.68
+[14:29:51.119] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.8 risk=0.68
+[14:29:51.136] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.8 risk=0.68
+[14:29:51.153] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.8 risk=0.68
+[14:29:51.170] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.7 risk=0.68
+[14:29:51.187] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.7 risk=0.68
+[14:29:51.202] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.6 risk=0.68
+[14:29:51.219] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.6 risk=0.68
+[14:29:51.235] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.5 risk=0.68
+[14:29:51.252] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.5 risk=0.68
+[14:29:51.269] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.4 risk=0.68
+[14:29:51.286] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.4 risk=0.68
+[14:29:51.303] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.3 risk=0.68
+[14:29:51.319] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.3 risk=0.68
+[14:29:51.335] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.2 risk=0.68
+[14:29:51.353] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.2 risk=0.68
+[14:29:51.369] [SURVIVAL_DECISION   ] ECHO-11  | risky_food_search | energy=4.1 risk=0.68
+[14:29:51.987] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=20.0 risk=0.51
+[14:29:52.004] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.9 risk=0.51
+[14:29:52.019] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.9 risk=0.51
+[14:29:52.036] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.9 risk=0.51
+[14:29:52.053] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.8 risk=0.51
+[14:29:52.070] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.8 risk=0.51
+[14:29:52.087] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.7 risk=0.51
+[14:29:52.104] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.7 risk=0.51
+[14:29:52.121] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.6 risk=0.51
+[14:29:52.138] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.6 risk=0.51
+[14:29:52.155] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.5 risk=0.51
+[14:29:52.173] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.5 risk=0.51
+[14:29:52.188] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.4 risk=0.51
+[14:29:52.204] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.4 risk=0.51
+[14:29:52.221] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.3 risk=0.51
+[14:29:52.239] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.3 risk=0.51
+[14:29:52.254] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.2 risk=0.51
+[14:29:52.271] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.2 risk=0.51
+[14:29:52.289] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.1 risk=0.51
+[14:29:52.313] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.1 risk=0.51
+[14:29:52.331] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.0 risk=0.51
+[14:29:52.347] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=19.0 risk=0.51
+[14:29:52.364] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=18.9 risk=0.51
+[14:29:52.381] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=18.9 risk=0.51
+[14:29:52.397] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=18.8 risk=0.51
+[14:29:52.413] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=18.8 risk=0.51
+[14:29:52.430] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=18.7 risk=0.51
+[14:29:52.447] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=18.7 risk=0.51
+[14:29:53.092] [STATS               ]          | pop=2  avg_hunger= 60.2  avg_energy=  8.4  hungry=1  social_events=0
+[14:29:58.095] [STATS               ]          | pop=2  avg_hunger= 80.2  avg_energy=  1.4  hungry=2  social_events=0
+[14:29:58.855] [DEATH               ] ECHO-11  | cause=exhaustion | lifespan=256.1s | state=SEEK_FOOD | hunger=100.0 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-11
+  Lifespan            : 256.1s
+  Cause of death      : exhaustion
+  Food eaten          : 27
+  Distance travelled  : 2604 px
+  Social interactions : 3
+  Time resting        : 19.1s
+  Time socializing    : 48.8s
+  Time seeking food   : 103.8s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-07  (affinity=7.8)
+  Personality         : risk=0.68  lazy=0.64  social=0.23  greed=0.79
+--------------------------------------------------------------
+[14:30:03.136] [STATS               ]          | pop=1  avg_hunger= 83.6  avg_energy=  0.0  hungry=1  social_events=0
+[14:30:03.285] [FOOD_FOUND          ] ECHO-07  | ate at (592, 162)  total=29
+[14:30:03.301] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.318] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.335] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.352] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.370] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.386] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.404] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.421] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.437] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.453] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.471] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.487] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.505] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.521] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.538] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.554] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.570] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.587] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.603] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.620] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.637] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.654] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.671] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.688] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.705] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.722] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.739] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.756] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.773] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.789] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.805] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.821] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.837] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.854] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.871] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.888] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.905] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.921] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.937] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.954] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.971] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:03.987] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.004] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.021] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.037] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.054] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.071] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.088] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.105] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.121] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.137] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.154] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.172] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.189] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.206] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.222] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.238] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.255] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.271] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.288] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.304] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.322] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.338] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.355] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.372] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.389] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.406] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.422] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.438] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.455] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.471] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.487] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.504] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.521] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.537] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.554] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.570] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.587] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.604] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.620] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.637] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.653] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.670] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.687] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.704] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.721] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.738] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.754] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.771] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.789] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.805] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.821] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.838] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.854] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.871] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.887] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.903] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.920] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.937] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.954] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.970] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:04.986] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.003] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.020] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.037] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.054] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.070] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.087] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.104] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.120] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.137] [SURVIVAL_DECISION   ] ECHO-07  | risky_food_search | energy=0.0 risk=0.51
+[14:30:05.154] [DEATH               ] ECHO-07  | cause=exhaustion | lifespan=262.4s | state=SEEK_FOOD | hunger=56.6 | energy=0.0
+--------------------------------------------------------------
+  LIFE SUMMARY  –  ECHO-07
+  Lifespan            : 262.4s
+  Cause of death      : exhaustion
+  Food eaten          : 29
+  Distance travelled  : 3253 px
+  Social interactions : 6
+  Time resting        : 19.3s
+  Time socializing    : 51.3s
+  Time seeking food   : 102.3s
+  Dominant state      : SEEK_FOOD
+  Best friend         : ECHO-11  (affinity=8.6)
+  Personality         : risk=0.51  lazy=0.64  social=0.35  greed=0.75
+--------------------------------------------------------------
+
+==============================================================
+  SESSION SUMMARY
+==============================================================
+  Max population         : 12
+  Final population       : 0
+  Creatures that died    : 12
+  Total food consumed    : 106
+  Total social events    : 16
+--------------------------------------------------------------
+  Avg lifespan (dead)    : 94.3s
+  Longest survivor       : ECHO-07  (262.4s, 29 meals)
+  Most social            : ECHO-07  (6 interactions)
+  Best forager           : ECHO-07  (29 meals)
+  Most travelled         : ECHO-07  (3253 px)
+==============================================================
