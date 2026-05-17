@@ -109,8 +109,9 @@ BAR_SPACING           = 5          # px between bar and creature edge
 
 # --- Logging ------------------------------------------------------------------
 LOG_TO_CONSOLE        = True        # print events to stdout
-LOG_TO_FILE           = True        # write events to log.txt
-LOG_FILE              = "log.txt"   # relative to working directory
+LOG_TO_FILE           = True        # write events to timestamped session file
+LOG_DIR               = "logs"      # directory for session log files
+LOG_FILE              = "log.txt"   # legacy alias – kept for compatibility
 STATS_INTERVAL        = 5.0         # seconds between statistics dumps
 SHOW_CREATURE_LABELS  = True        # render ECHO-NN label above each creature
 LABEL_FONT_SIZE       = 11          # px – larger = easier to read

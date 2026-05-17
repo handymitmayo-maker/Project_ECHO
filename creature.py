@@ -150,6 +150,18 @@ class Creature:
         self._last_seen_food_pos : pygame.Vector2 | None = None
         self._food_memory_timer  : float = 0.0
 
+        # --- Lifetime tracking (analytics / death summary) ---
+        self.food_eaten          : int   = 0
+        self.social_interactions : int   = 0
+        self.distance_travelled  : float = 0.0
+        self.time_resting        : float = 0.0
+        self.time_socializing    : float = 0.0
+        self.time_seeking_food   : float = 0.0
+        self.time_wandering      : float = 0.0
+
+        # Friendship milestones already logged (avoid duplicate events)
+        self._logged_friends     : set   = set()
+
         # --- Extension placeholders ---
         self.memory        : list = []
         self.dna           : dict = {}
@@ -316,9 +328,19 @@ class Creature:
         old_state = self.state
         duration  = self._state_timer
 
+        target_dist = (
+            f"  tgt={int(self.pos.distance_to(self.target.pos))}px"
+            if self.target is not None and hasattr(self.target, "pos")
+            else ""
+        )
         get_logger().log_event(
             "STATE_CHANGE",
-            f"{old_state.name} ({duration:.1f}s) -> {new_state.name} [{reason}]",
+            (
+                f"{old_state.name} ({duration:.1f}s) -> {new_state.name}"
+                f"  [{reason}]"
+                f"  h={self.hunger:.0f} e={self.energy:.0f} s={self.social:.0f}"
+                f"{target_dist}"
+            ),
             self.label,
         )
 
@@ -381,21 +403,22 @@ class Creature:
         return False
 
     def _die(self) -> None:
-        """Mark creature as dead, start corpse countdown, log the event."""
+        """Mark creature as dead, log death event + full life summary, start corpse fade."""
         self._cause_of_death = "starvation" if self.hunger >= 100 else "exhaustion"
         get_logger().log_event(
             "DEATH",
             (
                 f"cause={self._cause_of_death} | "
                 f"lifespan={self._lifespan:.1f}s | "
-                f"last_state={self.state.name} | "
+                f"state={self.state.name} | "
                 f"hunger={self.hunger:.1f} | "
                 f"energy={self.energy:.1f}"
             ),
             self.label,
         )
-        self.alive      = False
-        self.is_corpse  = True
+        get_logger().log_lifetime_summary(self)
+        self.alive        = False
+        self.is_corpse    = True
         self._death_timer = 0.0   # reset – now used for corpse fade
 
     # ------------------------------------------------------------------
@@ -432,10 +455,11 @@ class Creature:
                 if self.pos.distance_to(self.target.pos) < SOCIAL_RADIUS * 0.5:
                     self.social = min(100, self.social + SOCIAL_GAIN_RATE * dt)
                     if not self._in_social_interaction:
-                        self._in_social_interaction = True
+                        self._in_social_interaction  = True
+                        self.social_interactions    += 1
                         get_logger().log_event(
                             "SOCIAL",
-                            f"interacting with {self.target.label}",
+                            f"interacting with {self.target.label}  total={self.social_interactions}",
                             self.label,
                         )
                         get_logger().increment_social()
@@ -571,12 +595,22 @@ class Creature:
                 }
             entry = self.relationships[c.id]
             entry["last_seen_time"] = self._lifespan
+            prev_affinity = entry["affinity"]
             entry["affinity"] = min(REL_MAX, entry["affinity"] + REL_PASSIVE_GAIN * dt)
 
             # Extra gain when this creature is our active social target
             if self.state == State.SOCIALIZE and self.target is c:
                 entry["affinity"] = min(REL_MAX,
                     entry["affinity"] + REL_SOCIAL_GAIN * dt)
+
+            # Log first-time friendship milestone
+            if (prev_affinity < REL_FRIEND_THRESHOLD
+                    <= entry["affinity"]
+                    and c.id not in self._logged_friends):
+                self._logged_friends.add(c.id)
+                get_logger().log_relationship(
+                    "BEST_FRIEND", self.label, c.label, entry["affinity"]
+                )
 
     def _best_social_target(self, nearby: list) -> "Creature | None":
         """Pick the nearby creature with the highest known affinity."""
@@ -675,32 +709,40 @@ class Creature:
     # ------------------------------------------------------------------
 
     def _decay_stats(self, dt: float) -> None:
-        """Drain stats over time; energy cost differs per state."""
+        """Drain stats over time; energy cost differs per state. Also tracks time per state."""
         self.hunger = min(100, self.hunger + HUNGER_DECAY_RATE * dt)
 
         if self.state == State.REST:
             self.energy = min(100, self.energy + ENERGY_REST_RATE * dt)
+            self.time_resting       += dt
         elif self.state == State.SEEK_FOOD:
             self.energy = max(0, self.energy - ENERGY_DECAY_SEEK * dt)
+            self.time_seeking_food  += dt
+        elif self.state == State.SOCIALIZE:
+            self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * dt)
+            self.time_socializing   += dt
         elif self.state == State.DYING:
             self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * 0.5 * dt)
-        else:  # WANDER, SOCIALIZE
+        else:  # WANDER
             self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * dt)
+            self.time_wandering     += dt
 
         if self.state != State.SOCIALIZE:
             self.social = max(0, self.social - SOCIAL_DECAY_RATE * dt)
 
     def _eat(self, food, world: "World") -> None:
         """Consume food. Apply competition penalty to any rival that was targeting it."""
-        self.hunger = max(0, self.hunger - food.nutrition)
-        food.alive  = False
-        self.target = None
+        self.hunger      = max(0, self.hunger - food.nutrition)
+        food.alive       = False
+        self.target      = None
+        self.food_eaten += 1
+        get_logger().increment_food_consumed()
         get_logger().log_event(
             "FOOD_FOUND",
-            f"ate at ({int(self.pos.x)}, {int(self.pos.y)})",
+            f"ate at ({int(self.pos.x)}, {int(self.pos.y)})  total={self.food_eaten}",
             self.label,
         )
-        # Penalize any rival who was also heading for this food
+        # Penalize rivals who were also heading for this food
         for c in world.creatures:
             if c.alive and c is not self and c.target is food:
                 if c.id not in self.relationships:
@@ -709,9 +751,12 @@ class Creature:
                         "label"         : c.label,
                         "last_seen_time": self._lifespan,
                     }
-                self.relationships[c.id]["affinity"] = max(
-                    REL_MIN,
-                    self.relationships[c.id]["affinity"] - REL_COMPETITION_LOSS,
+                old_aff = self.relationships[c.id]["affinity"]
+                new_aff = max(REL_MIN, old_aff - REL_COMPETITION_LOSS)
+                self.relationships[c.id]["affinity"] = new_aff
+                get_logger().log_relationship(
+                    "RIVALRY", self.label, c.label, new_aff,
+                    delta=new_aff - old_aff,
                 )
 
     # ------------------------------------------------------------------
@@ -739,7 +784,8 @@ class Creature:
         if self.vel.length() > max_speed:
             self.vel = self.vel.normalize() * max_speed
 
-        self.pos += self.vel * dt
+        self.pos                += self.vel * dt
+        self.distance_travelled += self.vel.length() * dt
 
     def _wrap_borders(self) -> None:
         if self.pos.x < 0:

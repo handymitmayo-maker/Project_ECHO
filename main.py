@@ -28,6 +28,9 @@ def main() -> None:
     # --- Simulation ---------------------------------------------------------
     world = World()
 
+    from logger import get_logger
+    get_logger().start_session(world)
+
     # --- Game loop ----------------------------------------------------------
     running = True
     while running:
@@ -53,8 +56,7 @@ def main() -> None:
 
         pygame.display.flip()
 
-    from logger import get_logger
-    get_logger().close()
+    get_logger().close(world)
     pygame.quit()
     sys.exit()
 
