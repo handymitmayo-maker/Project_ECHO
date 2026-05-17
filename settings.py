@@ -102,7 +102,7 @@ COLOR_SCANLINE        = (0,   0,   0)       # scanline overlay tint
 
 # --- UI / HUD -----------------------------------------------------------------
 SCANLINE_ALPHA        = 30          # 0–255 opacity of scanline overlay
-SHOW_STATUS_BARS      = True        # toggle creature status bars
+SHOW_STATUS_BARS      = True        # [V] hunger/energy/social bars
 BAR_WIDTH             = 28
 BAR_HEIGHT            = 3
 BAR_SPACING           = 5          # px between bar and creature edge
@@ -122,7 +122,7 @@ LOG_TO_FILE           = True        # write events to timestamped session file
 LOG_DIR               = "logs"      # directory for session log files
 LOG_FILE              = "log.txt"   # legacy alias – kept for compatibility
 STATS_INTERVAL        = 5.0         # seconds between statistics dumps
-SHOW_CREATURE_LABELS  = True        # render ECHO-NN label above each creature
+SHOW_CREATURE_LABELS  = True        # [L] ECHO-NN labels above creatures
 LABEL_FONT_SIZE       = 11          # px – larger = easier to read
 LABEL_COLOR           = (200, 200, 200)  # bright enough to read on black bg
 
@@ -136,7 +136,7 @@ BIOME_FERTILE_RATE   = 3.0          # spawn weight multiplier
 BIOME_NEUTRAL_RATE   = 1.0
 BIOME_BARREN_RATE    = 0.25
 BIOME_CLUSTER_STD    = 55           # px – Gaussian std for food scatter within biome
-DEBUG_SHOW_BIOMES    = True         # draw semi-transparent biome overlay
+DEBUG_SHOW_BIOMES    = True         # [B] biome zone overlay
 
 # Biome zone colours – saturated so they read clearly on grass
 COLOR_BIOME_FERTILE  = (50,  210,  85)    # lush green
@@ -148,7 +148,7 @@ BIOME_ALPHA_CENTER   = 100          # peak tint opacity at zone centre (0–255)
 BIOME_FALLOFF        = 2.0          # >1 = softer fade toward edge
 BIOME_RING_WIDTH     = 3            # px outline so each zone has a clear border
 BIOME_RING_ALPHA     = 210          # outline opacity
-BIOME_SHOW_LABELS    = True         # FERTILE / NEUTRAL / BARREN label in centre
+BIOME_SHOW_LABELS    = True         # [N] zone type labels on biomes
 BIOME_LABEL_FONT_SIZE = 13
 COLOR_BIOME_LABEL    = (235, 245, 235)
 COLOR_BIOME_LABEL_BG = (0, 0, 0, 140)
@@ -209,14 +209,36 @@ CONTEST_LOG_COOLDOWN       = 4.0   # min seconds between FOOD_CONTEST log events
 # Logger anti-spam
 SURVIVAL_LOG_COOLDOWN      = 6.0   # min seconds between SURVIVAL_DECISION logs per creature
 
+# --- Reproduction (pair-only, two parents required) ---------------------------
+MAX_POPULATION           = 40
+REPRO_AFFINITY_MIN       = 25.0    # mutual affinity threshold
+REPRO_DISTANCE_MAX       = 35.0    # px between partners
+REPRO_ENERGY_MIN         = 75.0    # both parents must exceed
+REPRO_HUNGER_MAX         = 25.0    # both parents must stay below
+REPRO_AGE_MIN            = 60.0    # seconds alive (_lifespan)
+REPRO_COST_ENERGY        = 40.0    # deducted from each parent on success
+REPRO_COST_HUNGER        = 20.0    # added to each parent on success
+REPRO_COOLDOWN           = 90.0    # per-creature cooldown after reproducing
+REPRO_PAIR_COOLDOWN      = 120.0   # shared pair cooldown (world dict)
+REPRO_CHECK_INTERVAL     = 2.0     # seconds between reproduction scans
+REPRO_CHANCE_BASE        = 0.15    # probability after all gates pass
+REPRO_BOND_THRESHOLD     = 20.0    # mutual affinity for PAIR_BOND log
+REPRO_BOND_BONUS         = 0.10    # chance bonus when both are friends
+REPRO_OFFSPRING_SCALE    = 0.55    # visual scale at birth
+REPRO_GROWTH_DURATION    = 45.0    # seconds to reach full scale
+REPRO_MUTATION_MIN       = 0.10
+REPRO_MUTATION_MAX       = 0.15
+REPRO_SPAWN_OFFSET       = 15.0    # random px offset from parent midpoint
+
 # --- Background / Tiles -------------------------------------------------------
 GRASS_TILE_PATH  = "grass.png"   # path to the grass tile (relative to working dir)
 GRASS_TILE_DARK  = 30            # 0–255 darkness overlay on the tiled background
                                  # 0 = no darkening, 255 = fully black
 
-# --- Debug --------------------------------------------------------------------
-DEBUG_MODE            = True        # show extra info when True
-DEBUG_SHOW_PERCEPTION = True        # draw food-perception radius on SEEK_FOOD creatures
+# --- Debug (runtime toggles – keys in debug_controls.py) --------------------
+DEBUG_MODE            = True        # [D] stats HUD
+DEBUG_SHOW_PERCEPTION = True        # [P] food detection radius while seeking
+DEBUG_SHOW_HELP       = False       # [?] control reference overlay
 
 # =============================================================================
 # Extension placeholders (filled in future versions)

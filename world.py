@@ -23,12 +23,13 @@ from settings import (
     BIOME_COUNT, BIOME_RADIUS_MIN, BIOME_RADIUS_MAX,
     BIOME_FERTILE_COUNT, BIOME_BARREN_COUNT,
     BIOME_FERTILE_RATE, BIOME_NEUTRAL_RATE, BIOME_BARREN_RATE,
-    BIOME_CLUSTER_STD, DEBUG_SHOW_BIOMES,
+    BIOME_CLUSTER_STD,
     COLOR_BIOME_FERTILE, COLOR_BIOME_NEUTRAL, COLOR_BIOME_BARREN,
     COLOR_BG, SCANLINE_ALPHA, STATS_INTERVAL,
     STATE_EMERGENCY_HUNGER,
     GRASS_TILE_PATH, GRASS_TILE_DARK,
 )
+import settings
 from biome_render import build_biome_overlay
 from creature import Creature
 from food import Food
@@ -96,9 +97,13 @@ class World:
         # Scratch field written by get_best_food_target for MIGRATION_DECISION hooks
         self._last_food_seekers : int = 0
 
+        # Reproduction pair cooldowns and check timer
+        self._pair_cooldowns : dict = {}
+        self._repro_timer     : float = 0.0
+
         self._spawn_initial_entities()
 
-        if DEBUG_SHOW_BIOMES:
+        if settings.DEBUG_SHOW_BIOMES:
             self._rebuild_biome_overlay()
 
     # ------------------------------------------------------------------
@@ -185,6 +190,10 @@ class World:
             self._food_timer = 0.0
             self._spawn_food_batch()
 
+        # Pair reproduction (after all creature AI updates)
+        import reproduction
+        reproduction.update(self, dt)
+
         # Periodic statistics dump
         self._stats_timer += dt
         if self._stats_timer >= STATS_INTERVAL:
@@ -204,7 +213,7 @@ class World:
             surface.fill(COLOR_BG)
 
         # 2. Biome debug overlay
-        if DEBUG_SHOW_BIOMES:
+        if settings.DEBUG_SHOW_BIOMES:
             self._draw_biomes(surface)
 
         for food in self.foods:
@@ -342,6 +351,15 @@ class World:
         self._last_food_seekers = best_seekers
 
         return best
+
+    def alive_count(self) -> int:
+        return sum(1 for c in self.creatures if c.alive)
+
+    def get_creature_by_id(self, uid) -> Creature | None:
+        for c in self.creatures:
+            if c.id == uid:
+                return c
+        return None
 
     def get_nearby_creatures(
         self,

@@ -8,11 +8,12 @@ import pygame
 
 from settings import (
     WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, FPS,
-    DEBUG_MODE, COLOR_BG,
     HUD_BG_COLOR, HUD_BG_ALPHA, HUD_TEXT_COLOR, HUD_TEXT_SHADOW,
     HUD_PADDING, HUD_LINE_HEIGHT, HUD_FONT_SIZE,
 )
+import settings
 from boot_screen import BootScreen
+from debug_controls import handle_key, help_lines, is_on, status_lines
 from world import World
 
 
@@ -25,7 +26,7 @@ def main() -> None:
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock  = pygame.time.Clock()
 
-    debug_font = pygame.font.SysFont("Courier New", HUD_FONT_SIZE)
+    hud_font = pygame.font.SysFont("Courier New", HUD_FONT_SIZE)
 
     # --- Boot screen --------------------------------------------------------
     BootScreen(screen, clock).run()
@@ -56,8 +57,11 @@ def main() -> None:
         # 4. Render
         world.draw(screen)
 
-        if DEBUG_MODE:
-            _draw_debug(screen, debug_font, clock, world)
+        if is_on("DEBUG_MODE"):
+            _draw_debug_hud(screen, hud_font, clock, world)
+
+        if settings.DEBUG_SHOW_HELP:
+            _draw_help_overlay(screen, hud_font)
 
         pygame.display.flip()
 
@@ -67,32 +71,27 @@ def main() -> None:
 
 
 # =============================================================================
-def _handle_keydown(event: pygame.event.Event, world: "World") -> None:
+def _handle_keydown(event: pygame.event.Event, world: World) -> None:
     """
     Keyboard controls.
 
     ESC     – quit
-    D       – toggle DEBUG_MODE at runtime
-    B       – toggle biome zone overlay
-    SPACE   – spawn a burst of food manually
+    ?       – toggle help overlay (lists all debug keys)
+    D/B/N/P/L/V – debug toggles (see debug_controls.py)
+    SPACE   – spawn food burst
     """
-    import settings  # local import so we can mutate the module-level flag
-
     if event.key == pygame.K_ESCAPE:
         pygame.event.post(pygame.event.Event(pygame.QUIT))
+        return
 
-    elif event.key == pygame.K_d:
-        settings.DEBUG_MODE = not settings.DEBUG_MODE
+    if event.key == pygame.K_QUESTION or event.key == pygame.K_SLASH:
+        settings.DEBUG_SHOW_HELP = not settings.DEBUG_SHOW_HELP
+        return
 
-    elif event.key == pygame.K_b:
-        settings.DEBUG_SHOW_BIOMES = not settings.DEBUG_SHOW_BIOMES
-        if settings.DEBUG_SHOW_BIOMES:
-            world._rebuild_biome_overlay()
-        else:
-            world._biome_surf = None
+    if handle_key(event.key, world):
+        return
 
-    elif event.key == pygame.K_SPACE:
-        # Manual food drop at a random cluster position
+    if event.key == pygame.K_SPACE:
         import random
         from food import Food
         cx = random.uniform(100, settings.WORLD_WIDTH  - 100)
@@ -104,47 +103,64 @@ def _handle_keydown(event: pygame.event.Event, world: "World") -> None:
 
 
 # =============================================================================
-def _draw_debug(
-    screen     : pygame.Surface,
-    font       : pygame.font.Font,
-    clock      : pygame.time.Clock,
-    world      : "World",
+def _draw_panel(
+    screen: pygame.Surface,
+    font: pygame.font.Font,
+    lines: list[str],
+    x: int,
+    y: int,
 ) -> None:
-    """Render a semi-transparent HUD panel with simulation stats."""
-    import settings
-
-    alive = [c for c in world.creatures if c.alive]
-    lines = [
-        f"FPS       : {clock.get_fps():.1f}",
-        f"Tick      : {world.tick}",
-        f"Creatures : {len(alive)}",
-        f"Food      : {len(world.foods)}",
-        f"Biomes    : {'ON' if settings.DEBUG_SHOW_BIOMES else 'OFF'}  [B]",
-    ]
-    if settings.DEBUG_SHOW_BIOMES:
-        for b in world.biomes:
-            lines.append(f"  {b.type:7} r={int(b.radius):3}  ({int(b.center.x)},{int(b.center.y)})")
-
+    """Shared semi-transparent HUD panel renderer."""
     pad     = HUD_PADDING
     text_w  = max(font.size(line)[0] for line in lines)
     text_h  = HUD_LINE_HEIGHT * len(lines)
     panel_w = text_w + pad * 2
     panel_h = text_h + pad * 2
 
-    # Semi-transparent dark panel
     panel = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
     panel.fill((*HUD_BG_COLOR, HUD_BG_ALPHA))
-    screen.blit(panel, (8, 8))
+    screen.blit(panel, (x, y))
 
-    # Text with drop shadow
-    x = 8 + pad
-    y = 8 + pad
+    tx = x + pad
+    ty = y + pad
     for line in lines:
-        shadow = font.render(line, True, HUD_TEXT_SHADOW)
-        screen.blit(shadow, (x + 1, y + 1))
-        text = font.render(line, True, HUD_TEXT_COLOR)
-        screen.blit(text, (x, y))
-        y += HUD_LINE_HEIGHT
+        screen.blit(font.render(line, True, HUD_TEXT_SHADOW), (tx + 1, ty + 1))
+        screen.blit(font.render(line, True, HUD_TEXT_COLOR), (tx, ty))
+        ty += HUD_LINE_HEIGHT
+
+
+def _draw_debug_hud(
+    screen: pygame.Surface,
+    font: pygame.font.Font,
+    clock: pygame.time.Clock,
+    world: World,
+) -> None:
+    """Top-left stats + live toggle states."""
+    alive = [c for c in world.creatures if c.alive]
+    lines = [
+        f"FPS       : {clock.get_fps():.1f}",
+        f"Tick      : {world.tick}",
+        f"Creatures : {len(alive)}",
+        f"Food      : {len(world.foods)}",
+        "---",
+        *status_lines(),
+        "[?] Help",
+    ]
+    if is_on("DEBUG_SHOW_BIOMES"):
+        for b in world.biomes:
+            lines.append(f"  {b.type:7} r={int(b.radius):3}  ({int(b.center.x)},{int(b.center.y)})")
+
+    _draw_panel(screen, font, lines, 8, 8)
+
+
+def _draw_help_overlay(screen: pygame.Surface, font: pygame.font.Font) -> None:
+    """Bottom-right control reference."""
+    lines = help_lines()
+    text_w = max(font.size(line)[0] for line in lines)
+    pad = HUD_PADDING
+    x = WINDOW_WIDTH - text_w - pad * 2 - 12
+    y = WINDOW_HEIGHT - HUD_LINE_HEIGHT * len(lines) - pad * 2 - 12
+    _draw_panel(screen, font, lines, x, y)
 
 
 # =============================================================================

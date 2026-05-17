@@ -49,10 +49,15 @@ from settings import (
     COLOR_CREATURE, COLOR_CREATURE_REST, COLOR_CREATURE_SOCIAL,
     COLOR_CREATURE_SEEK, COLOR_CREATURE_DYING, COLOR_CORPSE,
     COLOR_BAR_BG, COLOR_BAR_HUNGER, COLOR_BAR_ENERGY, COLOR_BAR_SOCIAL,
-    SHOW_STATUS_BARS, BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
-    SHOW_CREATURE_LABELS, LABEL_FONT_SIZE, LABEL_COLOR,
-    DEBUG_SHOW_PERCEPTION,
+    BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
+    LABEL_FONT_SIZE, LABEL_COLOR,
+    REPRO_BOND_THRESHOLD, REPRO_OFFSPRING_SCALE, REPRO_GROWTH_DURATION,
+    REPRO_MUTATION_MIN, REPRO_MUTATION_MAX,
+    REPRO_ENERGY_MIN, REPRO_HUNGER_MAX, REPRO_AGE_MIN,
+    ENERGY_SURVIVAL_ONLY, STATE_EMERGENCY_HUNGER,
+    REL_FRIEND_THRESHOLD,
 )
+import settings
 from logger import get_logger
 
 if TYPE_CHECKING:
@@ -178,10 +183,108 @@ class Creature:
         self._contest_log_timer   : float = 0.0   # rate limit for FOOD_CONTEST log
         self._crowd_log_timer     : float = 0.0   # rate limit for CROWD_AVOIDANCE log
 
+        # --- Lineage / reproduction ---
+        self.generation      : int = 0
+        self.parent_a_id     : uuid.UUID | None = None
+        self.parent_b_id     : uuid.UUID | None = None
+        self.lineage_id      : uuid.UUID = self.id
+        self.repro_cooldown  : float = 0.0
+        self.offspring_count : int = 0
+        self.scale           : float = 1.0
+        self._pair_bonds_logged: set = set()
+
         # --- Extension placeholders ---
         self.memory        : list = []
         self.dna           : dict = {}
         self.relationships : dict = {}
+
+    @classmethod
+    def create_offspring(
+        cls,
+        parent_a: "Creature",
+        parent_b: "Creature",
+        x: float,
+        y: float,
+    ) -> "Creature":
+        """Spawn a child from two parents with inherited traits and mutation."""
+        child = cls(x, y)
+        child.generation = max(parent_a.generation, parent_b.generation) + 1
+        child.parent_a_id = parent_a.id
+        child.parent_b_id = parent_b.id
+
+        if parent_a.generation <= parent_b.generation:
+            child.lineage_id = parent_a.lineage_id
+        else:
+            child.lineage_id = parent_b.lineage_id
+
+        child.scale = REPRO_OFFSPRING_SCALE
+        child.hunger = random.uniform(15, 35)
+        child.energy = random.uniform(55, 75)
+        child.social = random.uniform(45, 70)
+
+        def _inherit(pa: float, pb: float) -> float:
+            base = (pa + pb) / 2.0
+            sign = random.choice([-1, 1])
+            mut  = random.uniform(REPRO_MUTATION_MIN, REPRO_MUTATION_MAX) * sign
+            return max(0.0, min(1.0, base + mut))
+
+        child.risk_tolerance    = _inherit(parent_a.risk_tolerance, parent_b.risk_tolerance)
+        child.laziness          = _inherit(parent_a.laziness, parent_b.laziness)
+        child.social_dependency = _inherit(parent_a.social_dependency, parent_b.social_dependency)
+        child.food_greed        = _inherit(parent_a.food_greed, parent_b.food_greed)
+
+        speed_base = (parent_a._speed + parent_b._speed) / 2.0
+        speed_mut  = random.uniform(REPRO_MUTATION_MIN, REPRO_MUTATION_MAX)
+        speed_mut *= random.choice([-1, 1])
+        child._speed = max(
+            CREATURE_SPEED_MIN,
+            min(CREATURE_SPEED_MAX, speed_base + speed_mut * (CREATURE_SPEED_MAX - CREATURE_SPEED_MIN)),
+        )
+
+        child.dna = {
+            "risk"       : round(child.risk_tolerance, 3),
+            "lazy"       : round(child.laziness, 3),
+            "social"     : round(child.social_dependency, 3),
+            "greed"      : round(child.food_greed, 3),
+            "speed"      : round(child._speed, 1),
+            "generation" : child.generation,
+            "lineage"    : str(child.lineage_id)[:8],
+            "parent_a"   : parent_a.label,
+            "parent_b"   : parent_b.label,
+        }
+        return child
+
+    def get_affinity_to(self, other: "Creature") -> float:
+        """Return known affinity toward another creature (0 if unknown)."""
+        data = self.relationships.get(other.id)
+        return data["affinity"] if data else 0.0
+
+    def is_reproduction_viable(self) -> bool:
+        """Per-creature gates (partner-independent)."""
+        if not self.alive or self.state == State.DYING:
+            return False
+        if self.repro_cooldown > 0:
+            return False
+        if self._lifespan < REPRO_AGE_MIN:
+            return False
+        if self.energy < REPRO_ENERGY_MIN:
+            return False
+        if self.hunger > REPRO_HUNGER_MAX:
+            return False
+        if self.energy < ENERGY_SURVIVAL_ONLY:
+            return False
+        if self.hunger >= STATE_EMERGENCY_HUNGER * 0.5:
+            return False
+        return True
+
+    def display_label(self) -> str:
+        """Label shown above creature; includes generation for offspring."""
+        if self.generation > 0:
+            return f"{self.label} G{self.generation}"
+        return self.label
+
+    def _visual_radius(self) -> int:
+        return max(2, int(CREATURE_RADIUS * self.scale))
 
     # ------------------------------------------------------------------
     # Public API
@@ -197,6 +300,12 @@ class Creature:
         if self._claim_refresh_timer > 0: self._claim_refresh_timer = max(0.0, self._claim_refresh_timer - dt)
         if self._contest_log_timer   > 0: self._contest_log_timer   = max(0.0, self._contest_log_timer   - dt)
         if self._crowd_log_timer     > 0: self._crowd_log_timer     = max(0.0, self._crowd_log_timer     - dt)
+        if self.repro_cooldown       > 0: self.repro_cooldown       = max(0.0, self.repro_cooldown       - dt)
+
+        if self.scale < 1.0:
+            t = min(1.0, self._lifespan / REPRO_GROWTH_DURATION)
+            self.scale = REPRO_OFFSPRING_SCALE + (1.0 - REPRO_OFFSPRING_SCALE) * t
+
         self._decay_stats(dt)
 
         # Decay food memory over time
@@ -225,16 +334,16 @@ class Creature:
             self._draw_corpse(surface)
         elif self.state == State.DYING:
             self._draw_body(surface, COLOR_CREATURE_DYING, glow=False)
-            if SHOW_STATUS_BARS:
+            if settings.SHOW_STATUS_BARS:
                 self._draw_status_bars(surface, int(self.pos.x), int(self.pos.y))
         else:
             px, py = int(self.pos.x), int(self.pos.y)
-            if DEBUG_SHOW_PERCEPTION and self.state == State.SEEK_FOOD:
+            if settings.DEBUG_SHOW_PERCEPTION and self.state == State.SEEK_FOOD:
                 self._draw_perception_debug(surface, px, py)
             self._draw_body(surface, _STATE_COLOR[self.state], glow=True)
-            if SHOW_CREATURE_LABELS:
+            if settings.SHOW_CREATURE_LABELS:
                 self._draw_label(surface, px, py)
-            if SHOW_STATUS_BARS:
+            if settings.SHOW_STATUS_BARS:
                 self._draw_status_bars(surface, px, py)
 
     # ------------------------------------------------------------------
@@ -646,6 +755,21 @@ class Creature:
                     "BEST_FRIEND", self.label, c.label, entry["affinity"]
                 )
 
+            # Log pair bond when mutual affinity crosses reproduction bond threshold
+            their_aff = c.get_affinity_to(self)
+            if (entry["affinity"] >= REPRO_BOND_THRESHOLD
+                    and their_aff >= REPRO_BOND_THRESHOLD):
+                pair_key = frozenset((self.id, c.id))
+                if pair_key not in self._pair_bonds_logged and self.id < c.id:
+                    self._pair_bonds_logged.add(pair_key)
+                    c._pair_bonds_logged.add(pair_key)
+                    avg = (entry["affinity"] + their_aff) / 2.0
+                    get_logger().log_event(
+                        "PAIR_BOND",
+                        f"with {c.label}  mutual_affinity={avg:.1f}",
+                        self.label,
+                    )
+
     def _best_social_target(self, nearby: list) -> "Creature | None":
         """Pick the nearby creature with the highest known affinity."""
         if not nearby:
@@ -1004,14 +1128,15 @@ class Creature:
         glow    : bool,
     ) -> None:
         px, py = int(self.pos.x), int(self.pos.y)
+        radius = self._visual_radius()
 
         if glow:
-            glow_r    = CREATURE_RADIUS + 5
+            glow_r    = radius + 5
             glow_surf = pygame.Surface((glow_r * 2, glow_r * 2), pygame.SRCALPHA)
             pygame.draw.circle(glow_surf, (*color, 40), (glow_r, glow_r), glow_r)
             surface.blit(glow_surf, (px - glow_r, py - glow_r))
 
-        pygame.draw.circle(surface, color, (px, py), CREATURE_RADIUS)
+        pygame.draw.circle(surface, color, (px, py), radius)
 
     def _draw_corpse(self, surface: pygame.Surface) -> None:
         """Render a fading corpse dot."""
@@ -1020,25 +1145,25 @@ class Creature:
         alpha  = int(200 * (1.0 - t))
         if alpha <= 0:
             return
+        radius = self._visual_radius()
         corpse_surf = pygame.Surface(
-            (CREATURE_RADIUS * 2 + 2, CREATURE_RADIUS * 2 + 2), pygame.SRCALPHA
+            (radius * 2 + 2, radius * 2 + 2), pygame.SRCALPHA
         )
         pygame.draw.circle(
             corpse_surf,
             (*COLOR_CORPSE, alpha),
-            (CREATURE_RADIUS + 1, CREATURE_RADIUS + 1),
-            CREATURE_RADIUS,
+            (radius + 1, radius + 1),
+            radius,
         )
-        surface.blit(corpse_surf, (px - CREATURE_RADIUS - 1, py - CREATURE_RADIUS - 1))
+        surface.blit(corpse_surf, (px - radius - 1, py - radius - 1))
 
     def _draw_label(self, surface: pygame.Surface, px: int, py: int) -> None:
         font   = _get_label_font()
-        y_base = py - CREATURE_RADIUS - 14
-        # Shadow (1 px offset) for contrast on dark background
-        shadow = font.render(self.label, True, (0, 0, 0))
+        label  = self.display_label()
+        y_base = py - self._visual_radius() - 14
+        shadow = font.render(label, True, (0, 0, 0))
         surface.blit(shadow, (px - shadow.get_width() // 2 + 1, y_base + 1))
-        # Main label
-        text = font.render(self.label, True, LABEL_COLOR)
+        text = font.render(label, True, LABEL_COLOR)
         surface.blit(text, (px - text.get_width() // 2, y_base))
 
     def _draw_status_bars(self, surface: pygame.Surface, px: int, py: int) -> None:
@@ -1048,7 +1173,7 @@ class Creature:
             (self.social, 100, COLOR_BAR_SOCIAL),
         ]
         start_x = px - BAR_WIDTH // 2
-        start_y = py + CREATURE_RADIUS + BAR_SPACING
+        start_y = py + self._visual_radius() + BAR_SPACING
 
         for i, (value, maximum, color) in enumerate(bars):
             y = start_y + i * (BAR_HEIGHT + 2)

@@ -28,16 +28,21 @@ from settings import (
 # ---------------------------------------------------------------------------
 
 _C_BG        = (0,   0,   0)          # background
-_C_DIM       = (0,   40,  20)         # very dim phosphor (inactive lines)
-_C_MID       = (0,  120,  60)         # medium phosphor
+_C_DIM       = (0,   55,  28)         # dim phosphor (hints, grid)
+_C_MID       = (0,  160,  80)         # medium phosphor
 _C_BRIGHT    = (0,  255, 136)         # phosphor green (main text)
-_C_CYAN      = (80, 200, 200)         # accent cyan
-_C_WARN      = (200, 200,  40)        # amber accent
-_C_BORDER    = (0,   80,  40)         # panel border
+_C_CYAN      = (80, 220, 220)         # accent cyan
+_C_WARN      = (220, 210,  50)        # amber accent
+_C_BORDER    = (0,  140,  70)         # panel border
+_C_SIDEBAR_LBL = (140, 220, 170)      # sidebar field labels (readable)
+_C_SIDEBAR_VAL = (0,  255, 136)       # sidebar values
+_C_PANEL_BG  = (0,   18,   8, 210)    # sidebar panel fill (RGBA)
 
 _FONT_SIZE   = 15                     # main terminal font
 _TITLE_SIZE  = 36                     # PROJECT ECHO heading
 _SUB_SIZE    = 13                     # sub-text / metadata
+_SIDEBAR_SIZE = 14                    # sidebar metadata (slightly larger)
+_LOGO_RADIUS  = 52                    # line-art emblem radius (px)
 
 _SCANLINE_ALPHA = 25                  # scanline overlay opacity
 _NOISE_ALPHA    = 12                  # static noise opacity
@@ -93,6 +98,8 @@ class BootScreen:
         self._font_b     = pygame.font.SysFont("Courier New", _FONT_SIZE,  bold=True)
         self._font_title = pygame.font.SysFont("Courier New", _TITLE_SIZE, bold=True)
         self._font_sub   = pygame.font.SysFont("Courier New", _SUB_SIZE,   bold=False)
+        self._font_side  = pygame.font.SysFont("Courier New", _SIDEBAR_SIZE, bold=False)
+        self._font_side_b = pygame.font.SysFont("Courier New", _SIDEBAR_SIZE, bold=True)
 
         self._scanline_surf = self._build_scanlines()
         self._noise_surf    = self._build_noise()
@@ -280,12 +287,20 @@ class BootScreen:
         )
 
     def _draw_sidebar(self, alpha: float) -> None:
-        """Right-side metadata panel."""
-        x   = self._w - 300
-        y   = 160
-        lh  = 17
-        ts  = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
+        """Right column: line-art logo + readable metadata panel."""
+        panel_w = 280
+        panel_x = self._w - panel_w - 36
+        logo_cy = 200
+        meta_y  = logo_cy + _LOGO_RADIUS + 36
 
+        # --- Line-art emblem (echo / observation motif) ---
+        self._draw_line_logo(panel_x + panel_w // 2, logo_cy, _LOGO_RADIUS, alpha)
+
+        # Wireframe "ECHO" under emblem
+        self._draw_wireframe_echo(panel_x + panel_w // 2, logo_cy + _LOGO_RADIUS + 14, alpha)
+
+        # --- Metadata panel ---
+        ts = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
         entries = [
             ("SESSION",    _SESSION_ID),
             ("SEED",       str(_SEED)),
@@ -294,20 +309,129 @@ class BootScreen:
             ("FOOD INIT",  str(self._food_display)),
             ("BIOMES",     str(BIOME_COUNT)),
         ]
+        lh      = 20
+        pad     = 12
+        panel_h = len(entries) * lh + pad * 2
 
-        # Panel border
-        panel_h = len(entries) * lh + 20
+        panel_surf = pygame.Surface((panel_w, panel_h), pygame.SRCALPHA)
+        pr, pg, pb, pa = _C_PANEL_BG
+        panel_surf.fill((pr, pg, pb, int(pa * alpha)))
         pygame.draw.rect(
-            self._screen, self._dim(_C_BORDER, alpha * 0.6),
-            (x - 10, y - 8, 290, panel_h), 1
+            panel_surf,
+            self._dim(_C_BORDER, alpha),
+            (0, 0, panel_w, panel_h), 1,
+        )
+        self._screen.blit(panel_surf, (panel_x, meta_y))
+
+        y = meta_y + pad
+        for label, value in entries:
+            lbl = self._font_side.render(f"{label}", True, self._dim(_C_SIDEBAR_LBL, alpha))
+            val = self._font_side_b.render(value, True, self._dim(_C_SIDEBAR_VAL, alpha))
+            self._screen.blit(lbl, (panel_x + pad, y))
+            self._screen.blit(val, (panel_x + 118, y))
+            y += lh
+
+    def _draw_line_logo(self, cx: int, cy: int, radius: int, alpha: float) -> None:
+        """
+        Stroke-based emblem: concentric rings, crosshair, echo arcs, corner brackets.
+        Evokes sonar / observation chamber without raster graphics.
+        """
+        bright = self._dim(_C_BRIGHT, alpha)
+        mid    = self._dim(_C_MID, alpha)
+        dim    = self._dim(_C_BORDER, alpha)
+
+        # Corner targeting brackets
+        b = radius + 14
+        blen = 16
+        corners = [
+            (cx - b, cy - b,  1,  1), (cx + b, cy - b, -1,  1),
+            (cx - b, cy + b,  1, -1), (cx + b, cy + b, -1, -1),
+        ]
+        for px, py, sx, sy in corners:
+            pygame.draw.line(self._screen, dim, (px, py), (px + sx * blen, py), 2)
+            pygame.draw.line(self._screen, dim, (px, py), (px, py + sy * blen), 2)
+
+        # Concentric rings
+        pygame.draw.circle(self._screen, bright, (cx, cy), radius, 2)
+        pygame.draw.circle(self._screen, mid,    (cx, cy), int(radius * 0.62), 1)
+        pygame.draw.circle(self._screen, mid,    (cx, cy), int(radius * 0.32), 1)
+
+        # Crosshair
+        gap = 8
+        pygame.draw.line(
+            self._screen, dim,
+            (cx - radius - 6, cy), (cx - gap, cy), 1,
+        )
+        pygame.draw.line(
+            self._screen, dim,
+            (cx + gap, cy), (cx + radius + 6, cy), 1,
+        )
+        pygame.draw.line(
+            self._screen, dim,
+            (cx, cy - radius - 6), (cx, cy - gap), 1,
+        )
+        pygame.draw.line(
+            self._screen, dim,
+            (cx, cy + gap), (cx, cy + radius + 6), 1,
         )
 
-        for label, value in entries:
-            lbl = self._font_sub.render(f"{label:<12}", True, self._dim(_C_DIM, alpha))
-            val = self._font_sub.render(value,           True, self._dim(_C_MID, alpha))
-            self._screen.blit(lbl, (x, y))
-            self._screen.blit(val, (x + lbl.get_width() + 6, y))
-            y += lh
+        # Echo wave arcs (right side – sound propagation)
+        for i, scale in enumerate((0.45, 0.72, 1.0)):
+            r = int(radius * scale)
+            rect = pygame.Rect(cx - r, cy - r, r * 2, r * 2)
+            start = -math.pi / 4
+            end   =  math.pi / 4
+            width = 2 if i == 2 else 1
+            col   = bright if i == 2 else mid
+            pygame.draw.arc(self._screen, col, rect, start, end, width)
+
+        # Pulse lines on left (incoming signal)
+        for dy in (-18, 0, 18):
+            x0 = cx - radius - 22
+            x1 = cx - radius - 6
+            pygame.draw.line(self._screen, mid, (x0, cy + dy), (x1, cy + dy), 1)
+
+        # Core node
+        pygame.draw.circle(self._screen, bright, (cx, cy), 4)
+        pygame.draw.circle(self._screen, _C_BG, (cx, cy), 2)
+
+    def _draw_wireframe_echo(self, cx: int, cy: int, alpha: float) -> None:
+        """Compact ECHO lettermark built from line segments."""
+        col   = self._dim(_C_BRIGHT, alpha)
+        h     = 10
+        w     = 7
+        gap   = 4
+        total = 4 * w + 3 * gap
+        x0    = cx - total // 2
+
+        def letter_e(x: int) -> None:
+            pygame.draw.line(self._screen, col, (x, cy - h), (x, cy + h), 2)
+            pygame.draw.line(self._screen, col, (x, cy - h), (x + w, cy - h), 2)
+            pygame.draw.line(self._screen, col, (x, cy),     (x + w - 2, cy), 1)
+            pygame.draw.line(self._screen, col, (x, cy + h), (x + w, cy + h), 2)
+
+        def letter_c(x: int) -> None:
+            pygame.draw.arc(
+                self._screen, col,
+                pygame.Rect(x, cy - h, w + 2, h * 2),
+                math.pi / 2, math.pi * 1.6, 2,
+            )
+
+        def letter_h(x: int) -> None:
+            pygame.draw.line(self._screen, col, (x, cy - h), (x, cy + h), 2)
+            pygame.draw.line(self._screen, col, (x + w, cy - h), (x + w, cy + h), 2)
+            pygame.draw.line(self._screen, col, (x, cy), (x + w, cy), 1)
+
+        def letter_o(x: int) -> None:
+            pygame.draw.rect(
+                self._screen, col,
+                pygame.Rect(x, cy - h, w, h * 2), 2,
+            )
+
+        letter_e(x0)
+        letter_c(x0 + w + gap)
+        letter_h(x0 + 2 * (w + gap))
+        letter_o(x0 + 3 * (w + gap))
 
     def _draw_boot_lines(self, alpha: float) -> None:
         if self._phase not in ("lines", "hold", "fade"):
@@ -362,7 +486,7 @@ class BootScreen:
 
         # Skip hint
         hint = self._font_sub.render(
-            "[ PRESS ANY KEY TO SKIP ]", True, self._dim(_C_DIM, alpha * 0.7)
+            "[ PRESS ANY KEY TO SKIP ]", True, self._dim(_C_MID, alpha)
         )
         self._screen.blit(
             hint, (self._w // 2 - hint.get_width() // 2, self._h - 30)

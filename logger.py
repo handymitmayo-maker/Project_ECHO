@@ -58,6 +58,10 @@ class Logger:
         # Per-creature death records (for session summary)
         self._death_records : list[dict] = []
 
+        # Reproduction / lineage tracking
+        self._logged_lineages : set = set()
+        self._peak_generation : int = 0
+
         if LOG_TO_FILE:
             os.makedirs(LOG_DIR, exist_ok=True)
             fname          = "echo_" + self._session_start.strftime("%Y-%m-%d_%H-%M-%S") + ".log"
@@ -73,11 +77,14 @@ class Logger:
         Write session header with world snapshot.
         Must be called after World() is fully initialised.
         """
+        import reproduction
+        reproduction.reset_session_counters()
+
         from settings import (
             FPS, HUNGER_DECAY_RATE, ENERGY_REST_RATE,
             ENERGY_DECAY_WANDER, ENERGY_DECAY_SEEK,
             FOOD_SPAWN_INTERVAL, FOOD_SPAWN_BATCH, FOOD_MAX_COUNT,
-            BIOME_COUNT,
+            BIOME_COUNT, MAX_POPULATION, REPRO_AFFINITY_MIN, REPRO_AGE_MIN,
         )
         ts        = self._session_start.strftime("%Y-%m-%d %H:%M:%S")
         sep_thick = "=" * 62
@@ -102,6 +109,10 @@ class Logger:
             f"  Energy wander/seek: {ENERGY_DECAY_WANDER}/{ENERGY_DECAY_SEEK} /s",
             f"  Energy rest rate  : {ENERGY_REST_RATE}/s",
             f"  Target FPS        : {FPS}",
+            sep_thin,
+            f"  Max population    : {MAX_POPULATION}  (pair reproduction only)",
+            f"  Repro gates       : affinity>{REPRO_AFFINITY_MIN:.0f},"
+            f" age>{REPRO_AGE_MIN:.0f}s",
             sep_thick,
             "",
         ])
@@ -167,6 +178,7 @@ class Logger:
             f"contested_food={contested_ratio:.0%}"
         )
         self._emit(line)
+        self.log_generation_stats(world)
 
     # ------------------------------------------------------------------
     # Relationship events
@@ -183,6 +195,51 @@ class Logger:
         delta_str = f" (Δ{delta:+.1f})" if delta is not None else ""
         msg = f"with {label_b:<8} | affinity={affinity:6.1f}{delta_str}"
         self.log_event(event_type, msg, label_a)
+
+    def log_reproduction(
+        self,
+        parent_a: "Creature",
+        parent_b: "Creature",
+        child: "Creature",
+    ) -> None:
+        self._peak_generation = max(self._peak_generation, child.generation)
+        msg = (
+            f"{parent_a.label} + {parent_b.label} produced offspring "
+            f"{child.label}  GEN-{child.generation}"
+        )
+        self.log_event("REPRODUCTION", msg, child.label)
+
+    def log_offspring_born(self, child: "Creature") -> None:
+        d = child.dna
+        msg = (
+            f"GEN-{child.generation}  lineage={str(child.lineage_id)[:8]}  "
+            f"risk={d.get('risk', 0):.2f} social={d.get('social', 0):.2f} "
+            f"greed={d.get('greed', 0):.2f} lazy={d.get('lazy', 0):.2f}"
+        )
+        self.log_event("OFFSPRING_BORN", msg, child.label)
+
+    def log_family_line(self, child: "Creature") -> None:
+        """Log when a lineage produces its first tracked offspring."""
+        lid = child.lineage_id
+        if lid in self._logged_lineages:
+            return
+        self._logged_lineages.add(lid)
+        parents = f"{child.dna.get('parent_a', '?')} + {child.dna.get('parent_b', '?')}"
+        msg = (
+            f"lineage={str(lid)[:8]}  first_offspring={child.label}  "
+            f"GEN-{child.generation}  from {parents}"
+        )
+        self.log_event("FAMILY_LINE", msg, child.label)
+
+    def log_generation_stats(self, world: "World") -> None:
+        import reproduction
+        stats = reproduction.generation_stats(world)
+        self._peak_generation = max(self._peak_generation, stats["max_gen"])
+        msg = (
+            f"max_gen={stats['max_gen']}  avg_gen={stats['avg_gen']:.1f}  "
+            f"total_births={stats['births']}"
+        )
+        self.log_event("GENERATION_STATS", msg)
 
     # ------------------------------------------------------------------
     # Lifetime summary (called from Creature._die)
@@ -230,6 +287,9 @@ class Logger:
             f"  lazy={creature.laziness:.2f}"
             f"  social={creature.social_dependency:.2f}"
             f"  greed={creature.food_greed:.2f}",
+            f"  Generation          : {creature.generation}",
+            f"  Lineage             : {str(creature.lineage_id)[:8]}",
+            f"  Offspring produced  : {creature.offspring_count}",
             sep,
         ]
         for line in lines:
@@ -251,6 +311,8 @@ class Logger:
                 "social" : round(creature.social_dependency, 2),
                 "greed"  : round(creature.food_greed, 2),
             },
+            "generation"         : creature.generation,
+            "offspring_count"    : creature.offspring_count,
         })
 
     # ------------------------------------------------------------------
@@ -269,8 +331,10 @@ class Logger:
     # ------------------------------------------------------------------
 
     def _write_session_summary(self, world: "World") -> None:
+        import reproduction
         alive   = [c for c in world.creatures if c.alive]
         records = self._death_records
+        repro   = reproduction.generation_stats(world)
         sep     = "=" * 62
         thin    = "-" * 62
 
@@ -284,6 +348,8 @@ class Logger:
             f"  Creatures that died    : {len(records)}",
             f"  Total food consumed    : {self._total_food_consumed}",
             f"  Total social events    : {self._total_social}",
+            f"  Total births           : {repro['births']}",
+            f"  Peak generation        : {max(self._peak_generation, repro['max_gen'])}",
         ]
 
         if records:
@@ -311,9 +377,10 @@ class Logger:
             for c in alive:
                 lines.append(
                     f"    {c.label:<8}"
+                    f"  gen={c.generation}"
                     f"  lifespan={c._lifespan:.1f}s"
                     f"  food={c.food_eaten}"
-                    f"  social={c.social_interactions}"
+                    f"  offspring={c.offspring_count}"
                     f"  dist={c.distance_travelled:.0f}px"
                 )
 
