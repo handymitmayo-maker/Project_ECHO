@@ -74,9 +74,15 @@ class World:
         """Advance simulation by dt seconds."""
         self.tick += 1
 
-        # Update all creatures
+        # Update creatures: alive ones run full AI; dead ones advance corpse fade
         for creature in self.creatures:
-            creature.update(self, dt)
+            if creature.alive:
+                creature.update(self, dt)
+            elif creature.is_corpse:
+                creature.update_corpse(dt)
+
+        # Remove corpses whose fade timer has expired
+        self.creatures = [c for c in self.creatures if c.alive or c.is_corpse]
 
         # Update food animations
         for food in self.foods:
@@ -108,8 +114,15 @@ class World:
         for food in self.foods:
             food.draw(surface)
 
+        # Corpses render first (underneath living creatures)
         for creature in self.creatures:
-            creature.draw(surface)
+            if creature.is_corpse:
+                creature.draw(surface)
+
+        # Living creatures render on top
+        for creature in self.creatures:
+            if creature.alive:
+                creature.draw(surface)
 
         self._draw_scanlines(surface)
 
@@ -136,11 +149,13 @@ class World:
         radius  : float,
         exclude : Creature | None = None,
     ) -> list[Creature]:
-        """Return all creatures within radius of pos, optionally excluding one."""
+        """Return all alive (non-corpse) creatures within radius of pos."""
         r2      = radius * radius
         result  = []
         for c in self.creatures:
             if c is exclude:
+                continue
+            if not c.alive:      # skip corpses – they are not social targets
                 continue
             if pos.distance_squared_to(c.pos) <= r2:
                 result.append(c)

@@ -63,8 +63,8 @@ class Logger:
         self._emit(line)
 
     def log_stats(self, world: "World") -> None:
-        """Compute and log a statistics snapshot from the current world state."""
-        creatures = world.creatures
+        """Compute and log a statistics snapshot from alive creatures only."""
+        creatures = [c for c in world.creatures if c.alive]
         if not creatures:
             return
 

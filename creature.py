@@ -1,6 +1,7 @@
 # =============================================================================
 # PROJECT ECHO – creature.py
-# Autonomous agent with a simple state-machine AI.
+# Autonomous agent with stable state-machine AI, hysteresis, dying state,
+# and a full life/death/corpse cycle.
 # =============================================================================
 
 from __future__ import annotations
@@ -18,13 +19,18 @@ from settings import (
     CREATURE_ARRIVE_RADIUS, CREATURE_ACCEL_FACTOR, CREATURE_FRICTION,
     HUNGER_DECAY_RATE, ENERGY_DECAY_RATE, ENERGY_REST_RATE,
     SOCIAL_DECAY_RATE, SOCIAL_GAIN_RATE,
-    HUNGER_THRESHOLD, ENERGY_THRESHOLD, SOCIAL_THRESHOLD,
+    STATE_MIN_DURATION, STATE_EMERGENCY_HUNGER,
+    HUNGER_SEEK_ENTER, HUNGER_SEEK_EXIT,
+    ENERGY_REST_ENTER, ENERGY_REST_EXIT,
+    SOCIAL_ENTER, SOCIAL_EXIT,
     WANDER_CHANGE_INTERVAL, WANDER_CIRCLE_DIST, WANDER_CIRCLE_RADIUS,
     WANDER_ANGLE_SPEED, SOCIAL_RADIUS,
     IDLE_CHANCE, IDLE_DURATION_MIN, IDLE_DURATION_MAX,
+    DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
+    DEATH_CRITICAL_TIME, CORPSE_DURATION,
     WORLD_WIDTH, WORLD_HEIGHT,
     COLOR_CREATURE, COLOR_CREATURE_REST, COLOR_CREATURE_SOCIAL,
-    COLOR_CREATURE_SEEK,
+    COLOR_CREATURE_SEEK, COLOR_CREATURE_DYING, COLOR_CORPSE,
     COLOR_BAR_BG, COLOR_BAR_HUNGER, COLOR_BAR_ENERGY, COLOR_BAR_SOCIAL,
     SHOW_STATUS_BARS, BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
     SHOW_CREATURE_LABELS,
@@ -41,14 +47,15 @@ class State(Enum):
     SEEK_FOOD  = auto()
     REST       = auto()
     SOCIALIZE  = auto()
+    DYING      = auto()
 
 
-# Colour per state
 _STATE_COLOR = {
     State.WANDER:    COLOR_CREATURE,
     State.SEEK_FOOD: COLOR_CREATURE_SEEK,
     State.REST:      COLOR_CREATURE_REST,
     State.SOCIALIZE: COLOR_CREATURE_SOCIAL,
+    State.DYING:     COLOR_CREATURE_DYING,
 }
 
 
@@ -66,149 +73,263 @@ def _get_label_font() -> pygame.font.Font:
 # =============================================================================
 class Creature:
     """
-    A single autonomous creature.
+    Autonomous creature driven by a stable priority state machine.
 
-    Drives itself via a priority-based state machine:
-        SEEK_FOOD  (highest priority – survival)
-        REST
-        SOCIALIZE
-        WANDER     (default / fallback)
+    State machine properties:
+        - Hysteresis:   separate enter/exit thresholds prevent rapid oscillation
+        - Commitment:   minimum time in each state (STATE_MIN_DURATION)
+        - Emergency:    critical hunger always breaks commitment immediately
+        - DYING:        pre-death degraded state with restricted behavior
 
-    Extension hooks (populated in future versions):
+    Extension hooks:
         self.memory        – episodic memory list
         self.dna           – heritable trait dict
         self.relationships – {creature_id: affinity_float}
     """
 
-    _counter: int = 0   # class-level sequential ID counter
+    _counter: int = 0
 
     def __init__(self, x: float, y: float) -> None:
         Creature._counter += 1
-        self.label         = f"ECHO-{Creature._counter:02d}"
-        self.id            = uuid.uuid4()
-        self.pos           = pygame.Vector2(x, y)
-        self.vel           = pygame.Vector2(
+        self.label  = f"ECHO-{Creature._counter:02d}"
+        self.id     = uuid.uuid4()
+        self.pos    = pygame.Vector2(x, y)
+        self.vel    = pygame.Vector2(
             random.uniform(-1, 1), random.uniform(-1, 1)
         ).normalize() * random.uniform(CREATURE_SPEED_MIN * 0.3, CREATURE_SPEED_MIN * 0.7)
 
         # --- Personality ---
-        self._speed        = random.uniform(CREATURE_SPEED_MIN, CREATURE_SPEED_MAX)
+        self._speed = random.uniform(CREATURE_SPEED_MIN, CREATURE_SPEED_MAX)
 
         # --- Vital stats (0–100) ---
-        self.hunger  = random.uniform(20, 60)   # grows over time; high = hungry
-        self.energy  = random.uniform(50, 100)
-        self.social  = random.uniform(30, 90)
+        self.hunger = random.uniform(20, 60)
+        self.energy = random.uniform(50, 100)
+        self.social = random.uniform(30, 90)
 
         # --- State machine ---
-        self.state        = State.WANDER
-        self._prev_state  = State.WANDER
-        self.target       = None                 # Food object or Vector2
+        self.state         = State.WANDER
+        self._state_timer  = 0.0    # seconds spent in current state
+        self._lifespan     = 0.0    # total seconds alive
+        self.target        = None   # Food object or Creature reference
 
-        # Wander / Reynolds wander circle
-        self._wander_timer  = 0.0
-        self._wander_angle  = random.uniform(0, math.tau)   # current wander heading angle
+        # --- Life / Death ---
+        self.alive           = True
+        self.is_corpse       = False
+        self._death_timer    = 0.0  # seconds at critical stats; reused for corpse fade
+        self._cause_of_death : str | None = None
 
-        # Idle sub-state
+        # --- Wander / Reynolds wander circle ---
+        self._wander_timer = 0.0
+        self._wander_angle = random.uniform(0, math.tau)
+
+        # --- Idle sub-state ---
         self._is_idle       = False
         self._idle_timer    = 0.0
         self._idle_duration = 0.0
 
-        # Social interaction – track whether we're already in an interaction
-        # to avoid logging every frame
+        # --- Social interaction cooldown ---
         self._in_social_interaction = False
 
         # --- Extension placeholders ---
-        self.memory        : list        = []    # future: episodic events
-        self.dna           : dict        = {}    # future: heritable traits
-        self.relationships : dict        = {}    # future: {id: affinity}
+        self.memory        : list = []
+        self.dna           : dict = {}
+        self.relationships : dict = {}
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
     def update(self, world: "World", dt: float) -> None:
-        """Main update: decide state, then act."""
+        """Main update tick – only called while self.alive is True."""
+        self._lifespan  += dt
+        self._state_timer += dt
         self._decay_stats(dt)
-        self._decide_state(world)
-        self._act(world, dt)
-        self._move(dt)
-        self._wrap_borders()
+        self._decide_state(world, dt)
+        if self.alive:  # _decide_state may have triggered death
+            self._act(world, dt)
+            self._move(dt)
+            self._wrap_borders()
+
+    def update_corpse(self, dt: float) -> None:
+        """Advance corpse fade timer. Called by World when alive=False."""
+        self._death_timer += dt
+        if self._death_timer >= CORPSE_DURATION:
+            self.is_corpse = False   # signals World to remove
 
     def draw(self, surface: pygame.Surface) -> None:
-        """Render creature and optional status bars."""
-        px, py = int(self.pos.x), int(self.pos.y)
-        color  = _STATE_COLOR[self.state]
+        """Render based on alive/dying/corpse status."""
+        if self.is_corpse:
+            self._draw_corpse(surface)
+        elif self.state == State.DYING:
+            self._draw_body(surface, COLOR_CREATURE_DYING, glow=False)
+            if SHOW_STATUS_BARS:
+                self._draw_status_bars(surface, int(self.pos.x), int(self.pos.y))
+        else:
+            self._draw_body(surface, _STATE_COLOR[self.state], glow=True)
+            if SHOW_CREATURE_LABELS:
+                self._draw_label(surface, int(self.pos.x), int(self.pos.y))
+            if SHOW_STATUS_BARS:
+                self._draw_status_bars(surface, int(self.pos.x), int(self.pos.y))
 
-        # Glow aura
-        glow_r = CREATURE_RADIUS + 5
-        glow_surf = pygame.Surface((glow_r * 2, glow_r * 2), pygame.SRCALPHA)
-        pygame.draw.circle(
-            glow_surf,
-            (*color, 40),
-            (glow_r, glow_r),
-            glow_r,
+    # ------------------------------------------------------------------
+    # Private – AI Decision
+    # ------------------------------------------------------------------
+
+    def _decide_state(self, world: "World", dt: float) -> None:
+        """
+        Stable priority state machine with:
+          1. Death check (always runs, can interrupt everything)
+          2. Emergency hunger override (breaks commitment)
+          3. State commitment (min duration)
+          4. Hysteresis evaluation
+        """
+        # 1. Death / dying check – always evaluated
+        if self._check_death_conditions(world, dt):
+            return
+
+        # 2. DYING state restricts choices to SEEK_FOOD or REST only
+        if self.state == State.DYING:
+            if self.hunger >= HUNGER_SEEK_ENTER:
+                nearest = world.get_nearest_food(self.pos)
+                if nearest is not None:
+                    self._force_transition(State.SEEK_FOOD, world, "dying_hunger")
+            elif self.energy <= ENERGY_REST_ENTER:
+                self._force_transition(State.REST, world, "dying_rest")
+            return
+
+        # 3. Emergency: critical hunger always breaks commitment
+        if self.hunger >= STATE_EMERGENCY_HUNGER and self.state != State.SEEK_FOOD:
+            self._force_transition(State.SEEK_FOOD, world, "emergency_hunger")
+            return
+
+        # 4. Respect commitment – don't evaluate until min duration elapsed
+        if self._state_timer < STATE_MIN_DURATION:
+            return
+
+        # 5. Hysteresis evaluation
+        new_state = self._evaluate_next_state()
+        if new_state != self.state:
+            self._force_transition(new_state, world, "normal")
+
+    def _evaluate_next_state(self) -> State:
+        """
+        Hysteresis-based state selection.
+        Sticky exits prevent the creature from leaving a state too quickly.
+        """
+        # Sticky exits: keep current state until recovery thresholds are met
+        if self.state == State.SEEK_FOOD and self.hunger >= HUNGER_SEEK_EXIT:
+            return State.SEEK_FOOD
+        if self.state == State.REST and self.energy <= ENERGY_REST_EXIT:
+            return State.REST
+        if self.state == State.SOCIALIZE and self.social <= SOCIAL_EXIT:
+            return State.SOCIALIZE
+
+        # Priority enter thresholds (evaluated top-down)
+        if self.hunger >= HUNGER_SEEK_ENTER:
+            return State.SEEK_FOOD
+        if self.energy <= ENERGY_REST_ENTER:
+            return State.REST
+        if self.social <= SOCIAL_ENTER:
+            return State.SOCIALIZE
+        return State.WANDER
+
+    def _force_transition(
+        self,
+        new_state : State,
+        world     : "World",
+        reason    : str,
+    ) -> None:
+        """Execute a state transition, log it with elapsed duration, update target."""
+        old_state = self.state
+        duration  = self._state_timer
+
+        get_logger().log_event(
+            "STATE_CHANGE",
+            f"{old_state.name} ({duration:.1f}s) -> {new_state.name} [{reason}]",
+            self.label,
         )
-        surface.blit(glow_surf, (px - glow_r, py - glow_r))
 
-        # Core body
-        pygame.draw.circle(surface, color, (px, py), CREATURE_RADIUS)
+        self.state        = new_state
+        self._state_timer = 0.0
 
-        if SHOW_CREATURE_LABELS:
-            font       = _get_label_font()
-            label_surf = font.render(self.label, True, (110, 110, 110))
-            surface.blit(
-                label_surf,
-                (px - label_surf.get_width() // 2, py - CREATURE_RADIUS - 13),
-            )
-
-        if SHOW_STATUS_BARS:
-            self._draw_status_bars(surface, px, py)
-
-    # ------------------------------------------------------------------
-    # Private – AI
-    # ------------------------------------------------------------------
-
-    def _decide_state(self, world: "World") -> None:
-        """Priority-based state selection."""
-        if self.hunger >= HUNGER_THRESHOLD:
-            self.state  = State.SEEK_FOOD
-            nearest     = world.get_nearest_food(self.pos)
-            self.target = nearest
-        elif self.energy <= ENERGY_THRESHOLD:
-            self.state  = State.REST
-            self.target = None
-        elif self.social <= SOCIAL_THRESHOLD:
-            self.state  = State.SOCIALIZE
+        # Refresh target for the new state
+        if new_state == State.SEEK_FOOD:
+            self.target = world.get_nearest_food(self.pos)
+        elif new_state == State.SOCIALIZE:
             nearby      = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
             self.target = nearby[0] if nearby else None
         else:
-            self.state  = State.WANDER
             self.target = None
 
-        if self.state != self._prev_state:
-            get_logger().log_event(
-                "STATE_CHANGE",
-                f"{self._prev_state.name} -> {self.state.name}",
-                self.label,
-            )
-            self._prev_state = self.state
+    # ------------------------------------------------------------------
+    # Private – Death System
+    # ------------------------------------------------------------------
+
+    def _check_death_conditions(self, world: "World", dt: float) -> bool:
+        """
+        Accumulate time spent at critical stats; trigger death when threshold met.
+        Also transitions to DYING when stats are very low but not yet fatal.
+        Returns True if the creature died this frame.
+        """
+        at_critical = (self.energy <= 0) or (self.hunger >= 100)
+
+        if at_critical:
+            self._death_timer += dt
+            if self._death_timer >= DEATH_CRITICAL_TIME:
+                self._die()
+                return True
+        else:
+            # Slowly bleed off death timer when recovering
+            self._death_timer = max(0.0, self._death_timer - dt * 0.5)
+
+        # Pre-death DYING state: severely reduced capacity
+        if (self.energy < DYING_ENERGY_THRESHOLD or
+                self.hunger > DYING_HUNGER_THRESHOLD):
+            if self.state not in (State.DYING, State.REST, State.SEEK_FOOD):
+                self._force_transition(State.DYING, world, "critical_stats")
+
+        return False
+
+    def _die(self) -> None:
+        """Mark creature as dead, start corpse countdown, log the event."""
+        self._cause_of_death = "starvation" if self.hunger >= 100 else "exhaustion"
+        get_logger().log_event(
+            "DEATH",
+            (
+                f"cause={self._cause_of_death} | "
+                f"lifespan={self._lifespan:.1f}s | "
+                f"last_state={self.state.name} | "
+                f"hunger={self.hunger:.1f} | "
+                f"energy={self.energy:.1f}"
+            ),
+            self.label,
+        )
+        self.alive      = False
+        self.is_corpse  = True
+        self._death_timer = 0.0   # reset – now used for corpse fade
+
+    # ------------------------------------------------------------------
+    # Private – Behavior (Act)
+    # ------------------------------------------------------------------
 
     def _act(self, world: "World", dt: float) -> None:
-        """Translate current state into steering forces."""
+        """Translate current state into movement and interaction."""
         if self.state == State.SEEK_FOOD:
             if self.target is not None and self.target.alive:
                 self._steer_arrive(self.target.pos)
                 if self.pos.distance_to(self.target.pos) < CREATURE_RADIUS + self.target.radius:
                     self._eat(self.target)
             else:
-                self._steer_wander(dt)
+                # Target gone – pick a new one or wander
+                self.target = world.get_nearest_food(self.pos)
+                if self.target is None:
+                    self._steer_wander(dt)
 
         elif self.state == State.REST:
-            # Gradually stop
             self.vel *= max(0.0, 1.0 - dt * 4)
 
         elif self.state == State.SOCIALIZE:
-            if self.target is not None:
+            if self.target is not None and self.target.alive:
                 self._steer_arrive(self.target.pos)
                 if self.pos.distance_to(self.target.pos) < SOCIAL_RADIUS * 0.5:
                     self.social = min(100, self.social + SOCIAL_GAIN_RATE * dt)
@@ -226,32 +347,33 @@ class Creature:
                 self._in_social_interaction = False
                 self._steer_wander(dt)
 
+        elif self.state == State.DYING:
+            # Very slow movement, no socialising
+            self.vel *= max(0.0, 1.0 - dt * 2)
+
         else:  # WANDER
             self._steer_wander(dt)
 
     # ------------------------------------------------------------------
-    # Private – Steering Behaviors
+    # Private – Steering
     # ------------------------------------------------------------------
 
     def _steer_arrive(self, target_pos: pygame.Vector2) -> None:
-        """
-        Craig Reynolds 'Arrive' steering behavior.
-        Slows down as the creature approaches the target.
-        Energy reduces top speed; hunger increases urgency.
-        """
+        """Arrive steering: slows down near target. Urgency increases when hungry."""
         to_target = target_pos - self.pos
         dist      = to_target.length()
         if dist < 0.1:
             return
 
-        # Tired creatures move slower
         energy_factor   = 0.5 + 0.5 * (self.energy / 100)
         effective_speed = self._speed * energy_factor
 
-        # Hungry creatures are faster and steer more sharply
         if self.state == State.SEEK_FOOD:
             effective_speed *= 1.4
             lerp = CREATURE_ACCEL_FACTOR * 1.8
+        elif self.state == State.DYING:
+            effective_speed *= 0.4
+            lerp = CREATURE_ACCEL_FACTOR * 0.5
         else:
             lerp = CREATURE_ACCEL_FACTOR
 
@@ -262,16 +384,11 @@ class Creature:
         self.vel    = self.vel.lerp(desired_vel, lerp)
 
     def _steer_wander(self, dt: float) -> None:
-        """
-        Reynolds Wander Circle steering.
-        Projects a circle ahead of the creature and picks a point on it,
-        perturbing the angle each frame for organic curved paths.
-        Periodically triggers idle pauses where the creature gently stops.
-        """
+        """Reynolds Wander Circle with periodic idle pauses."""
         # --- Idle sub-state ---
         if self._is_idle:
             self._idle_timer += dt
-            self.vel *= max(0.0, 1.0 - dt * 5)      # decelerate to a stop
+            self.vel *= max(0.0, 1.0 - dt * 5)
             if self._idle_timer >= self._idle_duration:
                 self._is_idle = False
             return
@@ -291,10 +408,10 @@ class Creature:
                 )
                 return
 
-        # --- Perturb wander angle (organic drift) ---
+        # --- Perturb wander angle ---
         self._wander_angle += random.uniform(-WANDER_ANGLE_SPEED, WANDER_ANGLE_SPEED) * dt
 
-        # --- Project wander circle ahead of current heading ---
+        # --- Project wander circle ---
         if self.vel.length() > 1.0:
             ahead = self.vel.normalize() * WANDER_CIRCLE_DIST
         else:
@@ -321,9 +438,11 @@ class Creature:
         if self.state == State.REST:
             self.energy = min(100, self.energy + ENERGY_REST_RATE * dt)
         else:
-            self.energy = max(0, self.energy - ENERGY_DECAY_RATE * dt)
+            decay = ENERGY_DECAY_RATE
+            if self.state == State.DYING:
+                decay *= 0.5   # dying creatures drain energy more slowly
+            self.energy = max(0, self.energy - decay * dt)
 
-        # Social: rises near others (handled in _act), falls alone
         if self.state != State.SOCIALIZE:
             self.social = max(0, self.social - SOCIAL_DECAY_RATE * dt)
 
@@ -337,31 +456,28 @@ class Creature:
             f"ate at ({int(self.pos.x)}, {int(self.pos.y)})",
             self.label,
         )
-        # Extension: self.memory.append({"event": "ate", "pos": self.pos.copy()})
 
     # ------------------------------------------------------------------
-    # Private – Utilities
+    # Private – Physics
     # ------------------------------------------------------------------
 
     def _move(self, dt: float) -> None:
-        """Apply friction, cap velocity, then integrate position."""
-        # Natural drag – prevents endless gliding when no steering force is applied
+        """Apply friction, cap velocity, integrate position."""
         self.vel *= max(0.0, 1.0 - CREATURE_FRICTION * dt)
 
-        # Per-creature speed cap, reduced when tired
         energy_factor = 0.5 + 0.5 * (self.energy / 100)
         max_speed     = self._speed * energy_factor
         if self.state == State.SEEK_FOOD:
             max_speed *= 1.4
+        elif self.state == State.DYING:
+            max_speed *= 0.3
 
-        speed = self.vel.length()
-        if speed > max_speed:
+        if self.vel.length() > max_speed:
             self.vel = self.vel.normalize() * max_speed
 
         self.pos += self.vel * dt
 
     def _wrap_borders(self) -> None:
-        """Wrap creature position around world edges (toroidal topology)."""
         if self.pos.x < 0:
             self.pos.x = WORLD_WIDTH
         elif self.pos.x > WORLD_WIDTH:
@@ -371,41 +487,61 @@ class Creature:
         elif self.pos.y > WORLD_HEIGHT:
             self.pos.y = 0
 
-    @staticmethod
-    def _random_position() -> pygame.Vector2:
-        return pygame.Vector2(
-            random.uniform(0, WORLD_WIDTH),
-            random.uniform(0, WORLD_HEIGHT),
-        )
-
     # ------------------------------------------------------------------
-    # Private – Drawing
+    # Private – Rendering
     # ------------------------------------------------------------------
 
-    def _draw_status_bars(
+    def _draw_body(
         self,
-        surface: pygame.Surface,
-        px: int,
-        py: int,
+        surface : pygame.Surface,
+        color   : tuple,
+        glow    : bool,
     ) -> None:
-        """Draw three small bars (Hunger, Energy, Social) below the creature."""
-        bars = [
-            (self.hunger,          100, COLOR_BAR_HUNGER),
-            (self.energy,          100, COLOR_BAR_ENERGY),
-            (self.social,          100, COLOR_BAR_SOCIAL),
+        px, py = int(self.pos.x), int(self.pos.y)
+
+        if glow:
+            glow_r    = CREATURE_RADIUS + 5
+            glow_surf = pygame.Surface((glow_r * 2, glow_r * 2), pygame.SRCALPHA)
+            pygame.draw.circle(glow_surf, (*color, 40), (glow_r, glow_r), glow_r)
+            surface.blit(glow_surf, (px - glow_r, py - glow_r))
+
+        pygame.draw.circle(surface, color, (px, py), CREATURE_RADIUS)
+
+    def _draw_corpse(self, surface: pygame.Surface) -> None:
+        """Render a fading corpse dot."""
+        px, py = int(self.pos.x), int(self.pos.y)
+        t      = min(1.0, self._death_timer / CORPSE_DURATION)
+        alpha  = int(200 * (1.0 - t))
+        if alpha <= 0:
+            return
+        corpse_surf = pygame.Surface(
+            (CREATURE_RADIUS * 2 + 2, CREATURE_RADIUS * 2 + 2), pygame.SRCALPHA
+        )
+        pygame.draw.circle(
+            corpse_surf,
+            (*COLOR_CORPSE, alpha),
+            (CREATURE_RADIUS + 1, CREATURE_RADIUS + 1),
+            CREATURE_RADIUS,
+        )
+        surface.blit(corpse_surf, (px - CREATURE_RADIUS - 1, py - CREATURE_RADIUS - 1))
+
+    def _draw_label(self, surface: pygame.Surface, px: int, py: int) -> None:
+        font       = _get_label_font()
+        label_surf = font.render(self.label, True, (110, 110, 110))
+        surface.blit(label_surf, (px - label_surf.get_width() // 2, py - CREATURE_RADIUS - 13))
+
+    def _draw_status_bars(self, surface: pygame.Surface, px: int, py: int) -> None:
+        bars    = [
+            (self.hunger, 100, COLOR_BAR_HUNGER),
+            (self.energy, 100, COLOR_BAR_ENERGY),
+            (self.social, 100, COLOR_BAR_SOCIAL),
         ]
         start_x = px - BAR_WIDTH // 2
         start_y = py + CREATURE_RADIUS + BAR_SPACING
 
         for i, (value, maximum, color) in enumerate(bars):
             y = start_y + i * (BAR_HEIGHT + 2)
-            # Background
-            pygame.draw.rect(
-                surface,
-                COLOR_BAR_BG,
-                (start_x, y, BAR_WIDTH, BAR_HEIGHT),
-            )
-            # Filled portion
+            pygame.draw.rect(surface, COLOR_BAR_BG, (start_x, y, BAR_WIDTH, BAR_HEIGHT))
             filled = max(0, min(BAR_WIDTH, int(BAR_WIDTH * value / maximum)))
             if filled:
                 pygame.draw.rect(surface, color, (start_x, y, filled, BAR_HEIGHT))
@@ -413,8 +549,9 @@ class Creature:
     # ------------------------------------------------------------------
 
     def __repr__(self) -> str:
+        status = "CORPSE" if self.is_corpse else self.state.name
         return (
-            f"Creature(state={self.state.name}, "
+            f"Creature({self.label} state={status}, "
             f"hunger={self.hunger:.1f}, "
             f"energy={self.energy:.1f}, "
             f"social={self.social:.1f})"

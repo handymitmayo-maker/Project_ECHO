@@ -42,11 +42,32 @@ ENERGY_REST_RATE      = 12.0        # energy units gained per second (while rest
 SOCIAL_DECAY_RATE     = 1.5         # social units lost per second (alone)
 SOCIAL_GAIN_RATE      = 8.0         # social units gained per second (near others)
 
-HUNGER_THRESHOLD      = 55          # hunger > this  → SEEK_FOOD
-ENERGY_THRESHOLD      = 25          # energy < this  → REST
-SOCIAL_THRESHOLD      = 30          # social < this  → SOCIALIZE
+# State commitment (anti-thrashing)
+STATE_MIN_DURATION     = 2.0        # min seconds in any state before voluntary switch
+STATE_EMERGENCY_HUNGER = 80         # hunger above this overrides commitment immediately
+
+# Hysteresis thresholds – separate enter vs exit values prevent rapid oscillation
+HUNGER_SEEK_ENTER      = 55         # enter SEEK_FOOD when hunger > this
+HUNGER_SEEK_EXIT       = 35         # leave SEEK_FOOD only when hunger drops below this
+ENERGY_REST_ENTER      = 25         # enter REST when energy < this
+ENERGY_REST_EXIT       = 45         # leave REST only when energy recovers above this
+SOCIAL_ENTER           = 30         # enter SOCIALIZE when social < this
+SOCIAL_EXIT            = 50         # leave SOCIALIZE only when social > this
+
+# Legacy aliases – kept so logger.py import of HUNGER_THRESHOLD still resolves
+HUNGER_THRESHOLD      = HUNGER_SEEK_ENTER
+ENERGY_THRESHOLD      = ENERGY_REST_ENTER
+SOCIAL_THRESHOLD      = SOCIAL_ENTER
 
 SOCIAL_RADIUS         = 120         # px radius for detecting nearby creatures
+
+# Dying / death
+DYING_ENERGY_THRESHOLD = 12         # enter DYING when energy < this
+DYING_HUNGER_THRESHOLD = 88         # enter DYING when hunger > this
+DEATH_CRITICAL_TIME    = 6.0        # seconds at energy==0 or hunger==100 before death
+
+# Corpse
+CORPSE_DURATION        = 6.0        # seconds corpse remains visible before removal
 
 # --- Food ---------------------------------------------------------------------
 FOOD_INITIAL_COUNT    = 20          # food items at game start
@@ -62,6 +83,8 @@ COLOR_CREATURE        = (0,   255, 136)     # phosphor green
 COLOR_CREATURE_REST   = (0,   180, 255)     # ice blue – resting
 COLOR_CREATURE_SOCIAL = (255, 220, 0)       # amber – socialising
 COLOR_CREATURE_SEEK   = (255, 80,  80)      # alert red – hungry
+COLOR_CREATURE_DYING  = (180, 50,  50)      # dim red – dying
+COLOR_CORPSE          = (55,  25,  25)      # very dim – corpse
 COLOR_FOOD            = (255, 60,  60)      # deep red
 COLOR_BAR_BG          = (30,  30,  30)      # status bar background
 COLOR_BAR_HUNGER      = (255, 100, 50)      # orange
