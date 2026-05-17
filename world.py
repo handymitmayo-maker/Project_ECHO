@@ -133,12 +133,26 @@ class World:
     # ------------------------------------------------------------------
 
     def get_nearest_food(self, pos: pygame.Vector2) -> Food | None:
-        """Return the closest alive Food to pos, or None if none exist."""
+        """Return the closest alive Food to pos (global scan). Used as last resort."""
         best      = None
         best_dist = float("inf")
         for food in self.foods:
             d = pos.distance_squared_to(food.pos)
             if d < best_dist:
+                best_dist = d
+                best      = food
+        return best
+
+    def get_nearest_food_in_radius(
+        self, pos: pygame.Vector2, radius: float
+    ) -> Food | None:
+        """Return the closest alive Food within radius, or None if none visible."""
+        r2        = radius * radius
+        best      = None
+        best_dist = float("inf")
+        for food in self.foods:
+            d = pos.distance_squared_to(food.pos)
+            if d <= r2 and d < best_dist:
                 best_dist = d
                 best      = food
         return best

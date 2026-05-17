@@ -36,11 +36,19 @@ IDLE_CHANCE           = 0.35        # probability of an idle pause at each inter
 IDLE_DURATION_MIN     = 1.5         # seconds
 IDLE_DURATION_MAX     = 5.0         # seconds
 
-HUNGER_DECAY_RATE     = 4.0         # hunger units lost per second
-ENERGY_DECAY_RATE     = 2.0         # energy units lost per second (while moving)
-ENERGY_REST_RATE      = 12.0        # energy units gained per second (while resting)
+HUNGER_DECAY_RATE     = 4.0         # hunger units per second (always)
+ENERGY_DECAY_RATE     = 2.0         # legacy alias – no longer used directly
+ENERGY_DECAY_WANDER   = 1.2         # energy cost while WANDER / SOCIALIZE
+ENERGY_DECAY_SEEK     = 2.8         # energy cost while SEEK_FOOD (urgency costs)
+ENERGY_REST_RATE      = 18.0        # energy gained per second while REST (was 12)
 SOCIAL_DECAY_RATE     = 1.5         # social units lost per second (alone)
 SOCIAL_GAIN_RATE      = 8.0         # social units gained per second (near others)
+
+# Food perception
+FOOD_DETECTION_RADIUS        = 200  # px – normal perception range
+FOOD_DETECTION_RADIUS_HUNGRY = 280  # px – expanded range when very hungry
+FOOD_HUNGER_SCAN_BOOST       = 70   # hunger above this activates larger radius
+FOOD_MEMORY_DURATION         = 8.0  # seconds the last known food position is remembered
 
 # State commitment (anti-thrashing)
 STATE_MIN_DURATION     = 2.0        # min seconds in any state before voluntary switch
@@ -110,6 +118,7 @@ LABEL_COLOR           = (200, 200, 200)  # bright enough to read on black bg
 
 # --- Debug --------------------------------------------------------------------
 DEBUG_MODE            = False       # show extra info when True
+DEBUG_SHOW_PERCEPTION = True       # draw food-perception radius on SEEK_FOOD creatures
 
 # =============================================================================
 # Extension placeholders (filled in future versions)

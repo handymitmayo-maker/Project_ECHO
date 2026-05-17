@@ -17,7 +17,7 @@ import pygame
 from settings import (
     CREATURE_RADIUS, CREATURE_SPEED, CREATURE_SPEED_MIN, CREATURE_SPEED_MAX,
     CREATURE_ARRIVE_RADIUS, CREATURE_ACCEL_FACTOR, CREATURE_FRICTION,
-    HUNGER_DECAY_RATE, ENERGY_DECAY_RATE, ENERGY_REST_RATE,
+    HUNGER_DECAY_RATE, ENERGY_DECAY_WANDER, ENERGY_DECAY_SEEK, ENERGY_REST_RATE,
     SOCIAL_DECAY_RATE, SOCIAL_GAIN_RATE,
     STATE_MIN_DURATION, STATE_EMERGENCY_HUNGER,
     HUNGER_SEEK_ENTER, HUNGER_SEEK_EXIT,
@@ -26,6 +26,8 @@ from settings import (
     WANDER_CHANGE_INTERVAL, WANDER_CIRCLE_DIST, WANDER_CIRCLE_RADIUS,
     WANDER_ANGLE_SPEED, SOCIAL_RADIUS,
     IDLE_CHANCE, IDLE_DURATION_MIN, IDLE_DURATION_MAX,
+    FOOD_DETECTION_RADIUS, FOOD_DETECTION_RADIUS_HUNGRY, FOOD_HUNGER_SCAN_BOOST,
+    FOOD_MEMORY_DURATION,
     DYING_ENERGY_THRESHOLD, DYING_HUNGER_THRESHOLD,
     DEATH_CRITICAL_TIME, CORPSE_DURATION,
     WORLD_WIDTH, WORLD_HEIGHT,
@@ -34,6 +36,7 @@ from settings import (
     COLOR_BAR_BG, COLOR_BAR_HUNGER, COLOR_BAR_ENERGY, COLOR_BAR_SOCIAL,
     SHOW_STATUS_BARS, BAR_WIDTH, BAR_HEIGHT, BAR_SPACING,
     SHOW_CREATURE_LABELS, LABEL_FONT_SIZE, LABEL_COLOR,
+    DEBUG_SHOW_PERCEPTION,
 )
 from logger import get_logger
 
@@ -130,6 +133,10 @@ class Creature:
         # --- Social interaction cooldown ---
         self._in_social_interaction = False
 
+        # --- Food perception memory ---
+        self._last_seen_food_pos : pygame.Vector2 | None = None
+        self._food_memory_timer  : float = 0.0
+
         # --- Extension placeholders ---
         self.memory        : list = []
         self.dna           : dict = {}
@@ -141,9 +148,17 @@ class Creature:
 
     def update(self, world: "World", dt: float) -> None:
         """Main update tick – only called while self.alive is True."""
-        self._lifespan  += dt
+        self._lifespan    += dt
         self._state_timer += dt
         self._decay_stats(dt)
+
+        # Decay food memory over time
+        if self._last_seen_food_pos is not None:
+            self._food_memory_timer += dt
+            if self._food_memory_timer >= FOOD_MEMORY_DURATION:
+                self._last_seen_food_pos = None
+                self._food_memory_timer  = 0.0
+
         self._decide_state(world, dt)
         if self.alive:  # _decide_state may have triggered death
             self._act(world, dt)
@@ -165,11 +180,14 @@ class Creature:
             if SHOW_STATUS_BARS:
                 self._draw_status_bars(surface, int(self.pos.x), int(self.pos.y))
         else:
+            px, py = int(self.pos.x), int(self.pos.y)
+            if DEBUG_SHOW_PERCEPTION and self.state == State.SEEK_FOOD:
+                self._draw_perception_debug(surface, px, py)
             self._draw_body(surface, _STATE_COLOR[self.state], glow=True)
             if SHOW_CREATURE_LABELS:
-                self._draw_label(surface, int(self.pos.x), int(self.pos.y))
+                self._draw_label(surface, px, py)
             if SHOW_STATUS_BARS:
-                self._draw_status_bars(surface, int(self.pos.x), int(self.pos.y))
+                self._draw_status_bars(surface, px, py)
 
     # ------------------------------------------------------------------
     # Private – AI Decision
@@ -190,7 +208,7 @@ class Creature:
         # 2. DYING state restricts choices to SEEK_FOOD or REST only
         if self.state == State.DYING:
             if self.hunger >= HUNGER_SEEK_ENTER:
-                nearest = world.get_nearest_food(self.pos)
+                nearest = self._get_food_target(world)
                 if nearest is not None:
                     self._force_transition(State.SEEK_FOOD, world, "dying_hunger")
             elif self.energy <= ENERGY_REST_ENTER:
@@ -254,7 +272,7 @@ class Creature:
 
         # Refresh target for the new state
         if new_state == State.SEEK_FOOD:
-            self.target = world.get_nearest_food(self.pos)
+            self.target = self._get_food_target(world)
         elif new_state == State.SOCIALIZE:
             nearby      = world.get_nearby_creatures(self.pos, SOCIAL_RADIUS, exclude=self)
             self.target = nearby[0] if nearby else None
@@ -320,10 +338,18 @@ class Creature:
                 if self.pos.distance_to(self.target.pos) < CREATURE_RADIUS + self.target.radius:
                     self._eat(self.target)
             else:
-                # Target gone – pick a new one or wander
-                self.target = world.get_nearest_food(self.pos)
-                if self.target is None:
-                    self._steer_wander(dt)
+                # Target gone – look for new visible food
+                self.target = self._get_food_target(world)
+                if self.target is not None:
+                    self._steer_arrive(self.target.pos)
+                elif self._last_seen_food_pos is not None:
+                    # Head toward last known food position
+                    self._steer_arrive(self._last_seen_food_pos)
+                    if self.pos.distance_to(self._last_seen_food_pos) < 20:
+                        self._last_seen_food_pos = None   # arrived – memory consumed
+                else:
+                    # No memory – sweep wider in search
+                    self._steer_search_wander(dt)
 
         elif self.state == State.REST:
             self.vel *= max(0.0, 1.0 - dt * 4)
@@ -427,21 +453,60 @@ class Creature:
         )
         self._steer_arrive(wander_target)
 
+    def _get_food_target(self, world: "World"):
+        """
+        Radius-based food lookup. Updates the food memory on every hit.
+        Hungry creatures scan farther.
+        """
+        radius = (FOOD_DETECTION_RADIUS_HUNGRY
+                  if self.hunger >= FOOD_HUNGER_SCAN_BOOST
+                  else FOOD_DETECTION_RADIUS)
+        food = world.get_nearest_food_in_radius(self.pos, radius)
+        if food is not None:
+            self._last_seen_food_pos = food.pos.copy()
+            self._food_memory_timer  = 0.0
+        return food
+
+    def _steer_search_wander(self, dt: float) -> None:
+        """
+        Faster, wider sweep used during SEEK_FOOD when no food or memory is available.
+        No idle pauses – hunger forbids stopping.
+        """
+        self._wander_angle += random.uniform(
+            -WANDER_ANGLE_SPEED * 2, WANDER_ANGLE_SPEED * 2
+        ) * dt
+
+        if self.vel.length() > 1.0:
+            ahead = self.vel.normalize() * (WANDER_CIRCLE_DIST * 1.5)
+        else:
+            ahead = pygame.Vector2(
+                math.cos(self._wander_angle),
+                math.sin(self._wander_angle),
+            ) * (WANDER_CIRCLE_DIST * 1.5)
+
+        circle_center = self.pos + ahead
+        search_target = circle_center + pygame.Vector2(
+            math.cos(self._wander_angle) * WANDER_CIRCLE_RADIUS,
+            math.sin(self._wander_angle) * WANDER_CIRCLE_RADIUS,
+        )
+        self._steer_arrive(search_target)
+
     # ------------------------------------------------------------------
     # Private – Stats
     # ------------------------------------------------------------------
 
     def _decay_stats(self, dt: float) -> None:
-        """Drain stats over time according to current state."""
+        """Drain stats over time; energy cost differs per state."""
         self.hunger = min(100, self.hunger + HUNGER_DECAY_RATE * dt)
 
         if self.state == State.REST:
             self.energy = min(100, self.energy + ENERGY_REST_RATE * dt)
-        else:
-            decay = ENERGY_DECAY_RATE
-            if self.state == State.DYING:
-                decay *= 0.5   # dying creatures drain energy more slowly
-            self.energy = max(0, self.energy - decay * dt)
+        elif self.state == State.SEEK_FOOD:
+            self.energy = max(0, self.energy - ENERGY_DECAY_SEEK * dt)
+        elif self.state == State.DYING:
+            self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * 0.5 * dt)
+        else:  # WANDER, SOCIALIZE
+            self.energy = max(0, self.energy - ENERGY_DECAY_WANDER * dt)
 
         if self.state != State.SOCIALIZE:
             self.social = max(0, self.social - SOCIAL_DECAY_RATE * dt)
@@ -490,6 +555,13 @@ class Creature:
     # ------------------------------------------------------------------
     # Private – Rendering
     # ------------------------------------------------------------------
+
+    def _draw_perception_debug(self, surface: pygame.Surface, px: int, py: int) -> None:
+        """Optional: draw the food detection radius when DEBUG_SHOW_PERCEPTION is on."""
+        r = (FOOD_DETECTION_RADIUS_HUNGRY
+             if self.hunger >= FOOD_HUNGER_SCAN_BOOST
+             else FOOD_DETECTION_RADIUS)
+        pygame.draw.circle(surface, (60, 40, 0), (px, py), int(r), 1)
 
     def _draw_body(
         self,
